@@ -45,6 +45,6 @@ group :development do
 end
 
 group :test do
-  gem 'shoulda-matchers'
-  gem 'json_spec'
+    gem 'shoulda-matchers'
+    gem 'json_spec'
 end
