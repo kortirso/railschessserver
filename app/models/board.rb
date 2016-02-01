@@ -3,4 +3,16 @@ class Board < ActiveRecord::Base
     has_many :cells
 
     validates :game_id, presence: true
+
+    def self.build(game)
+        board = create game: game
+        #Cell.build(board)
+        #Figure.build
+        #board.set_figures
+        board
+    end
+
+    def set_figures
+        
+    end
 end
