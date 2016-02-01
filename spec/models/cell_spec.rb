@@ -1,5 +1,6 @@
 RSpec.describe Cell, type: :model do
     it { should belong_to :board }
+    it { should have_one :figure }
     it { should validate_presence_of :board_id }
     it { should validate_presence_of :x_param }
     it { should validate_presence_of :y_param }

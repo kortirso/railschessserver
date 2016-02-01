@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160201044546) do
+ActiveRecord::Schema.define(version: 20160201172311) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -33,6 +33,16 @@ ActiveRecord::Schema.define(version: 20160201044546) do
   end
 
   add_index "cells", ["board_id"], name: "index_cells_on_board_id", using: :btree
+
+  create_table "figures", force: :cascade do |t|
+    t.string   "type"
+    t.string   "color"
+    t.integer  "cell_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "figures", ["cell_id"], name: "index_figures_on_cell_id", using: :btree
 
   create_table "games", force: :cascade do |t|
     t.integer  "user_id"

@@ -1,5 +1,6 @@
 class Cell < ActiveRecord::Base
     belongs_to :board
+    has_one :figure
 
     validates :board_id, :x_param, :y_param, presence: true
     validates :x_param, inclusion: { in: %w(a b c d e f g h) }
