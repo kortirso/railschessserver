@@ -5,5 +5,13 @@ RSpec.describe Cell, type: :model do
     it { should validate_presence_of :x_param }
     it { should validate_presence_of :y_param }
     it { should validate_inclusion_of(:x_param).in_array(%w(a b c d e f g h)) }
-    #it { should validate_inclusion_of(:y_param).in_range(1..8) }
+    it { should validate_inclusion_of(:y_param).in_array(%w(1 2 3 4 5 6 7 8)) }
+
+    context '.build' do
+        let(:board) { create :board }
+
+        it 'should create new 64 Cells fo Board' do
+            expect { Cell.build(board) }.to change(Cell, :count).by(64)
+        end
+    end
 end

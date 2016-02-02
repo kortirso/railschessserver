@@ -6,8 +6,8 @@ class Board < ActiveRecord::Base
 
     def self.build(game)
         board = create game: game
-        #Cell.build(board)
-        #Figure.build
+        Cell.build(board)
+        Figure.build
         #board.set_figures
         board
     end
