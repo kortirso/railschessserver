@@ -10,7 +10,7 @@ RSpec.describe Game, type: :model do
         let(:user_1) { create :user }
         let(:user_2) { create :user }
 
-        it 'should create new Game' do
+        it 'should creates new Game' do
             expect { Game.build(user_1, user_2, true) }.to change(Game, :count).by(1)
         end
 
@@ -20,6 +20,14 @@ RSpec.describe Game, type: :model do
             expect(user_1.games.first).to eq game
             expect(user_2.as_opponent_games.first).to eq game
             expect(game.access).to eq true
+        end
+
+        it 'and creates new Board' do
+            expect { Game.build(user_1, user_2, true) }.to change(Board, :count).by(1)
+        end
+
+        it 'and creates new 32 Figures' do
+            expect { Game.build(user_1, user_2, true) }.to change(Figure, :count).by(32)
         end
     end
 end

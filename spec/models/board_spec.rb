@@ -5,7 +5,7 @@ RSpec.describe Board, type: :model do
     it { should validate_presence_of :game_id }
 
     context '.build' do
-        let(:game) { create :game }
+        let!(:game) { create :game }
 
         it 'should create new Board' do
             expect { Board.build(game) }.to change(Board, :count).by(1)

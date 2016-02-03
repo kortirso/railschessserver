@@ -8,7 +8,7 @@ RSpec.describe Cell, type: :model do
     it { should validate_inclusion_of(:y_param).in_array(%w(1 2 3 4 5 6 7 8)) }
 
     context '.build' do
-        let(:board) { create :board }
+        let!(:board) { create :board }
 
         it 'should create new 64 Cells fo Board' do
             expect { Cell.build(board) }.to change(Cell, :count).by(64)

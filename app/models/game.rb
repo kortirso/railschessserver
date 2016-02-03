@@ -6,9 +6,14 @@ class Game < ActiveRecord::Base
 
     validates :user_id, :opponent_id, :access, presence: true
 
+    after_create :board_build
+
     def self.build(user_1, user_2, access)
         game = create user: user_1, opponent: user_2, access: access
-        Board.build(game)
-        game
+    end
+
+    private
+    def board_build
+        Board.build(self)
     end
 end

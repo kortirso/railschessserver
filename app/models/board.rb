@@ -5,12 +5,10 @@ class Board < ActiveRecord::Base
 
     validates :game_id, presence: true
 
+    after_create :board_sets
+
     def self.build(game)
         board = create game: game
-        Cell.build(board)
-        Figure.build(board)
-        board.set_figures
-        board
     end
 
     def set_figures
@@ -29,5 +27,12 @@ class Board < ActiveRecord::Base
             self.figures.find_by(type: 'k', color: color).update(cell: self.cells.find_by(x_param: 'e', y_param: line))
             self.figures.find_by(type: 'q', color: color).update(cell: self.cells.find_by(x_param: 'd', y_param: line))
         end
+    end
+
+    private
+    def board_sets
+        Cell.build(self)
+        Figure.build(self)
+        self.set_figures
     end
 end
