@@ -1,10 +1,15 @@
 RSpec.describe Figure, type: :model do
     it { should belong_to :cell }
+    it { should belong_to :board }
+    it { should validate_presence_of :board_id }
+    it { should validate_presence_of :color }
+    it { should validate_presence_of :type }
     it { should validate_inclusion_of(:type).in_array(%w(k q r n b p)) }
     it { should validate_inclusion_of(:color).in_array(%w(white black)) }
 
     context '.build' do
-        before { Figure.build }
+        let(:board) { create :board }
+        before { Figure.build(board) }
 
         it 'creates 8 white and black P' do
             expect(Figure.where(type: 'p', color: 'white').count).to eq 8

@@ -1,6 +1,5 @@
 FactoryGirl.define do
-  factory :figure do
-    
-  end
-
+    factory :figure do
+        association :board
+    end
 end
