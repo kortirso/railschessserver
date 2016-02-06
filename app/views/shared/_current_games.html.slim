@@ -1,0 +1,4 @@
+p.head Your current games
+p= link_to 'Start new game', new_game_path, class: 'btn btn-primary'
+- @users_games.each do |game|
+    p= link_to "Game ##{game.id}", game, class: 'btn btn-sm btn-default'

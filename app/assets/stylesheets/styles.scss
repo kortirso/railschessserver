@@ -1,3 +1,9 @@
+@import url('https://fonts.googleapis.com/css?family=Ubuntu:400,500&subset=latin,cyrillic');
+
+* {
+    font-family: 'Ubuntu', sans-serif;
+}
+
 #board {
     width: 400px;
     border: 2px solid #404040;
@@ -13,6 +19,32 @@
         }
         &.black {
             background: #b58863;
+        }
+    }
+}
+
+.auth_block {
+    #login, #signup, #logged, #current_games, #menu {
+        padding: 20px 0 0;
+        .head {
+            font-weight: 500;
+        }
+    }
+    #menu {
+        a {
+            font-weight: 500;
+        }
+    }
+}
+
+.chess_block {
+    padding: 20px 0;
+    #last_public_games {
+        h2 {
+            font-size: 20px;
+        }
+        .btn {
+            margin-right: 10px;
         }
     }
 }

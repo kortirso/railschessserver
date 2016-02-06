@@ -4,7 +4,9 @@ class Game < ActiveRecord::Base
 
     has_one :board
 
-    validates :user_id, :opponent_id, :access, presence: true
+    validates :user_id, :opponent_id, presence: true
+
+    scope :accessable, -> { where(access: true) }
 
     after_create :board_build
 

@@ -3,7 +3,6 @@ RSpec.describe Game, type: :model do
     it { should belong_to :opponent }
     it { should have_one :board }
     it { should validate_presence_of :user_id }
-    it { should validate_presence_of :access }
     it { should validate_presence_of :opponent_id }
 
     context '.build' do

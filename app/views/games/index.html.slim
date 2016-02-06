@@ -1,0 +1,11 @@
+h1 Chess server
+p Welcome to simple chess server builds on Ruby on Rails. You'll can play and chat with other users and with simple AI.
+.row
+    .col-xs-12.col-sm-6
+        #last_public_games
+            h2 Last started public games
+            - @last_games.each do |game|
+                p
+                    = link_to "Game ##{game.id}", game, class: 'btn btn-sm btn-default'
+                    = "#{game.user.username} vs #{game.opponent.username}"
+    .col-xs-12.col-sm-6
