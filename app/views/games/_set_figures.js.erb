@@ -1,0 +1,5 @@
+$(function() {
+    <% @figures.each do |figure| %>
+        $('.square-<%= "#{figure.cell.x_param}#{figure.cell.y_param}" %>').append('<%= image_tag figure.image, data: { figure: "#{figure.color[0]}#{figure.type}" } %>');
+    <% end %>
+});

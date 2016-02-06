@@ -1,0 +1,18 @@
+#board {
+    width: 400px;
+    border: 2px solid #404040;
+    box-sizing: content-box;
+
+    .square {
+        float: left;
+        position: relative;
+        width: 50px;
+        height: 50px;
+        &.white {
+            background: #f0d9b5;
+        }
+        &.black {
+            background: #b58863;
+        }
+    }
+}
