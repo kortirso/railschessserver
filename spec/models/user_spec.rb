@@ -43,4 +43,19 @@ RSpec.describe User, type: :model do
         user.valid?
         expect(user.errors[:email]).to include('has already been taken')
     end
+
+    context '.users_games' do
+        let!(:user) { create :user }
+        let!(:game_1) { create :game, user: user }
+        let!(:game_2) { create :game, opponent: user }
+        let!(:game_3) { create :game }
+
+        it 'should return a list of games with current user' do
+            games = user.users_games
+            
+            expect(games.count).to eq 2
+            expect(games[0]).to eq game_1
+            expect(games[1]).to eq game_2
+        end
+    end
 end

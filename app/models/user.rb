@@ -7,4 +7,10 @@ class User < ActiveRecord::Base
     has_many :as_opponent_games, class_name: 'Game', foreign_key: 'opponent_id'
     
     validates :username, presence: true, uniqueness: true, length: { in: 1..20 }
+
+    scope :other_users, -> (user_id) { where.not(id: user_id) }
+
+    def users_games
+        games = Game.where('user_id = ? OR opponent_id = ?', self.id, self.id)
+    end
 end
