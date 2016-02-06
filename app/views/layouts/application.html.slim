@@ -6,4 +6,25 @@ html
         = javascript_include_tag 'application'
         = csrf_meta_tags
     body
-        = yield
+        .container
+            .col-xs-9
+                = yield
+            .col-xs-3
+                - if current_user
+                    p= "Login as #{current_user.email}"
+                    p= link_to 'Logoff', destroy_user_session_path, method: :delete, class: 'btn btn-sm btn-danger', id: 'destroy'
+                - else
+                    #login
+                        p Authentification
+                        = simple_form_for(User.new, as: :user, url: session_path(:user)) do |f|
+                            p= f.input :username, autofocus: true, label: false
+                            p= f.input :password, autocomplete: 'off', label: false
+                            p= f.button :submit, 'Login', class: 'btn btn-primary', id: 'authorization'
+                    #signup
+                        p Registration
+                        = simple_form_for(User.new, as: :user, url: registration_path(:user)) do |f|
+                            p= f.input :username, required: true, label: false, placeholder: 'Username'
+                            p= f.input :email, required: true, label: false, placeholder: 'Email'
+                            p= f.input :password, required: true, label: false, placeholder: 'Password'
+                            p= f.input :password_confirmation, autocomplete: 'off', required: true, label: false, placeholder: 'Password Confirm'
+                            p=  f.button :submit, 'Sign Up', class: 'btn btn-primary', id: 'registration'

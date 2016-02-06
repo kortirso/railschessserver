@@ -9,7 +9,7 @@ class Game < ActiveRecord::Base
     after_create :board_build
 
     def self.build(user_1, user_2, access)
-        game = create user: user_1, opponent: user_2, access: access
+        game = create user_id: user_1, opponent_id: user_2, access: access
     end
 
     private

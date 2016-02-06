@@ -14,6 +14,8 @@ RSpec.configure do |config|
     config.include FactoryGirl::Syntax::Methods
     config.include Capybara::DSL
 
+    config.extend ControllerMacros, type: :controller
+
     include Warden::Test::Helpers
     Warden.test_mode!
 

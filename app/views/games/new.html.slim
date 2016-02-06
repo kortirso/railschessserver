@@ -1,0 +1,12 @@
+.row
+    .col-lg-12
+        h1 Новая партия
+        = simple_form_for @game do |f|
+            .col-xs-12.col-lg-6
+                = f.input :access
+            .clearfix
+            .col-xs-12.col-lg-6
+                = f.input :opponent_id, collection: User.where.not(id: current_user.id), label: 'Противник', label_method: :username, value_method: :id
+            .col-xs-12
+                .actions
+                    = f.button :submit, class: "btn btn-success", value: 'Создать партию'
