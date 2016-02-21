@@ -1,5 +1,5 @@
 .row
-    .col-xs-12
+    .col-xs-6.col-sm-6
         #board
             .chess_row
                 .square.white.square-a8 data={square: 'a8'}
@@ -81,12 +81,16 @@
                 .square.black.square-g1 data={square: 'g1'}
                 .square.white.square-h1 data={square: 'h1'}
                 .clearfix
-.row
-    h2 Выполнить ход
-    = simple_form_for(Turn.new, as: :turn, url: make_turn_path(:game, :from, :to), remote: true) do |f|
-        = f.input :game, as: :hidden, input_html: {value: "#{@game.id}"}
-        .col-xs-2= f.input :from, placeholder: 'From', label: false
-        .col-xs-2= f.input :to, placeholder: 'To', label: false
-        p= f.button :submit, 'Ход', class: 'btn btn-primary', id: 'make_turn'
+    .col-xs-12.col-sm-6
+        .row
+            p Выполнить ход
+            = simple_form_for(Turn.new, as: :turn, url: make_turn_path(:game, :user, :from, :to), remote: true) do |f|
+                = f.input :game, as: :hidden, input_html: {value: "#{@game.id}"}
+                = f.input :user, as: :hidden, input_html: {value: "#{@current_user.id}"}
+                .col-xs-3= f.input :from, placeholder: 'From', label: false
+                .col-xs-3= f.input :to, placeholder: 'To', label: false
+                p= f.button :submit, 'Ход', class: 'btn btn-primary', id: 'make_turn'
+        .row
+            #notice
 javascript:
     #{render 'games/set_figures.js'}
