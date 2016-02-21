@@ -3,6 +3,7 @@ class Game < ActiveRecord::Base
     belongs_to :opponent, class_name: 'User', foreign_key: 'opponent_id'
 
     has_one :board
+    has_many :turns
 
     validates :user_id, :opponent_id, presence: true
 
