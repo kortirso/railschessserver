@@ -4,7 +4,7 @@ class ChessController < ApplicationController
     before_action :checks_before_turn
 
     def make_turn
-        Turn.build(@game, @from, @to) if @turn_error.nil?
+        Turn.build(@game.id, @from, @to) if @turn_error.nil?
     end
 
     private
@@ -16,6 +16,8 @@ class ChessController < ApplicationController
 
     def checks_before_turn
         @turn_error = @game.check_users_turn(params[:turn][:user].to_i)
+        return unless @turn_error.nil?
+        @turn_error = @game.check_cells(@from, @to)
         return unless @turn_error.nil?
         @turn_error = @game.check_right_figure(@from)
     end
