@@ -15,10 +15,14 @@ class ChessController < ApplicationController
     end
 
     def checks_before_turn
-        @turn_error = @game.check_users_turn(params[:turn][:user].to_i)
+        @turn_error = @game.check_users_turn(params[:turn][:user].to_i) # Чья очередь ходить
         return unless @turn_error.nil?
-        @turn_error = @game.check_cells(@from, @to)
+        @turn_error = @game.check_cells(@from, @to) # Должны быть разные исходная и конечная точки
         return unless @turn_error.nil?
-        @turn_error = @game.check_right_figure(@from)
+        @turn_error = @game.check_right_figure(@from) # Своей ли фигурой ходит игрок
+        return unless @turn_error.nil?
+        @turn_error = @game.check_turn(@from, @to) # Проверка правильности хода, проверка на препятствия
+        return unless @turn_error.nil?
+        @turn_error = @game.check_finish_cell(@to) # Проверка, есть ли фигуры в конечной точке
     end
 end

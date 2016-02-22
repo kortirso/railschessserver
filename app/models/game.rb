@@ -16,24 +16,18 @@ class Game < ActiveRecord::Base
     end
 
     def check_users_turn(user_id)
-        result = user_id == self.user_id && self.white_turn || user_id == self.opponent_id && !self.white_turn ? nil : "Сейчас не ваш черед ходить"
+        result = user_id == self.user_id && self.white_turn || user_id == self.opponent_id && !self.white_turn ? nil : 'Сейчас не ваш черед ходить'
     end
 
     def check_cells(from, to)
-        result = from == to ? "Должны быть указаны разные ячейки" : nil
+        result = from == to ? 'Должны быть указаны разные ячейки' : nil
         return result unless result.nil?
         errors = 0
-        %w("#{from} #{to}").each do |index|
-            case index[0]
-                when 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'
-                else errors += 1
-            end
-            case index[1]
-                when '1', '2', '3', '4', '5', '6', '7', '8'
-                else errors += 1
-            end
+        [from, to].each do |index|
+            errors += 1 if %w(a b c d e f g h).index(index[0]).nil?
+            errors += 1 if %w(1 2 3 4 5 6 7 8).index(index[1]).nil?
         end
-        result = errors > 0 ? "Указана неправильная ячейка" : nil
+        result = errors > 0 ? 'Указана неправильная ячейка' : nil
     end
 
     def check_right_figure(from)
@@ -41,7 +35,50 @@ class Game < ActiveRecord::Base
         result = figure.nil? ? "В клетке '#{from}' нет фигуры для хода" : nil
         return result unless result.nil?
         f_color = figure.color
-        result = f_color == 'white' && self.white_turn || f_color == 'black' && !self.white_turn ? nil : "Нельзя ходить чужой фигурой"
+        result = f_color == 'white' && self.white_turn || f_color == 'black' && !self.white_turn ? nil : 'Нельзя ходить чужой фигурой'
+    end
+
+    def check_turn(from, to)
+        figure = self.board.cells.find_by(x_param: from[0], y_param: from[1]).figure
+        x_params = %w(a b c d e f g h)
+        y_params = %w(1 2 3 4 5 6 7 8)
+        x_change = x_params.index(to[0]) - x_params.index(from[0])
+        y_change = y_params.index(to[1]) - y_params.index(from[1])
+        case figure.type
+            when 'k'
+                result = x_change.abs <= 1 && y_change.abs <= 1 ? nil : 'Неправильный ход королем'
+                # добавить рокировку
+            when 'q'
+                result = x_change != 0 && y_change == 0 || x_change == 0 && y_change != 0 || x_change.abs == y_change.abs ? nil : 'Неправильный ход ферзём'
+            when 'r'
+                result = x_change != 0 && y_change == 0 || x_change == 0 && y_change != 0 ? nil : 'Неправильный ход ладьёй'
+            when 'n'
+                result = x_change.abs == 2 && y_change.abs == 1 || x_change.abs == 1 && y_change.abs == 2 ? nil : 'Неправильный ход конём'
+            when 'b'
+                result = x_change.abs == y_change.abs ? nil : 'Неправильный ход слоном'
+            when 'p'
+                finish_cell = self.board.cells.find_by(x_param: to[0], y_param: to[1]).figure
+                result = figure.color == 'white' && (x_change == 0 && y_change == 1 || x_change == 0 && y_change == 2 && from[1] == '2' || x_change.abs == 1 && y_change == 1 && !finish_cell.nil? && finish_cell.color == 'black') || figure.color == 'black' && (x_change == 0 && y_change == -1 || x_change == 0 && y_change == -2 && from[1] == '7' || x_change.abs == 1 && y_change == -1 && !finish_cell.nil? && finish_cell.color == 'white') ? nil : 'Неправильный ход пешкой'
+                # добавить взятие на проходе
+        end
+        return result unless result.nil?
+        x_direction = x_change > 0 ? 1 : -1
+        y_direction = y_change > 0 ? 1 : -1
+        checks = []
+        if x_change == 0 && y_change.abs > 1
+            (y_params.index(from[1]) + 2).step(y_params.index(to[1]), y_direction) { |iter| checks.push("#{from[0]}#{iter}") }
+        elsif x_change.abs > 1 && y_change == 0
+            (x_params.index(from[0]) + 1).step(x_params.index(to[0]) - 1, x_direction) { |iter| checks.push("#{x_params[iter]}#{from[1]}") }
+        elsif x_change.abs == y_change.abs && x_change.abs > 1
+            count = x_change.abs - 1
+            (1..count).each do |step|
+                 
+            end
+        end                
+    end
+
+    def check_finish_cell(to)
+
     end
 
     private
