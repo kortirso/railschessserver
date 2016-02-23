@@ -67,9 +67,9 @@ class Game < ActiveRecord::Base
             y_direction = y_change > 0 ? 1 : -1
             checks = []
             if x_change == 0 && y_change.abs > 1
-                (y_params.index(from[1]) + 2).step(y_params.index(to[1]), y_direction) { |iter| checks.push("#{from[0]}#{iter}") }
+                (y_params.index(from[1]) + y_direction).step(y_params.index(to[1]) - y_direction, y_direction) { |iter| checks.push("#{from[0]}#{iter}") }
             elsif x_change.abs > 1 && y_change == 0
-                (x_params.index(from[0]) + 1).step(x_params.index(to[0]) - 1, x_direction) { |iter| checks.push("#{x_params[iter]}#{from[1]}") }
+                (x_params.index(from[0]) + x_direction).step(x_params.index(to[0]) - x_direction, x_direction) { |iter| checks.push("#{x_params[iter]}#{from[1]}") }
             elsif x_change.abs == y_change.abs && x_change.abs > 1
                 count = x_change.abs - 1
                 (1..count).each do |step|

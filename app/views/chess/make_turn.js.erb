@@ -1,10 +1,3 @@
 <% if @turn_error %>
     $('#notice').html('<%= @turn_error %>');
-<% else %>
-    figure = $('.square-<%= @from %> img');
-    newFigure = $(figure).clone();
-    $('.square-<%= @to %> img').remove();
-    $('.square-<%= @to %>').append(newFigure);
-    figure.remove();
-    $('#notice').html('');
 <% end %>

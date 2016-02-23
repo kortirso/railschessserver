@@ -4,7 +4,11 @@ class ChessController < ApplicationController
     before_action :checks_before_turn
 
     def make_turn
-        Turn.build(@game.id, @from, @to) if @turn_error.nil?
+        if @turn_error.nil?
+            turn = Turn.build(@game.id, @from, @to)
+            PrivatePub.publish_to "/games/#{@game.id}/turns", turn: turn.to_json
+            render nothing: true
+        end
     end
 
     private
@@ -15,7 +19,7 @@ class ChessController < ApplicationController
     end
 
     def checks_before_turn
-        @turn_error = @game.check_users_turn(params[:turn][:user].to_i) # Чья очередь ходить
+        @turn_error = @game.check_users_turn(current_user.id) # Чья очередь ходить
         return unless @turn_error.nil?
         @turn_error = @game.check_cells(@from, @to) # Должны быть разные исходная и конечная точки
         return unless @turn_error.nil?
