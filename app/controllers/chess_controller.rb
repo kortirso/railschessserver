@@ -23,6 +23,6 @@ class ChessController < ApplicationController
         return unless @turn_error.nil?
         @turn_error = @game.check_turn(@from, @to) # Проверка правильности хода, проверка на препятствия
         return unless @turn_error.nil?
-        @turn_error = @game.check_finish_cell(@to) # Проверка, есть ли фигуры в конечной точке
+        @turn_error = @game.check_finish_cell(@from, @to) # Проверка, есть ли фигуры в конечной точке
     end
 end

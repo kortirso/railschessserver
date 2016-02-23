@@ -80,15 +80,25 @@ class Game < ActiveRecord::Base
             end
             checks.each do |box|
                 check = self.board.cells.find_by(x_param: box[0], y_param: box[1]).figure
-                result = check.nil? ? 'На пути фигуры есть препятствие' : nil
+                result = check.nil? ? nil : 'На пути фигуры есть препятствие'
                 break unless result.nil?
             end
-            result
         end
+        result
     end
 
-    def check_finish_cell(to)
-
+    def check_finish_cell(from, to)
+        figure = self.board.cells.find_by(x_param: from[0], y_param: from[1]).figure
+        obstacle = self.board.cells.find_by(x_param: to[0], y_param: to[1]).figure
+        unless obstacle.nil?
+            if obstacle.color == figure.color
+                result = 'Ваша фигура мешает ходу'
+            else
+                obstacle.update(cell: nil)
+                result = nil
+            end
+        end   
+        result
     end
 
     private

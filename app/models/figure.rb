@@ -8,6 +8,8 @@ class Figure < ActiveRecord::Base
     validates :type, inclusion: { in: %w(k q r n b p) }
     validates :color, inclusion: { in: %w(white black) }
 
+    scope :on_the_board, -> { where.not(cell: nil) }
+
     def self.build(board)
         %w(white black).each do |color|
             (1..8).each do |number|
