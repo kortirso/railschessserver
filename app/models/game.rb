@@ -62,19 +62,29 @@ class Game < ActiveRecord::Base
                 # добавить взятие на проходе
         end
         return result unless result.nil?
-        x_direction = x_change > 0 ? 1 : -1
-        y_direction = y_change > 0 ? 1 : -1
-        checks = []
-        if x_change == 0 && y_change.abs > 1
-            (y_params.index(from[1]) + 2).step(y_params.index(to[1]), y_direction) { |iter| checks.push("#{from[0]}#{iter}") }
-        elsif x_change.abs > 1 && y_change == 0
-            (x_params.index(from[0]) + 1).step(x_params.index(to[0]) - 1, x_direction) { |iter| checks.push("#{x_params[iter]}#{from[1]}") }
-        elsif x_change.abs == y_change.abs && x_change.abs > 1
-            count = x_change.abs - 1
-            (1..count).each do |step|
-                 
+        unless figure.type == 'n'
+            x_direction = x_change > 0 ? 1 : -1
+            y_direction = y_change > 0 ? 1 : -1
+            checks = []
+            if x_change == 0 && y_change.abs > 1
+                (y_params.index(from[1]) + 2).step(y_params.index(to[1]), y_direction) { |iter| checks.push("#{from[0]}#{iter}") }
+            elsif x_change.abs > 1 && y_change == 0
+                (x_params.index(from[0]) + 1).step(x_params.index(to[0]) - 1, x_direction) { |iter| checks.push("#{x_params[iter]}#{from[1]}") }
+            elsif x_change.abs == y_change.abs && x_change.abs > 1
+                count = x_change.abs - 1
+                (1..count).each do |step|
+                     x_new = x_params.index(from[0]) + x_direction * step
+                     y_new = y_params.index(from[1]) + 1 + y_direction * step
+                     checks.push("#{x_params[x_new]}#{y_new}")
+                end
             end
-        end                
+            checks.each do |box|
+                check = self.board.cells.find_by(x_param: box[0], y_param: box[1]).figure
+                result = check.nil? ? 'На пути фигуры есть препятствие' : nil
+                break unless result.nil?
+            end
+            result
+        end
     end
 
     def check_finish_cell(to)
