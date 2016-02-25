@@ -40,10 +40,12 @@ class Game < ActiveRecord::Base
 
     def check_turn(from, to)
         figure = self.board.cells.find_by(x_param: from[0], y_param: from[1]).figure
+        finish_cell = self.board.cells.find_by(x_param: to[0], y_param: to[1]).figure
         x_params = %w(a b c d e f g h)
         y_params = %w(1 2 3 4 5 6 7 8)
         x_change = x_params.index(to[0]) - x_params.index(from[0])
         y_change = y_params.index(to[1]) - y_params.index(from[1])
+        p_pass = nil
         case figure.type
             when 'k'
                 result = x_change.abs <= 1 && y_change.abs <= 1 ? nil : 'Неправильный ход королем'
@@ -57,9 +59,14 @@ class Game < ActiveRecord::Base
             when 'b'
                 result = x_change.abs == y_change.abs ? nil : 'Неправильный ход слоном'
             when 'p'
-                finish_cell = self.board.cells.find_by(x_param: to[0], y_param: to[1]).figure
-                result = figure.color == 'white' && (x_change == 0 && y_change == 1 || x_change == 0 && y_change == 2 && from[1] == '2' || x_change.abs == 1 && y_change == 1 && !finish_cell.nil? && finish_cell.color == 'black') || figure.color == 'black' && (x_change == 0 && y_change == -1 || x_change == 0 && y_change == -2 && from[1] == '7' || x_change.abs == 1 && y_change == -1 && !finish_cell.nil? && finish_cell.color == 'white') ? nil : 'Неправильный ход пешкой'
-                # добавить взятие на проходе
+                near_x_param = x_params(x_params.index(from[0]) + x_direction)
+                near_figure = self.board.cells.find_by(x_param: near_x_param, y_param: from[1]).figure
+                if near_figure && near_figure.type == 'p' && near_figure.color == !figure.color
+                    last_turn = self.turns.last
+                    p_pass = near_figure if last_turn.to == "#{near_x_param}#{from[1]}" && last_turn.from == "#{near_x_param}#{from[1] + y_direction * 2}"
+                end
+
+                result = figure.color == 'white' && (x_change == 0 && y_change == 1 && finish_cell.nil? || x_change == 0 && y_change == 2 && from[1] == '2' && finish_cell.nil? || x_change.abs == 1 && y_change == 1 && !finish_cell.nil? && finish_cell.color == 'black' || x_change.abs == 1 && y_change == 1 && !p_pass.nil?) || figure.color == 'black' && (x_change == 0 && y_change == -1 && finish_cell.nil? || x_change == 0 && y_change == -2 && from[1] == '7' && finish_cell.nil? || x_change.abs == 1 && y_change == -1 && !finish_cell.nil? && finish_cell.color == 'white' || x_change.abs == 1 && y_change == -1 && !p_pass.nil?) ? nil : 'Неправильный ход пешкой'
         end
         return result unless result.nil?
         unless figure.type == 'n'
@@ -84,20 +91,18 @@ class Game < ActiveRecord::Base
                 break unless result.nil?
             end
         end
-        result
-    end
-
-    def check_finish_cell(from, to)
-        figure = self.board.cells.find_by(x_param: from[0], y_param: from[1]).figure
-        obstacle = self.board.cells.find_by(x_param: to[0], y_param: to[1]).figure
-        unless obstacle.nil?
-            if obstacle.color == figure.color
+        return result unless result.nil?
+        unless finish_cell.nil?
+            if finish_cell.color == figure.color
                 result = 'Ваша фигура мешает ходу'
+            elsif figure.type == 'p' && x_change.abs == 1
+                p_pass.update(cell: nil)
+                result = nil
             else
-                obstacle.update(cell: nil)
+                finish_cell.update(cell: nil)
                 result = nil
             end
-        end   
+        end
         result
     end
 
