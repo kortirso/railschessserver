@@ -49,7 +49,18 @@ class Game < ActiveRecord::Base
         case figure.type
             when 'k'
                 result = x_change.abs <= 1 && y_change.abs <= 1 ? nil : 'Неправильный ход королем'
-                # добавить рокировку
+                if !result.nil? && x_change.abs == 2 && y_change == 0
+                    if figure.color == 'white'
+                        k_place = 'e1'
+                        r_place = x_change > 0 ? 'h1' : 'a1'
+                    else
+                        k_place = 'e8'
+                        r_place = x_change > 0 ? 'h8' : 'a8'
+                    end
+                    did_k_turn = self.turns.where(from: k_place).any?
+                    did_r_turn = self.turns.where(from: r_place).any?
+                    result = did_k_turn && did_r_turn ? 'Нельзя рокироваться, фигуры двигались' : nil
+                end
             when 'q'
                 result = x_change != 0 && y_change == 0 || x_change == 0 && y_change != 0 || x_change.abs == y_change.abs ? nil : 'Неправильный ход ферзём'
             when 'r'
