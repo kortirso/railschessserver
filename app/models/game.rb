@@ -46,6 +46,7 @@ class Game < ActiveRecord::Base
         x_change = x_params.index(to[0]) - x_params.index(from[0])
         y_change = y_params.index(to[1]) - y_params.index(from[1])
         p_pass = nil
+        roque = nil
         case figure.type
             when 'k'
                 result = x_change.abs <= 1 && y_change.abs <= 1 ? nil : 'Неправильный ход королем'
@@ -59,7 +60,10 @@ class Game < ActiveRecord::Base
                     end
                     did_k_turn = self.turns.where(from: k_place).any?
                     did_r_turn = self.turns.where(from: r_place).any?
-                    result = did_k_turn && did_r_turn ? 'Нельзя рокироваться, фигуры двигались' : nil
+                    roque_figure = self.board.cells.find_by(x_param: r_place[0], y_param: r_place[1]).figure
+                    result = roque_figure.nil? ? 'Нет ладьи для рокировки' : nil
+                    result = result.nil? && did_k_turn && did_r_turn ? 'Нельзя рокироваться, фигуры двигались' : nil
+                    roque = roque_figure if result.nil?
                 end
             when 'q'
                 result = x_change != 0 && y_change == 0 || x_change == 0 && y_change != 0 || x_change.abs == y_change.abs ? nil : 'Неправильный ход ферзём'
@@ -70,11 +74,11 @@ class Game < ActiveRecord::Base
             when 'b'
                 result = x_change.abs == y_change.abs ? nil : 'Неправильный ход слоном'
             when 'p'
-                near_x_param = x_params(x_params.index(from[0]) + x_direction)
+                near_x_param = x_params[x_params.index(from[0]) + x_change]
                 near_figure = self.board.cells.find_by(x_param: near_x_param, y_param: from[1]).figure
-                if near_figure && near_figure.type == 'p' && near_figure.color == !figure.color
+                if near_figure && near_figure.type == 'p' && near_figure.color != figure.color
                     last_turn = self.turns.last
-                    p_pass = near_figure if last_turn.to == "#{near_x_param}#{from[1]}" && last_turn.from == "#{near_x_param}#{from[1] + y_direction * 2}"
+                    p_pass = near_figure if last_turn.to == "#{near_x_param}#{from[1]}" && last_turn.from == "#{near_x_param}#{from[1].to_i + y_change * 2}"
                 end
 
                 result = figure.color == 'white' && (x_change == 0 && y_change == 1 && finish_cell.nil? || x_change == 0 && y_change == 2 && from[1] == '2' && finish_cell.nil? || x_change.abs == 1 && y_change == 1 && !finish_cell.nil? && finish_cell.color == 'black' || x_change.abs == 1 && y_change == 1 && !p_pass.nil?) || figure.color == 'black' && (x_change == 0 && y_change == -1 && finish_cell.nil? || x_change == 0 && y_change == -2 && from[1] == '7' && finish_cell.nil? || x_change.abs == 1 && y_change == -1 && !finish_cell.nil? && finish_cell.color == 'white' || x_change.abs == 1 && y_change == -1 && !p_pass.nil?) ? nil : 'Неправильный ход пешкой'
@@ -87,7 +91,12 @@ class Game < ActiveRecord::Base
             if x_change == 0 && y_change.abs > 1
                 (y_params.index(from[1]) + y_direction).step(y_params.index(to[1]) - y_direction, y_direction) { |iter| checks.push("#{from[0]}#{iter + 1}") }
             elsif x_change.abs > 1 && y_change == 0
-                (x_params.index(from[0]) + x_direction).step(x_params.index(to[0]) - x_direction, x_direction) { |iter| checks.push("#{x_params[iter]}#{from[1]}") }
+                if !roque.nil?
+                    line = roque.cell.y_param
+                    checks = roque.cell.x_param == 'a' ? ["b#{line}", "c#{line}", "d#{line}"] : ["f#{line}", "g#{line}"]
+                else
+                    (x_params.index(from[0]) + x_direction).step(x_params.index(to[0]) - x_direction, x_direction) { |iter| checks.push("#{x_params[iter]}#{from[1]}") }
+                end
             elsif x_change.abs == y_change.abs && x_change.abs > 1
                 count = x_change.abs - 1
                 (1..count).each do |step|
@@ -103,16 +112,20 @@ class Game < ActiveRecord::Base
             end
         end
         return result unless result.nil?
-        unless finish_cell.nil?
+        if !finish_cell.nil?
             if finish_cell.color == figure.color
                 result = 'Ваша фигура мешает ходу'
-            elsif figure.type == 'p' && x_change.abs == 1
-                p_pass.update(cell: nil)
-                result = nil
             else
                 finish_cell.update(cell: nil)
                 result = nil
             end
+        elsif !p_pass.nil?
+            p_pass.update(cell: nil)
+            result = nil
+        elsif !roque.nil?
+            change = roque.cell.x_param == 'a' ? 'd' : 'f'
+            roque.cell.update(x_param: change)
+            result = nil
         end
         result
     end
