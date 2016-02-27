@@ -9,6 +9,11 @@ class GamesController < ApplicationController
 
     def show
         @figures = @game.board.figures.includes(:cell)
+        case @game.game_result
+            when 1 then @game_result = 'Победа белых'
+            when 0 then @game_result = 'Победа черных'
+            when 0.5 then @game_result = 'Ничья'
+        end
     end
 
     def new

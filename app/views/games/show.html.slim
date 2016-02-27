@@ -81,19 +81,27 @@
                 .square.black.square-g1 data={square: 'g1'}
                 .square.white.square-h1 data={square: 'h1'}
                 .clearfix
-    .col-xs-12.col-md-5
         .row
-            p#next_turn= @game.turns.last.next_turn
-        - if current_user && (current_user.id == @game.user_id || current_user.id == @game.opponent_id)
+            = link_to 'Сдаться', '', class: 'btn btn-default'
+            = link_to 'Предложить ничью', '', class: 'btn btn-default'
+    .col-xs-12.col-md-5
+        - if @game.game_result.nil?
             .row
-                p Выполнить ход
-                = simple_form_for(Turn.new, as: :turn, url: make_turn_path(:game, :from, :to), remote: true) do |f|
-                    = f.input :game, as: :hidden, input_html: {value: "#{@game.id}"}
-                    .col-xs-4= f.input :from, placeholder: 'From', label: false
-                    .col-xs-4= f.input :to, placeholder: 'To', label: false
-                    p= f.button :submit, 'Ход', class: 'btn btn-primary', id: 'make_turn'
+                p#next_turn= @game.turns.last.next_turn
+            - if current_user && (current_user.id == @game.user_id || current_user.id == @game.opponent_id)
+                .row
+                    p Выполнить ход
+                    = simple_form_for(Turn.new, as: :turn, url: make_turn_path(:game, :from, :to), remote: true) do |f|
+                        = f.input :game, as: :hidden, input_html: {value: "#{@game.id}"}
+                        .col-xs-4= f.input :from, placeholder: 'From', label: false
+                        .col-xs-4= f.input :to, placeholder: 'To', label: false
+                        p= f.button :submit, 'Ход', class: 'btn btn-primary', id: 'make_turn'
+                .row
+                    #notice
+        - else
             .row
-                #notice
+                p Партия завершалась
+                p= "Результат - #{@game_result}"
 javascript:
     #{render 'games/set_figures.js'}
 = subscribe_to "/games/#{@game.id}/turns"

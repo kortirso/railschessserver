@@ -6,7 +6,7 @@ class ChessController < ApplicationController
     def make_turn
         if !@turn_error.is_a? String
             turn = @turn_error.nil? ? Turn.build(@game.id, @from, @to) : Turn.build(@game.id, @from, @to, @turn_error[0], @turn_error[1])
-            PrivatePub.publish_to "/games/#{@game.id}/turns", turn: turn.to_json, game: @game.to_json
+            PrivatePub.publish_to "/games/#{@game.id}/turns", turn: turn.to_json
             render nothing: true
         end
     end
