@@ -113,19 +113,12 @@ class Game < ActiveRecord::Base
         end
         return result unless result.nil?
         if !finish_cell.nil?
-            if finish_cell.color == figure.color
-                result = 'Ваша фигура мешает ходу'
-            else
-                finish_cell.update(cell: nil)
-                result = nil
-            end
+            result = finish_cell.color == figure.color ? 'Ваша фигура мешает ходу': nil
         elsif !p_pass.nil?
-            p_pass.update(cell: nil)
-            result = nil
+            result = ["#{p_pass.cell.x_param}#{p_pass.cell.y_param}", '0']
         elsif !roque.nil?
-            change = roque.cell.x_param == 'a' ? 'd' : 'f'
-            roque.cell.update(x_param: change)
-            result = nil
+            another = roque.cell.x_param == 'a' ? 'd' : 'f'
+            result = ["#{roque.cell.x_param}#{roque.cell.y_param}", "#{another}#{roque.cell.y_param}"]
         end
         result
     end
