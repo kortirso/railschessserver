@@ -5,7 +5,8 @@ class Turn < ActiveRecord::Base
 
     def self.build(game_id, from, to, second_from = '0', second_to = '0')
         game = Game.find(game_id)
-        new_turn = Turn.create(game: game, from: from, to: to, second_from: second_from, second_to: second_to)
+        next_turn = game.turns.count % 2 == 0 ? 'Ход белых' : 'Ход черных'
+        new_turn = Turn.create(game: game, from: from, to: to, second_from: second_from, second_to: second_to, next_turn: next_turn)
         # удаление чужой фигуры
         enemy = game.board.cells.find_by(x_param: to[0], y_param: to[1]).figure
         enemy.update(cell: nil) unless enemy.nil?

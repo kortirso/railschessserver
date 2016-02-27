@@ -18,6 +18,7 @@ $(function() {
                 $('.square-' + turn.second_from + ' img').remove();
             }
         }
+        $('#next_turn').html(turn.next_turn);
         $('#notice').html('');
         $('#turn_from').val('');
         $('#turn_to').val('');
