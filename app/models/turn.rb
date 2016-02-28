@@ -15,6 +15,10 @@ class Turn < ActiveRecord::Base
         if second_from != '0'
             # взятие на проходе или рокировка
             second_to == '0' ? game.board.cells.find_by(x_param: second_from[0], y_param: second_from[1]).figure.update(cell: nil) : game.board.cells.find_by(x_param: second_from[0], y_param: second_from[1]).figure.update(cell: game.board.cells.find_by(x_param: second_to[0], y_param: second_to[1]))
+        elsif second_to != '0'
+            game.board.cells.find_by(x_param: to[0], y_param: to[1]).figure.update(cell: nil)
+            figure = Figure.create board: game.board, type: 'q', color: second_to, image: "figures/#{second_to[0]}q.png"
+            figure.update(cell: game.board.cells.find_by(x_param: to[0], y_param: to[1]))
         end
         turn = game.white_turn ? false : true
         game.update(white_turn: turn)

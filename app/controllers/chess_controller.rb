@@ -1,7 +1,7 @@
 class ChessController < ApplicationController
     before_action :authenticate_user!
-    before_action :find_game
-    before_action :checks_before_turn
+    before_action :find_game, only: :make_turn
+    before_action :checks_before_turn, only: :make_turn
 
     def make_turn
         if !@turn_error.is_a? String
@@ -10,6 +10,13 @@ class ChessController < ApplicationController
             PrivatePub.publish_to "/games/#{@game.id}", game: turn.game.to_json unless turn.game.game_result.nil?
             render nothing: true
         end
+    end
+
+    def surrender
+        game = Game.find(params[:game])
+        game.update(game_result: params[:user].to_i == game.user_id ? 0 : 1)
+        PrivatePub.publish_to "/games/#{game.id}", game: game.to_json
+        render nothing: true
     end
 
     private

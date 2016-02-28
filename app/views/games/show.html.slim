@@ -81,10 +81,14 @@
                 .square.black.square-g1 data={square: 'g1'}
                 .square.white.square-h1 data={square: 'h1'}
                 .clearfix
-        .row#actions
-            - if @game.game_result.nil?
-                = link_to 'Сдаться', '', class: 'btn btn-default'
-                = link_to 'Предложить ничью', '', class: 'btn btn-default'
+            .reserve_row
+                .square.black.square-black data={square: 'black'}
+                .square.white.square-white data={square: 'white'}
+                .clearfix
+        #actions
+            - if @game.game_result.nil? && current_user && (current_user.id == @game.user_id || current_user.id == @game.opponent_id)
+                = link_to 'Сдаться', surrender_path(@game.id, current_user.id), class: 'btn btn-default', remote: true
+                /= link_to 'Предложить ничью', '', class: 'btn btn-default'
     .col-xs-12.col-md-5
         .row#result
             - if @game.game_result.nil?
@@ -94,14 +98,14 @@
                     p#next_turn= @game.turns.last.next_turn
                 - if current_user && (current_user.id == @game.user_id || current_user.id == @game.opponent_id)
                     p Выполнить ход
-                    = simple_form_for(Turn.new, as: :turn, url: make_turn_path(:game, :from, :to), remote: true) do |f|
+                    = simple_form_for(Turn.new, as: :turn, url: make_turn_path, remote: true) do |f|
                         = f.input :game, as: :hidden, input_html: {value: "#{@game.id}"}
                         .col-xs-4= f.input :from, placeholder: 'From', label: false
                         .col-xs-4= f.input :to, placeholder: 'To', label: false
                         p= f.button :submit, 'Ход', class: 'btn btn-primary', id: 'make_turn'
                     p#notice
             - else
-                p Партия завершалась
+                p Партия завершилась
                 p= "Результат - #{@game_result}"
 javascript:
     #{render 'games/set_figures.js'}

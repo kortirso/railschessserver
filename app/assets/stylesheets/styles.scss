@@ -21,6 +21,10 @@
             background: #b58863;
         }
     }
+
+    .reserve_row {
+        display: none;
+    }
 }
 
 .auth_block {
@@ -53,4 +57,8 @@
     .form-group {
         margin-bottom: 0;
     }
+}
+
+#actions {
+    margin-top: 10px;
 }

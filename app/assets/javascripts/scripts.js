@@ -19,6 +19,12 @@ $(function() {
                 $('.square-' + turn.second_from + ' img').remove();
             }
         }
+        else if(turn.second_to != '0') {
+            figure = $('.square-' + turn.second_to + ' img');
+            newFigure = $(figure).clone();
+            $('.square-' + turn.to + ' img').remove();
+            $('.square-' + turn.to).append(newFigure);
+        }
         $('#next_turn').html(turn.next_turn);
         $('#notice').html('');
         $('#turn_from').val('');
@@ -28,7 +34,7 @@ $(function() {
     PrivatePub.subscribe("/games/" + gameID, function(data, channel) {
         game = $.parseJSON(data.game);
         $('#result').html('');
-        $('#result').append('<p>Партия завершалась</p>');
+        $('#result').append('<p>Партия завершилась</p>');
         if(game.game_result == 1) {
             value = 'Победа белых';
         }

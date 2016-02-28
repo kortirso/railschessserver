@@ -110,6 +110,8 @@ class Game < ActiveRecord::Base
         elsif !roque.nil?
             another = roque.cell.x_param == 'a' ? 'd' : 'f'
             result = ["#{roque.cell.x_param}#{roque.cell.y_param}", "#{another}#{roque.cell.y_param}"]
+        elsif figure.type == 'p' && to[1] == '1' || to[1] == '8'
+            result = ['0', "#{figure.color}"]
         end
         result
     end
@@ -136,10 +138,8 @@ class Game < ActiveRecord::Base
     def whites_check
         if self.white_beats.include?(self.board.figures.find_by(type: 'k', color: 'black').cell.cell_name)
             case self.white_checkmat
-                when nil
-                    self.update(white_checkmat: 'check')
-                when 'check'
-                    self.update(white_checkmat: 'mat', game_result: 1)
+                when nil then self.update(white_checkmat: 'check')
+                when 'check' then self.update(white_checkmat: 'mat', game_result: 1)
             end
         end
     end
@@ -147,10 +147,8 @@ class Game < ActiveRecord::Base
     def blacks_check
         if self.black_beats.include?(self.board.figures.find_by(type: 'k', color: 'white').cell.cell_name)
             case self.black_checkmat
-                when nil
-                    self.update(black_checkmat: 'check')
-                when 'check'
-                    self.update(black_checkmat: 'mat', game_result: 0)
+                when nil then self.update(black_checkmat: 'check')
+                when 'check' then self.update(black_checkmat: 'mat', game_result: 0)
             end
         end
     end
