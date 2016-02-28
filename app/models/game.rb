@@ -26,6 +26,7 @@ class Game < ActiveRecord::Base
         [from, to].each do |index|
             errors += 1 if %w(a b c d e f g h).index(index[0]).nil?
             errors += 1 if %w(1 2 3 4 5 6 7 8).index(index[1]).nil?
+            errors += 1 if index.size > 2
         end
         result = errors > 0 ? 'Указана неправильная ячейка' : nil
     end
@@ -115,17 +116,11 @@ class Game < ActiveRecord::Base
 
     def beat_fields
         range = []
-        self.board.figures.on_the_board.whites.each do |figure|
-            range += figure.beaten_fields
-        end
-        range.uniq
-        self.update(white_beats: range)
+        self.board.figures.on_the_board.whites.each { |figure| range += figure.beaten_fields }
+        self.update(white_beats: range.uniq)
         range = []
-        self.board.figures.on_the_board.blacks.each do |figure|
-            range += figure.beaten_fields
-        end
-        range.uniq
-        self.update(black_beats: range)
+        self.board.figures.on_the_board.blacks.each { |figure| range += figure.beaten_fields }
+        self.update(black_beats: range.uniq)
     end
 
     def checkmat_check

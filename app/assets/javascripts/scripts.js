@@ -1,5 +1,6 @@
 $(function() {
     gameID = $('#board').data("game");
+
     PrivatePub.subscribe("/games/" + gameID + "/turns", function(data, channel) {
         turn = $.parseJSON(data.turn);
         figure = $('.square-' + turn.from + ' img');
@@ -22,5 +23,22 @@ $(function() {
         $('#notice').html('');
         $('#turn_from').val('');
         $('#turn_to').val('');
+    });
+
+    PrivatePub.subscribe("/games/" + gameID, function(data, channel) {
+        game = $.parseJSON(data.game);
+        $('#result').html('');
+        $('#result').append('<p>Партия завершалась</p>');
+        if(game.game_result == 1) {
+            value = 'Победа белых';
+        }
+        else if(game.game_result == 0) {
+            value = 'Победа черных';
+        }
+        else if(game.game_result == 0.5) {
+            value = 'Ничья';
+        }
+        $('#result').append(value);
+        $('#actions').remove();
     });
 });
