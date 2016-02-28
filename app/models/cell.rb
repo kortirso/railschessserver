@@ -13,4 +13,8 @@ class Cell < ActiveRecord::Base
             end
         end
     end
+
+    def cell_name
+        self.x_param + self.y_param
+    end
 end

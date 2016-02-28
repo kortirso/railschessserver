@@ -113,6 +113,53 @@ class Game < ActiveRecord::Base
         result
     end
 
+    def beat_fields
+        range = []
+        self.board.figures.on_the_board.whites.each do |figure|
+            range += figure.beaten_fields
+        end
+        range.uniq
+        self.update(white_beats: range)
+        range = []
+        self.board.figures.on_the_board.blacks.each do |figure|
+            range += figure.beaten_fields
+        end
+        range.uniq
+        self.update(black_beats: range)
+    end
+
+    def checkmat_check
+        if self.white_turn
+            self.blacks_check
+            self.whites_check
+        else
+            self.whites_check
+            self.blacks_check
+        end
+    end
+
+    def whites_check
+        if self.white_beats.include?(self.board.figures.find_by(type: 'k', color: 'black').cell.cell_name)
+            case self.white_checkmat
+                when nil
+                    self.update(white_checkmat: 'check')
+                when 'check'
+                    self.update(white_checkmat: 'mat', game_result: 1)
+            end
+        end
+    end
+
+    def blacks_check
+        if self.black_beats.include?(self.board.figures.find_by(type: 'k', color: 'white').cell.cell_name)
+            case self.black_checkmat
+                when nil
+                    self.update(black_checkmat: 'check')
+                when 'check'
+                    self.update(black_checkmat: 'mat', game_result: 0)
+            end
+        end
+    end
+
     private
     def board_build
         Board.build(self)

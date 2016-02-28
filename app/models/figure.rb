@@ -9,6 +9,8 @@ class Figure < ActiveRecord::Base
     validates :color, inclusion: { in: %w(white black) }
 
     scope :on_the_board, -> { where.not(cell: nil) }
+    scope :whites, -> { where(color: 'white') }
+    scope :blacks, -> { where(color: 'black') }
 
     def self.build(board)
         %w(white black).each do |color|
@@ -37,7 +39,7 @@ class Figure < ActiveRecord::Base
             when 'b' then b_like_check(x_params, y_params, x_index, y_index)
             when 'p' then p_like_check(x_params, y_params, x_index, y_index)
         end
-        self.update(beaten_fields: beaten_fields)
+        self.update(beaten_fields: beaten_fields) if self.beaten_fields != beaten_fields
     end
 
     def r_like_check(x_params, y_params, x_index, y_index)
