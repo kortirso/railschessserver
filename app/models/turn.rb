@@ -18,6 +18,7 @@ class Turn < ActiveRecord::Base
         end
         turn = game.white_turn ? false : true
         game.update(white_turn: turn)
+        game.board.figures.on_the_board.each { |figure| figure.check_beaten_fields }
         new_turn
     end
 end

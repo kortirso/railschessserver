@@ -49,7 +49,7 @@ class Game < ActiveRecord::Base
         roque = nil
         case figure.type
             when 'k'
-                result = x_change.abs <= 1 && y_change.abs <= 1 ? nil : 'Неправильный ход королем'
+                result = figure.beaten_fields.include?(to) ? nil : 'Неправильный ход королем'
                 if !result.nil? && x_change.abs == 2 && y_change == 0
                     if figure.color == 'white'
                         k_place = 'e1'
@@ -66,13 +66,13 @@ class Game < ActiveRecord::Base
                     roque = roque_figure if result.nil?
                 end
             when 'q'
-                result = x_change != 0 && y_change == 0 || x_change == 0 && y_change != 0 || x_change.abs == y_change.abs ? nil : 'Неправильный ход ферзём'
+                result = figure.beaten_fields.include?(to) ? nil : 'Неправильный ход ферзём'
             when 'r'
-                result = x_change != 0 && y_change == 0 || x_change == 0 && y_change != 0 ? nil : 'Неправильный ход ладьёй'
+                result = figure.beaten_fields.include?(to) ? nil : 'Неправильный ход ладьёй'
             when 'n'
-                result = x_change.abs == 2 && y_change.abs == 1 || x_change.abs == 1 && y_change.abs == 2 ? nil : 'Неправильный ход конём'
+                result = figure.beaten_fields.include?(to) ? nil : 'Неправильный ход конём'
             when 'b'
-                result = x_change.abs == y_change.abs ? nil : 'Неправильный ход слоном'
+                result = figure.beaten_fields.include?(to) ? nil : 'Неправильный ход слоном'
             when 'p'
                 near_x_param = x_params[x_params.index(from[0]) + x_change]
                 near_figure = self.board.cells.find_by(x_param: near_x_param, y_param: from[1]).figure
@@ -81,40 +81,30 @@ class Game < ActiveRecord::Base
                     p_pass = near_figure if last_turn.to == "#{near_x_param}#{from[1]}" && last_turn.from == "#{near_x_param}#{from[1].to_i + y_change * 2}"
                 end
 
-                result = figure.color == 'white' && (x_change == 0 && y_change == 1 && finish_cell.nil? || x_change == 0 && y_change == 2 && from[1] == '2' && finish_cell.nil? || x_change.abs == 1 && y_change == 1 && !finish_cell.nil? && finish_cell.color == 'black' || x_change.abs == 1 && y_change == 1 && !p_pass.nil?) || figure.color == 'black' && (x_change == 0 && y_change == -1 && finish_cell.nil? || x_change == 0 && y_change == -2 && from[1] == '7' && finish_cell.nil? || x_change.abs == 1 && y_change == -1 && !finish_cell.nil? && finish_cell.color == 'white' || x_change.abs == 1 && y_change == -1 && !p_pass.nil?) ? nil : 'Неправильный ход пешкой'
+                result = figure.color == 'white' && (x_change == 0 && y_change == 1 && finish_cell.nil? || x_change == 0 && y_change == 2 && from[1] == '2' && finish_cell.nil? || figure.beaten_fields.include?(to) && !finish_cell.nil? && finish_cell.color == 'black' || figure.beaten_fields.include?(to) && !p_pass.nil?) || figure.color == 'black' && (x_change == 0 && y_change == -1 && finish_cell.nil? || x_change == 0 && y_change == -2 && from[1] == '7' && finish_cell.nil? || figure.beaten_fields.include?(to) && !finish_cell.nil? && finish_cell.color == 'white' || figure.beaten_fields.include?(to) && !p_pass.nil?) ? nil : 'Неправильный ход пешкой'
         end
         return result unless result.nil?
-        unless figure.type == 'n'
-            x_direction = x_change > 0 ? 1 : -1
-            y_direction = y_change > 0 ? 1 : -1
-            checks = []
-            if x_change == 0 && y_change.abs > 1
-                (y_params.index(from[1]) + y_direction).step(y_params.index(to[1]) - y_direction, y_direction) { |iter| checks.push("#{from[0]}#{iter + 1}") }
-            elsif x_change.abs > 1 && y_change == 0
-                if !roque.nil?
-                    line = roque.cell.y_param
-                    checks = roque.cell.x_param == 'a' ? ["b#{line}", "c#{line}", "d#{line}"] : ["f#{line}", "g#{line}"]
-                else
-                    (x_params.index(from[0]) + x_direction).step(x_params.index(to[0]) - x_direction, x_direction) { |iter| checks.push("#{x_params[iter]}#{from[1]}") }
-                end
-            elsif x_change.abs == y_change.abs && x_change.abs > 1
-                count = x_change.abs - 1
-                (1..count).each do |step|
-                     x_new = x_params.index(from[0]) + x_direction * step
-                     y_new = y_params.index(from[1]) + 1 + y_direction * step
-                     checks.push("#{x_params[x_new]}#{y_new}")
-                end
-            end
+        if figure.type == 'k' && !roque.nil? && x_change.abs > 1 && y_change == 0
+            line = roque.cell.y_param
+            checks = roque.cell.x_param == 'a' ? ["b#{line}", "c#{line}", "d#{line}"] : ["f#{line}", "g#{line}"]
+            check_beated = roque.cell.x_param == 'a' ? ["c#{line}", "d#{line}", "e#{line}"] : ["e#{line}", "f#{line}"]
             checks.each do |box|
                 check = self.board.cells.find_by(x_param: box[0], y_param: box[1]).figure
-                result = check.nil? ? nil : 'На пути фигуры есть препятствие'
+                result = check.nil? ? nil : 'На пути рокировки есть препятствие'
                 break unless result.nil?
+            end
+            if result.nil?
+                check_beated.each do |box|
+                    self.board.figures.on_the_board.where('color != ?', figure.color).each do |figure|
+                        result = figure.beaten_fields.include?(box) ? 'Рокировка под ударом' : nil
+                        break unless result.nil?
+                    end
+                    break unless result.nil?
+                end
             end
         end
         return result unless result.nil?
-        if !finish_cell.nil?
-            result = finish_cell.color == figure.color ? 'Ваша фигура мешает ходу': nil
-        elsif !p_pass.nil?
+        if !p_pass.nil?
             result = ["#{p_pass.cell.x_param}#{p_pass.cell.y_param}", '0']
         elsif !roque.nil?
             another = roque.cell.x_param == 'a' ? 'd' : 'f'
