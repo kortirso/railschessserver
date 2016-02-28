@@ -34,5 +34,6 @@ class Board < ActiveRecord::Base
         Cell.build(self)
         Figure.build(self)
         self.set_figures
+        #self.figures.no_the_board.each { |figure| figure.check_beaten_fields }
     end
 end
