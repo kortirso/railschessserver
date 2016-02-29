@@ -42,6 +42,12 @@ class Figure < ActiveRecord::Base
         self.update(beaten_fields: beaten_fields) if self.beaten_fields != beaten_fields
     end
 
+    def check_king_cells
+        fields = self.color == 'white' ? self.board.game.black_beats : self.board.game.white_beats
+        limits = self.beaten_fields - fields
+        self.update(beaten_fields: limits) if self.beaten_fields != limits
+    end
+
     def r_like_check(board_figures, x_params, y_params, x_index, y_index, color)
         beaten_fields = []
         [-1, 1].each do |x_change|
