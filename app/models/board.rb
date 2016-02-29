@@ -29,11 +29,17 @@ class Board < ActiveRecord::Base
         end
     end
 
+    def check_beaten_fields
+        board_figures = []
+        self.figures.on_the_board.each { |figure| board_figures.push([figure.cell.cell_name, figure.color]) }
+        self.figures.on_the_board.each { |figure| figure.check_beaten_fields(board_figures) }
+    end
+
     private
     def board_sets
         Cell.build(self)
         Figure.build(self)
         self.set_figures
-        self.figures.on_the_board.each { |figure| figure.check_beaten_fields }
+        self.check_beaten_fields
     end
 end

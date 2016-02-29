@@ -28,30 +28,31 @@ class Figure < ActiveRecord::Base
         end
     end
 
-    def check_beaten_fields
+    def check_beaten_fields(board_figures)
         x_params, y_params = %w(a b c d e f g h), %w(1 2 3 4 5 6 7 8)
         x_index, y_index = x_params.index(self.cell.x_param), y_params.index(self.cell.y_param)
         beaten_fields = case self.type
-            when 'k' then k_like_check(x_params, y_params, x_index, y_index)
-            when 'q' then r_like_check(x_params, y_params, x_index, y_index) + b_like_check(x_params, y_params, x_index, y_index)
-            when 'r' then r_like_check(x_params, y_params, x_index, y_index)
-            when 'n' then n_like_check(x_params, y_params, x_index, y_index)
-            when 'b' then b_like_check(x_params, y_params, x_index, y_index)
-            when 'p' then p_like_check(x_params, y_params, x_index, y_index)
+            when 'k' then k_like_check(board_figures, x_params, y_params, x_index, y_index, self.color)
+            when 'q' then r_like_check(board_figures, x_params, y_params, x_index, y_index, self.color) + b_like_check(board_figures, x_params, y_params, x_index, y_index, self.color)
+            when 'r' then r_like_check(board_figures, x_params, y_params, x_index, y_index, self.color)
+            when 'n' then n_like_check(board_figures, x_params, y_params, x_index, y_index, self.color)
+            when 'b' then b_like_check(board_figures, x_params, y_params, x_index, y_index, self.color)
+            when 'p' then p_like_check(board_figures, x_params, y_params, x_index, y_index, self.color)
         end
         self.update(beaten_fields: beaten_fields) if self.beaten_fields != beaten_fields
     end
 
-    def r_like_check(x_params, y_params, x_index, y_index)
+    def r_like_check(board_figures, x_params, y_params, x_index, y_index, color)
         beaten_fields = []
         [-1, 1].each do |x_change|
             y_change, x_new = 0, x_index + x_change
             while x_new >= 0 && x_new <= 7
-                field_figure = self.board.cells.find_by(x_param: x_params[x_new], y_param: self.cell.y_param).figure
-                if field_figure.nil?
-                    beaten_fields.push("#{x_params[x_new]}#{self.cell.y_param}")
+                cell = "#{x_params[x_new]}#{y_params[y_index]}"
+                field_figure = board_figures.find_all{ |elem| elem[0] == cell }
+                if field_figure.empty?
+                    beaten_fields.push(cell)
                 else
-                    beaten_fields.push("#{x_params[x_new]}#{self.cell.y_param}") if field_figure.color != self.color
+                    beaten_fields.push(cell) if field_figure[0][1] != color
                     break
                 end
                 x_new += x_change
@@ -60,11 +61,12 @@ class Figure < ActiveRecord::Base
         [-1, 1].each do |y_change|
             x_change, y_new = 0, y_index + y_change
             while y_new >= 0 && y_new <= 7
-                field_figure = self.board.cells.find_by(x_param: self.cell.x_param, y_param: y_params[y_new]).figure
-                if field_figure.nil?
-                    beaten_fields.push("#{self.cell.x_param}#{y_params[y_new]}")
+                cell = "#{x_params[x_index]}#{y_params[y_new]}"
+                field_figure = board_figures.find_all{ |elem| elem[0] == cell }
+                if field_figure.empty?
+                    beaten_fields.push(cell)
                 else
-                    beaten_fields.push("#{self.cell.x_param}#{y_params[y_new]}") if field_figure.color != self.color
+                    beaten_fields.push(cell) if field_figure[0][1] != color
                     break
                 end
                 y_new += y_change
@@ -73,42 +75,44 @@ class Figure < ActiveRecord::Base
         beaten_fields
     end
 
-    def n_like_check(x_params, y_params, x_index, y_index)
+    def n_like_check(board_figures, x_params, y_params, x_index, y_index, color)
         beaten_fields = []
         [-2, 2].each do |x_change|
             [-1, 1].each do |y_change|
                 x_new, y_new = x_index + x_change, y_index + y_change
-                beaten_fields.push(n_common_block(x_params, y_params, x_new, y_new))
+                beaten_fields.push(n_common_block(board_figures, x_params, y_params, x_new, y_new, color))
             end
         end
         [-1, 1].each do |x_change|
             [-2, 2].each do |y_change|
                 x_new, y_new = x_index + x_change, y_index + y_change
-                beaten_fields.push(n_common_block(x_params, y_params, x_new, y_new))
+                beaten_fields.push(n_common_block(board_figures, x_params, y_params, x_new, y_new, color))
             end
         end
         beaten_fields.compact
     end
 
-    def n_common_block(x_params, y_params, x_new, y_new)
+    def n_common_block(board_figures, x_params, y_params, x_new, y_new, color)
         if x_new >= 0 && x_new <= 7 && y_new >= 0 && y_new <= 7
-            field_figure = self.board.cells.find_by(x_param: x_params[x_new], y_param: y_params[y_new]).figure
-            result = "#{x_params[x_new]}#{y_params[y_new]}" if field_figure.nil? || field_figure.color != self.color
+            cell = "#{x_params[x_new]}#{y_params[y_new]}"
+            field_figure = board_figures.find_all{ |elem| elem[0] == cell }
+            result = cell if field_figure.empty? || field_figure[0][1] != color
         end
         result
     end
 
-    def b_like_check(x_params, y_params, x_index, y_index)
+    def b_like_check(board_figures, x_params, y_params, x_index, y_index, color)
         beaten_fields = []
         [-1, 1].each do |x_change|
             [-1, 1].each do |y_change|
                 x_new, y_new = x_index + x_change, y_index + y_change
                 while x_new >= 0 && x_new <= 7 && y_new >= 0 && y_new <= 7
-                    field_figure = self.board.cells.find_by(x_param: x_params[x_new], y_param: y_params[y_new]).figure
-                    if field_figure.nil?
-                        beaten_fields.push("#{x_params[x_new]}#{y_params[y_new]}")
+                    cell = "#{x_params[x_new]}#{y_params[y_new]}"
+                    field_figure = board_figures.find_all{ |elem| elem[0] == cell }
+                    if field_figure.empty?
+                        beaten_fields.push(cell)
                     else
-                        beaten_fields.push("#{x_params[x_new]}#{y_params[y_new]}") if field_figure.color != self.color
+                        beaten_fields.push(cell) if field_figure[0][1] != color
                         break
                     end
                     x_new += x_change
@@ -119,29 +123,31 @@ class Figure < ActiveRecord::Base
         beaten_fields
     end
 
-    def k_like_check(x_params, y_params, x_index, y_index)
+    def k_like_check(board_figures, x_params, y_params, x_index, y_index, color)
         beaten_fields = []
         [-1, 0, 1].each do |x_change|
             [-1, 0, 1].each do |y_change|
                 x_new, y_new = x_index + x_change, y_index + y_change
                 if x_new >= 0 && x_new <= 7 && y_new >= 0 && y_new <= 7
-                    field_figure = self.board.cells.find_by(x_param: x_params[x_new], y_param: y_params[y_new]).figure
-                    beaten_fields.push("#{x_params[x_new]}#{y_params[y_new]}") if field_figure.nil? || field_figure.color != self.color
+                    cell = "#{x_params[x_new]}#{y_params[y_new]}"
+                    field_figure = board_figures.find_all{ |elem| elem[0] == cell }
+                    beaten_fields.push(cell) if field_figure.empty? || field_figure[0][1] != color
                 end
             end
         end
         beaten_fields
     end
 
-    def p_like_check(x_params, y_params, x_index, y_index)
+    def p_like_check(board_figures, x_params, y_params, x_index, y_index, color)
         beaten_fields = []
         y_change = self.color == 'white' ? 1 : -1
         y_new = y_index + y_change
         [-1, 1].each do |x_change|
             x_new = x_index + x_change
             if x_new >= 0 && x_new <= 7
-                field_figure = self.board.cells.find_by(x_param: x_params[x_new], y_param: y_params[y_new]).figure
-                beaten_fields.push("#{x_params[x_new]}#{y_params[y_new]}") if field_figure.nil? || field_figure.color != self.color
+                cell = "#{x_params[x_new]}#{y_params[y_new]}"
+                field_figure = board_figures.find_all{ |elem| elem[0] == cell }
+                beaten_fields.push(cell) if field_figure.empty? || field_figure[0][1] != color
             end
         end
         beaten_fields
