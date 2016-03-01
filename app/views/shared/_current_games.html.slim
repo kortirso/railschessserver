@@ -1,4 +1,11 @@
-p.head Your current games
-p= link_to 'Start new game', new_game_path, class: 'btn btn-primary'
-- @users_games.each do |game|
-    p= link_to "Game ##{game.id}", game, class: 'btn btn-sm btn-default'
+p.head Your games
+p= link_to 'Start new game', new_game_path, class: 'btn btn-sm btn-primary'
+#games_list
+    .col-xs-6
+        p Current
+        - @users_games.current.each do |game|
+            p= link_to "Game ##{game.id}", game, class: 'btn btn-sm btn-default'
+    .col-xs-6
+        p Finished
+        - @users_games.finished.each do |game|
+            p= link_to "Game ##{game.id}", game, class: 'btn btn-sm btn-default'

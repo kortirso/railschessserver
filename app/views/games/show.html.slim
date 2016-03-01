@@ -89,7 +89,7 @@
             - if @game.game_result.nil? && current_user && (current_user.id == @game.user_id || current_user.id == @game.opponent_id)
                 = link_to 'Сдаться', surrender_path(@game.id, current_user.id), class: 'btn btn-default', remote: true
                 /= link_to 'Предложить ничью', '', class: 'btn btn-default'
-    .col-xs-12.col-md-5
+    .col-xs-12.col-md-5.col-md-offset-1
         .row#result
             - if @game.game_result.nil?
                 - if @game.turns.last.nil?

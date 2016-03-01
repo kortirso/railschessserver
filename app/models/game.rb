@@ -8,6 +8,8 @@ class Game < ActiveRecord::Base
     validates :user_id, :opponent_id, presence: true
 
     scope :accessable, -> { where(access: true) }
+    scope :current, -> { where(game_result: nil) }
+    scope :finished, -> { where.not(game_result: nil) }
 
     after_create :board_build
 
