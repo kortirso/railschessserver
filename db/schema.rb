@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160228100607) do
+ActiveRecord::Schema.define(version: 20160301114441) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -38,11 +38,12 @@ ActiveRecord::Schema.define(version: 20160228100607) do
     t.string   "type"
     t.string   "color"
     t.integer  "cell_id"
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
     t.integer  "board_id"
     t.string   "image"
-    t.string   "beaten_fields", default: [],              array: true
+    t.string   "beaten_fields",    default: [],              array: true
+    t.string   "protected_fields", default: [],              array: true
   end
 
   add_index "figures", ["board_id"], name: "index_figures_on_board_id", using: :btree
@@ -51,15 +52,17 @@ ActiveRecord::Schema.define(version: 20160228100607) do
   create_table "games", force: :cascade do |t|
     t.integer  "user_id"
     t.integer  "opponent_id"
-    t.boolean  "access",         default: true
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
-    t.boolean  "white_turn",     default: true
+    t.boolean  "access",          default: true
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+    t.boolean  "white_turn",      default: true
     t.float    "game_result"
     t.string   "white_checkmat"
     t.string   "black_checkmat"
-    t.string   "white_beats",    default: [],                array: true
-    t.string   "black_beats",    default: [],                array: true
+    t.string   "white_beats",     default: [],                array: true
+    t.string   "black_beats",     default: [],                array: true
+    t.string   "white_protectes", default: [],                array: true
+    t.string   "black_protectes", default: [],                array: true
   end
 
   add_index "games", ["opponent_id"], name: "index_games_on_opponent_id", using: :btree

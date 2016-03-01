@@ -45,6 +45,10 @@ class Game < ActiveRecord::Base
         case figure.type
             when 'k'
                 result = figure.beaten_fields.include?(to) ? nil : 'Неправильный ход королем'
+                if result.nil?
+                    protectes = figure.color == 'white' ? figure.board.game.black_protectes : figure.board.game.white_protectes
+                    result = protectes.include?(to) ? 'Нельзя атаковать, фигура защищена' : nil
+                end
                 if !result.nil? && x_change.abs == 2 && y_change == 0
                     if figure.color == 'white'
                         k_place = 'e1'
@@ -106,12 +110,17 @@ class Game < ActiveRecord::Base
     end
 
     def beat_fields
-        range = []
-        self.board.figures.on_the_board.whites.each { |figure| range += figure.beaten_fields }
-        self.update(white_beats: range.uniq)
-        range = []
-        self.board.figures.on_the_board.blacks.each { |figure| range += figure.beaten_fields }
-        self.update(black_beats: range.uniq)
+        range = [[], [], [], []]
+        self.board.figures.on_the_board.each do |figure|
+            if figure.color == 'white'
+                range[0] += figure.beaten_fields
+                range[1] += figure.protected_fields
+            else
+                range[2] += figure.beaten_fields
+                range[3] += figure.protected_fields
+            end
+        end
+        self.update(white_beats: range[0].uniq, white_protectes: range[1].uniq, black_beats: range[2].uniq, black_protectes: range[3].uniq)
     end
 
     def checkmat_check
