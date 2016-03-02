@@ -80,6 +80,52 @@ class Game < ActiveRecord::Base
                 result = figure.color == 'white' && (x_change == 0 && y_change == 1 && finish_cell.nil? || x_change == 0 && y_change == 2 && from[1] == '2' && finish_cell.nil? || figure.beaten_fields.include?(to) && !finish_cell.nil? && finish_cell.color == 'black' || figure.beaten_fields.include?(to) && !p_pass.nil?) || figure.color == 'black' && (x_change == 0 && y_change == -1 && finish_cell.nil? || x_change == 0 && y_change == -2 && from[1] == '7' && finish_cell.nil? || figure.beaten_fields.include?(to) && !finish_cell.nil? && finish_cell.color == 'white' || figure.beaten_fields.include?(to) && !p_pass.nil?) ? nil : 'Неправильный ход пешкой'
         end
         return result unless result.nil?
+        protectors = figure.color == 'white' ? self.w_king_protectors : self.b_king_protectors
+        if protectors.include?(figure.cell.cell_name)
+            king = self.board.figures.find_by(type: 'k', color: figure.color).cell
+            x_diff = x_params.index(from[0]) - x_params.index(king.x_param)
+            y_diff = y_params.index(from[1]) - y_params.index(king.y_param)
+            x = x_diff != 0 ? x_diff / x_diff.abs : 0
+            y = y_diff != 0 ? y_diff / y_diff.abs : 0
+
+            if x != 0 && y == 0
+                x_new = x_params.index(from[0]) + x
+                while x_new >= 0 && x_new <= 7
+                    cell = "#{x_params[x_new]}#{from[1]}"
+                    field_figure = self.board.cells.find_by(x_param: cell[0], y_param: cell[1]).figure
+                    unless field_figure.nil?
+                        result = field_figure.color != figure.color && field_figure.type == 'q' || field_figure.type == 'r' ? 'Ход запрещен, эта фигура защищает короля' : nil
+                        break
+                    end
+                    x_new += x
+                end
+            elsif x == 0 && y != 0
+                y_new = y_params.index(from[1]) + y
+                while y_new >= 0 && y_new <= 7
+                    cell = "#{from[0]}#{y_params[y_new]}"
+                    field_figure = self.board.cells.find_by(x_param: cell[0], y_param: cell[1]).figure
+                    unless field_figure.nil?
+                        result = field_figure.color != figure.color && field_figure.type == 'q' || field_figure.type == 'r' ? 'Ход запрещен, эта фигура защищает короля' : nil
+                        break
+                    end
+                    y_new += y
+                end
+            else                
+                x_new = x_params.index(from[0]) + x
+                y_new = y_params.index(from[1]) + y
+                while x_new >= 0 && x_new <= 7 && y_new >= 0 && y_new <= 7
+                    cell = "#{x_params[x_new]}#{y_params[y_new]}"
+                    field_figure = self.board.cells.find_by(x_param: cell[0], y_param: cell[1]).figure
+                    unless field_figure.nil?
+                        result = field_figure.color != figure.color && field_figure.type == 'q' || field_figure.type == 'b' ? 'Ход запрещен, эта фигура защищает короля' : nil
+                        break
+                    end
+                    x_new += x
+                    y_new += y
+                end
+            end
+        end
+        return result unless result.nil?
         if figure.type == 'k' && !roque.nil? && x_change.abs > 1 && y_change == 0
             line = roque.cell.y_param
             checks = roque.cell.x_param == 'a' ? ["b#{line}", "c#{line}", "d#{line}"] : ["f#{line}", "g#{line}"]

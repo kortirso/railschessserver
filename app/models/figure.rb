@@ -47,11 +47,58 @@ class Figure < ActiveRecord::Base
         self.update(protected_fields: fields[1]) if self.protected_fields != fields[1]
     end
 
-    def check_king_cells
+    def check_king_cells(board_figures)
         unless self.beaten_fields.empty?
             fields = self.color == 'white' ? self.board.game.black_beats : self.board.game.white_beats
             limits = self.beaten_fields - fields
             self.update(beaten_fields: limits) if self.beaten_fields != limits
+        end
+        fields = []
+        x_params, y_params = %w(a b c d e f g h), %w(1 2 3 4 5 6 7 8)
+        x_index, y_index = x_params.index(self.cell.x_param), y_params.index(self.cell.y_param)
+        [-1, 1].each do |x_change|
+            [-1, 1].each do |y_change|
+                x_new, y_new = x_index + x_change, y_index + y_change
+                while x_new >= 0 && x_new <= 7 && y_new >= 0 && y_new <= 7
+                    cell = "#{x_params[x_new]}#{y_params[y_new]}"
+                    field_figure = board_figures.find_all{ |elem| elem[0] == cell }
+                    unless field_figure.empty?
+                        fields.push(cell) if field_figure[0][1] == self.color
+                        break
+                    end
+                    x_new += x_change
+                    y_new += y_change
+                end
+            end
+        end
+        [-1, 1].each do |x_change|
+            y_change, x_new = 0, x_index + x_change
+            while x_new >= 0 && x_new <= 7
+                cell = "#{x_params[x_new]}#{y_params[y_index]}"
+                field_figure = board_figures.find_all{ |elem| elem[0] == cell }
+                unless field_figure.empty?
+                    fields.push(cell) if field_figure[0][1] == self.color
+                    break
+                end
+                x_new += x_change
+            end
+        end
+        [-1, 1].each do |y_change|
+            x_change, y_new = 0, y_index + y_change
+            while y_new >= 0 && y_new <= 7
+                cell = "#{x_params[x_index]}#{y_params[y_new]}"
+                field_figure = board_figures.find_all{ |elem| elem[0] == cell }
+                unless field_figure.empty?
+                    fields.push(cell) if field_figure[0][1] == self.color
+                    break
+                end
+                y_new += y_change
+            end
+        end
+        if self.color == 'white'
+            self.board.game.update(w_king_protectors: fields) if self.board.game.w_king_protectors != fields
+        else
+            self.board.game.update(b_king_protectors: fields) if self.board.game.b_king_protectors != fields
         end
     end
 

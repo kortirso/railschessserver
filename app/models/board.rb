@@ -37,7 +37,10 @@ class Board < ActiveRecord::Base
     end
 
     def kings_check
-        self.figures.on_the_board.where(type: 'k').each { |figure| figure.check_king_cells }
+        board_figures = []
+        f = self.figures.on_the_board
+        f.each { |figure| board_figures.push([figure.cell.cell_name, figure.color]) }
+        f.where(type: 'k').each { |figure| figure.check_king_cells(board_figures) }
     end
 
     private
