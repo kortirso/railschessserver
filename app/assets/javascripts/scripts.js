@@ -29,6 +29,8 @@ $(function() {
         $('#notice').html('');
         $('#turn_from').val('');
         $('#turn_to').val('');
+        var audio = new Audio('../assets/turn.wav');
+        audio.play();
     });
 
     PrivatePub.subscribe("/games/" + gameID, function(data, channel) {

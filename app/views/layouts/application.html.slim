@@ -6,32 +6,30 @@ html
         = javascript_include_tag 'application'
         = csrf_meta_tags
     body
+        = render 'shared/login_modal'
+        = render 'shared/sign_up_modal'
+        nav.navbar.navbar-inverse.navbar-fixed-top role='navigation'
+            .navbar-header
+                button.navbar-toggle data-target=".navbar-collapse" data-toggle="collapse" type="button"
+                    span.sr-only Toggle navigation
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+                = link_to image_tag('logo.png', class: 'img-responsive', alt: 'Логотип RoR'), root_path, class: 'navbar-brand'
+            .navbar-collapse.collapse
+                ul.nav.navbar-nav
+                    li= link_to 'Главная', root_path
+                    li= link_to 'Игры', root_path
+                    li= link_to 'О сайте', root_path
+            .auth_box
+                - if user_signed_in?
+                    span.hidden-xs
+                        span= "Login as #{current_user.username}"
+                    = link_to 'Logoff', destroy_user_session_path, method: :delete, class: 'btn btn-sm btn-danger', id: 'destroy'
+                - else
+                    = link_to 'SignUp', '#sign_up', 'data-toggle' => 'modal', id: 'up', class: 'btn btn-sm btn-success'
+                    = link_to 'Login', '#login', 'data-toggle' => 'modal', id: 'log', class: 'btn btn-sm btn-success'
         .container
-            .col-xs-8.col-md-9
+            .col-xs-12
                 .chess_block
                     = yield
-            .col-xs-4.col-md-3
-                .auth_block
-                    #menu
-                        = link_to 'Main page', root_path
-                    - if current_user
-                        #logged
-                            p= "Login as #{current_user.username}"
-                            p= link_to 'Logoff', destroy_user_session_path, method: :delete, class: 'btn btn-sm btn-danger', id: 'destroy'
-                        #current_games
-                            = render partial: 'shared/current_games'
-                    - else
-                        #login
-                            p.head Authentification
-                            = simple_form_for(User.new, as: :user, url: session_path(:user)) do |f|
-                                p= f.input :username, autofocus: true, label: false
-                                p= f.input :password, autocomplete: 'off', label: false
-                                p= f.button :submit, 'Login', class: 'btn btn-primary', id: 'authorization'
-                        #signup
-                            p.head Registration
-                            = simple_form_for(User.new, as: :user, url: registration_path(:user)) do |f|
-                                p= f.input :username, required: true, label: false, placeholder: 'Username'
-                                p= f.input :email, required: true, label: false, placeholder: 'Email'
-                                p= f.input :password, required: true, label: false, placeholder: 'Password'
-                                p= f.input :password_confirmation, autocomplete: 'off', required: true, label: false, placeholder: 'Password Confirm'
-                                p=  f.button :submit, 'Sign Up', class: 'btn btn-primary', id: 'registration'

@@ -1,0 +1,12 @@
+.modal.fade.in#login
+    .modal-dialog
+        .modal-content
+            .modal-header
+                button.close aria-hidden='true' data-dismiss='modal' type='button' ×
+                h2.modal-title= 'Login'
+            = simple_form_for(User.new, as: :user, url: session_path(:user)) do |f|
+                .modal-body
+                    .col-md-7= f.input :username, required: true, autofocus: true, label: 'Username'
+                    .col-md-7= f.input :password, required: true, hint: ("#{@minimum_password_length} characters minimum" if @validatable), label: 'Password'
+                    .clearfix
+                    p= f.button :submit, 'Login', class: 'btn btn-small btn-success'

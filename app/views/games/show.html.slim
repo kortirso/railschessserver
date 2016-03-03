@@ -1,103 +1,111 @@
 .row
-    .col-xs-12.col-md-7.col-lg-6
-        #board data={game: "#{@game.id}"}
-            .chess_row
-                .square.white.square-a8 data={square: 'a8'}
-                .square.black.square-b8 data={square: 'b8'}
-                .square.white.square-c8 data={square: 'c8'}
-                .square.black.square-d8 data={square: 'd8'}
-                .square.white.square-e8 data={square: 'e8'}
-                .square.black.square-f8 data={square: 'f8'}
-                .square.white.square-g8 data={square: 'g8'}
-                .square.black.square-h8 data={square: 'h8'}
-                .clearfix
-            .chess_row
-                .square.black.square-a7 data={square: 'a7'}
-                .square.white.square-b7 data={square: 'b7'}
-                .square.black.square-c7 data={square: 'c7'}
-                .square.white.square-d7 data={square: 'd7'}
-                .square.black.square-e7 data={square: 'e7'}
-                .square.white.square-f7 data={square: 'f7'}
-                .square.black.square-g7 data={square: 'g7'}
-                .square.white.square-h7 data={square: 'h7'}
-                .clearfix
-            .chess_row
-                .square.white.square-a6 data={square: 'a6'}
-                .square.black.square-b6 data={square: 'b6'}
-                .square.white.square-c6 data={square: 'c6'}
-                .square.black.square-d6 data={square: 'd6'}
-                .square.white.square-e6 data={square: 'e6'}
-                .square.black.square-f6 data={square: 'f6'}
-                .square.white.square-g6 data={square: 'g6'}
-                .square.black.square-h6 data={square: 'h6'}
-                .clearfix
-            .chess_row
-                .square.black.square-a5 data={square: 'a5'}
-                .square.white.square-b5 data={square: 'b5'}
-                .square.black.square-c5 data={square: 'c6'}
-                .square.white.square-d5 data={square: 'd5'}
-                .square.black.square-e5 data={square: 'e5'}
-                .square.white.square-f5 data={square: 'f5'}
-                .square.black.square-g5 data={square: 'g5'}
-                .square.white.square-h5 data={square: 'h5'}
-                .clearfix
-            .chess_row
-                .square.white.square-a4 data={square: 'a4'}
-                .square.black.square-b4 data={square: 'b4'}
-                .square.white.square-c4 data={square: 'c4'}
-                .square.black.square-d4 data={square: 'd4'}
-                .square.white.square-e4 data={square: 'e4'}
-                .square.black.square-f4 data={square: 'f4'}
-                .square.white.square-g4 data={square: 'g4'}
-                .square.black.square-h4 data={square: 'h4'}
-                .clearfix
-            .chess_row
-                .square.black.square-a3 data={square: 'a3'}
-                .square.white.square-b3 data={square: 'b3'}
-                .square.black.square-c3 data={square: 'c3'}
-                .square.white.square-d3 data={square: 'd3'}
-                .square.black.square-e3 data={square: 'e3'}
-                .square.white.square-f3 data={square: 'f3'}
-                .square.black.square-g3 data={square: 'g3'}
-                .square.white.square-h3 data={square: 'h3'}
-                .clearfix
-            .chess_row
-                .square.white.square-a2 data={square: 'a2'}
-                .square.black.square-b2 data={square: 'b2'}
-                .square.white.square-c2 data={square: 'c2'}
-                .square.black.square-d2 data={square: 'd2'}
-                .square.white.square-e2 data={square: 'e2'}
-                .square.black.square-f2 data={square: 'f2'}
-                .square.white.square-g2 data={square: 'g2'}
-                .square.black.square-h2 data={square: 'h2'}
-                .clearfix
-            .chess_row
-                .square.black.square-a1 data={square: 'a1'}
-                .square.white.square-b1 data={square: 'b1'}
-                .square.black.square-c1 data={square: 'c1'}
-                .square.white.square-d1 data={square: 'd1'}
-                .square.black.square-e1 data={square: 'e1'}
-                .square.white.square-f1 data={square: 'f1'}
-                .square.black.square-g1 data={square: 'g1'}
-                .square.white.square-h1 data={square: 'h1'}
-                .clearfix
-            .reserve_row
-                .square.black.square-black data={square: 'black'}
-                .square.white.square-white data={square: 'white'}
-                .clearfix
+    .col-xs-12.col-md-6
+        #all_board
+            #board data={game: "#{@game.id}"}
+                .chess_row
+                    .square.white.square-a8 data={square: 'a8'}
+                    .square.black.square-b8 data={square: 'b8'}
+                    .square.white.square-c8 data={square: 'c8'}
+                    .square.black.square-d8 data={square: 'd8'}
+                    .square.white.square-e8 data={square: 'e8'}
+                    .square.black.square-f8 data={square: 'f8'}
+                    .square.white.square-g8 data={square: 'g8'}
+                    .square.black.square-h8 data={square: 'h8'}
+                    .clearfix
+                .chess_row
+                    .square.black.square-a7 data={square: 'a7'}
+                    .square.white.square-b7 data={square: 'b7'}
+                    .square.black.square-c7 data={square: 'c7'}
+                    .square.white.square-d7 data={square: 'd7'}
+                    .square.black.square-e7 data={square: 'e7'}
+                    .square.white.square-f7 data={square: 'f7'}
+                    .square.black.square-g7 data={square: 'g7'}
+                    .square.white.square-h7 data={square: 'h7'}
+                    .clearfix
+                .chess_row
+                    .square.white.square-a6 data={square: 'a6'}
+                    .square.black.square-b6 data={square: 'b6'}
+                    .square.white.square-c6 data={square: 'c6'}
+                    .square.black.square-d6 data={square: 'd6'}
+                    .square.white.square-e6 data={square: 'e6'}
+                    .square.black.square-f6 data={square: 'f6'}
+                    .square.white.square-g6 data={square: 'g6'}
+                    .square.black.square-h6 data={square: 'h6'}
+                    .clearfix
+                .chess_row
+                    .square.black.square-a5 data={square: 'a5'}
+                    .square.white.square-b5 data={square: 'b5'}
+                    .square.black.square-c5 data={square: 'c6'}
+                    .square.white.square-d5 data={square: 'd5'}
+                    .square.black.square-e5 data={square: 'e5'}
+                    .square.white.square-f5 data={square: 'f5'}
+                    .square.black.square-g5 data={square: 'g5'}
+                    .square.white.square-h5 data={square: 'h5'}
+                    .clearfix
+                .chess_row
+                    .square.white.square-a4 data={square: 'a4'}
+                    .square.black.square-b4 data={square: 'b4'}
+                    .square.white.square-c4 data={square: 'c4'}
+                    .square.black.square-d4 data={square: 'd4'}
+                    .square.white.square-e4 data={square: 'e4'}
+                    .square.black.square-f4 data={square: 'f4'}
+                    .square.white.square-g4 data={square: 'g4'}
+                    .square.black.square-h4 data={square: 'h4'}
+                    .clearfix
+                .chess_row
+                    .square.black.square-a3 data={square: 'a3'}
+                    .square.white.square-b3 data={square: 'b3'}
+                    .square.black.square-c3 data={square: 'c3'}
+                    .square.white.square-d3 data={square: 'd3'}
+                    .square.black.square-e3 data={square: 'e3'}
+                    .square.white.square-f3 data={square: 'f3'}
+                    .square.black.square-g3 data={square: 'g3'}
+                    .square.white.square-h3 data={square: 'h3'}
+                    .clearfix
+                .chess_row
+                    .square.white.square-a2 data={square: 'a2'}
+                    .square.black.square-b2 data={square: 'b2'}
+                    .square.white.square-c2 data={square: 'c2'}
+                    .square.black.square-d2 data={square: 'd2'}
+                    .square.white.square-e2 data={square: 'e2'}
+                    .square.black.square-f2 data={square: 'f2'}
+                    .square.white.square-g2 data={square: 'g2'}
+                    .square.black.square-h2 data={square: 'h2'}
+                    .clearfix
+                .chess_row
+                    .square.black.square-a1 data={square: 'a1'}
+                    .square.white.square-b1 data={square: 'b1'}
+                    .square.black.square-c1 data={square: 'c1'}
+                    .square.white.square-d1 data={square: 'd1'}
+                    .square.black.square-e1 data={square: 'e1'}
+                    .square.white.square-f1 data={square: 'f1'}
+                    .square.black.square-g1 data={square: 'g1'}
+                    .square.white.square-h1 data={square: 'h1'}
+                    .clearfix
+                .reserve_row
+                    .square.black.square-black data={square: 'black'}
+                    .square.white.square-white data={square: 'white'}
+                    .clearfix
         #actions
             - if @game.game_result.nil? && current_user && (current_user.id == @game.user_id || current_user.id == @game.opponent_id)
                 = link_to 'Сдаться', surrender_path(@game.id, current_user.id), class: 'btn btn-default', remote: true
                 /= link_to 'Предложить ничью', '', class: 'btn btn-default'
-    .col-xs-12.col-md-5.col-md-offset-1
-        .row#result
+    .col-xs-12.col-md-4
+        .row#data.data-block
+            p Шахматная партия
+            p= "№#{@game.id}"
+        .row.data-block
+            p
+                = "Белыми играет - #{@game.user.username}"
+            p
+                = "Чёрными играет - #{@game.opponent.username}"
+        .row#result.data-block
             - if @game.game_result.nil?
                 - if @game.turns.last.nil?
                     p#next_turn Ход белых
                 - else
                     p#next_turn= @game.turns.last.next_turn
                 - if current_user && (current_user.id == @game.user_id || current_user.id == @game.opponent_id)
-                    p Выполнить ход
                     = simple_form_for(Turn.new, as: :turn, url: make_turn_path, remote: true) do |f|
                         = f.input :game, as: :hidden, input_html: {value: "#{@game.id}"}
                         .col-xs-4= f.input :from, placeholder: 'From', label: false
