@@ -63,7 +63,7 @@ class Figure < ActiveRecord::Base
                     cell = "#{x_params[x_new]}#{y_params[y_new]}"
                     field_figure = board_figures.find_all{ |elem| elem[0] == cell }
                     unless field_figure.empty?
-                        fields.push(cell) if field_figure[0][1] == self.color
+                        check_king_protector(self, cell, x_params, y_params) if field_figure[0][1] == self.color
                         break
                     end
                     x_new += x_change
@@ -77,7 +77,7 @@ class Figure < ActiveRecord::Base
                 cell = "#{x_params[x_new]}#{y_params[y_index]}"
                 field_figure = board_figures.find_all{ |elem| elem[0] == cell }
                 unless field_figure.empty?
-                    fields.push(cell) if field_figure[0][1] == self.color
+                    check_king_protector(self, cell, x_params, y_params) if field_figure[0][1] == self.color
                     break
                 end
                 x_new += x_change
@@ -89,7 +89,7 @@ class Figure < ActiveRecord::Base
                 cell = "#{x_params[x_index]}#{y_params[y_new]}"
                 field_figure = board_figures.find_all{ |elem| elem[0] == cell }
                 unless field_figure.empty?
-                    fields.push(cell) if field_figure[0][1] == self.color
+                    check_king_protector(self, cell, x_params, y_params) if field_figure[0][1] == self.color
                     break
                 end
                 y_new += y_change
@@ -210,5 +210,59 @@ class Figure < ActiveRecord::Base
             end
         end
         fields
+    end
+
+    private
+    def check_king_protector(king, from, x_params, y_params)
+        x_diff = x_params.index(from[0]) - x_params.index(king.cell.x_param)
+        y_diff = y_params.index(from[1]) - y_params.index(king.cell.y_param)
+        x = x_diff != 0 ? x_diff / x_diff.abs : 0
+        y = y_diff != 0 ? y_diff / y_diff.abs : 0
+
+        if x != 0 && y == 0
+            x_new = x_params.index(from[0]) + x
+            while x_new >= 0 && x_new <= 7
+                cell = "#{x_params[x_new]}#{from[1]}"
+                field_figure = king.board.cells.find_by(x_param: cell[0], y_param: cell[1]).figure
+                unless field_figure.nil?
+                    if field_figure.color != king.color && field_figure.type == 'q' || field_figure.type == 'r'
+                        protector = king.board.cells.find_by(x_param: from[0], y_param: from[1]).figure
+                        protector.beaten_fields.include?(cell) ? protector.update(beaten_fields: [cell]) : protector.update(beaten_fields: [])
+                    end
+                    break
+                end
+                x_new += x
+            end
+        elsif x == 0 && y != 0
+            y_new = y_params.index(from[1]) + y
+            while y_new >= 0 && y_new <= 7
+                cell = "#{from[0]}#{y_params[y_new]}"
+                field_figure = king.board.cells.find_by(x_param: cell[0], y_param: cell[1]).figure
+                unless field_figure.nil?
+                    if field_figure.color != king.color && field_figure.type == 'q' || field_figure.type == 'r'
+                        protector = king.board.cells.find_by(x_param: from[0], y_param: from[1]).figure
+                        protector.beaten_fields.include?(cell) ? protector.update(beaten_fields: [cell]) : protector.update(beaten_fields: [])
+                    end
+                    break
+                end
+                y_new += y
+            end
+        else                
+            x_new = x_params.index(from[0]) + x
+            y_new = y_params.index(from[1]) + y
+            while x_new >= 0 && x_new <= 7 && y_new >= 0 && y_new <= 7
+                cell = "#{x_params[x_new]}#{y_params[y_new]}"
+                field_figure = king.board.cells.find_by(x_param: cell[0], y_param: cell[1]).figure
+                unless field_figure.nil?
+                    if field_figure.color != king.color && field_figure.type == 'q' || field_figure.type == 'b'
+                        protector = king.board.cells.find_by(x_param: from[0], y_param: from[1]).figure
+                        protector.beaten_fields.include?(cell) ? protector.update(beaten_fields: [cell]) : protector.update(beaten_fields: [])
+                    end
+                    break
+                end
+                x_new += x
+                y_new += y
+            end
+        end
     end
 end
