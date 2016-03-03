@@ -131,7 +131,7 @@ class Game < ActiveRecord::Base
         if self.white_beats.include?(self.board.figures.find_by(type: 'k', color: 'black').cell.name)
             case self.white_checkmat
                 when nil then self.update(white_checkmat: 'check')
-                when 'check' then self.update(white_checkmat: 'mat', game_result: 1)
+                when 'check' then self.complete(1)
             end
         end
     end
@@ -140,9 +140,33 @@ class Game < ActiveRecord::Base
         if self.black_beats.include?(self.board.figures.find_by(type: 'k', color: 'white').cell.name)
             case self.black_checkmat
                 when nil then self.update(black_checkmat: 'check')
-                when 'check' then self.update(black_checkmat: 'mat', game_result: 0)
+                when 'check' then self.complete(0)
             end
         end
+    end
+
+    def complete(game_result)
+        case game_result
+            when 1 then self.update(white_checkmat: 'mat', game_result: 1)
+            when 0 then self.update(black_checkmat: 'mat', game_result: 0)
+        end
+        user, opponent = self.user, self.opponent
+        ra, rb = user.elo, opponent.elo
+        sa, sb = game_result, 1 - game_result
+        ea, eb = (1 / (1 + 10 ** ((rb - ra) / 400.0))).round(4), (1 / (1 + 10 ** ((ra - rb) / 400.0))).round(4)
+        output = []
+        [[ra, ea, sa], [rb, eb, sb]].each do |r|
+            if r[0] >= 2400
+                k = 10
+            elsif r[0] < 2400 && r[0] >= 2300
+                k = 20
+            else
+                k = 40
+            end
+            output.push(r[0] + k * (r[2] - r[1]))
+        end
+        user.update(elo: output[0])
+        opponent.update(elo: output[1])
     end
 
     private
