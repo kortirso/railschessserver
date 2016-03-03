@@ -38,8 +38,9 @@ class Game < ActiveRecord::Base
     end
 
     def check_turn(from, to)
-        figure = self.board.cells.find_by(x_param: from[0], y_param: from[1]).figure
-        finish_cell = self.board.cells.find_by(x_param: to[0], y_param: to[1]).figure
+        cells_list = self.board.cells
+        figure = cells_list.find_by(name: from).figure
+        finish_cell = cells_list.find_by(name: to).figure
         x_params, y_params = %w(a b c d e f g h), %w(1 2 3 4 5 6 7 8)
         x_change = x_params.index(to[0]) - x_params.index(from[0])
         y_change = y_params.index(to[1]) - y_params.index(from[1])
@@ -61,7 +62,7 @@ class Game < ActiveRecord::Base
                     end
                     did_k_turn = self.turns.where(from: k_place).any?
                     did_r_turn = self.turns.where(from: r_place).any?
-                    roque_figure = self.board.cells.find_by(x_param: r_place[0], y_param: r_place[1]).figure
+                    roque_figure = cells_list.find_by(name: r_place).figure
                     result = roque_figure.nil? ? 'Нет ладьи для рокировки' : nil
                     result = result.nil? && did_k_turn && did_r_turn ? 'Нельзя рокироваться, фигуры двигались' : nil
                     roque = roque_figure if result.nil?
@@ -71,13 +72,18 @@ class Game < ActiveRecord::Base
             when 'n' then result = figure.beaten_fields.include?(to) ? nil : 'Неправильный ход конём'
             when 'b' then result = figure.beaten_fields.include?(to) ? nil : 'Неправильный ход слоном'
             when 'p'
-                near_x_param = x_params[x_params.index(from[0]) + x_change]
-                near_figure = self.board.cells.find_by(x_param: near_x_param, y_param: from[1]).figure
-                if near_figure && near_figure.type == 'p' && near_figure.color != figure.color
-                    last_turn = self.turns.last
-                    p_pass = near_figure if last_turn.to == "#{near_x_param}#{from[1]}" && last_turn.from == "#{near_x_param}#{from[1].to_i + y_change * 2}"
+                protectors = figure.color == 'white' ? self.w_king_protectors : self.b_king_protectors
+                if protectors.include?(figure.cell.name) && x_change == 0 && y_change.abs > 0
+                    result = 'Эта пешка защищает короля'
+                else
+                    near_x_param = x_params[x_params.index(from[0]) + x_change]
+                    near_figure = cells_list.find_by(x_param: near_x_param, y_param: from[1]).figure
+                    if near_figure && near_figure.type == 'p' && near_figure.color != figure.color
+                        last_turn = self.turns.last
+                        p_pass = near_figure if last_turn.to == "#{near_x_param}#{from[1]}" && last_turn.from == "#{near_x_param}#{from[1].to_i + y_change * 2}"
+                    end
+                    result = figure.color == 'white' && (x_change == 0 && y_change == 1 && finish_cell.nil? || x_change == 0 && y_change == 2 && from[1] == '2' && finish_cell.nil? || figure.beaten_fields.include?(to) && !finish_cell.nil? && finish_cell.color == 'black' || figure.beaten_fields.include?(to) && !p_pass.nil?) || figure.color == 'black' && (x_change == 0 && y_change == -1 && finish_cell.nil? || x_change == 0 && y_change == -2 && from[1] == '7' && finish_cell.nil? || figure.beaten_fields.include?(to) && !finish_cell.nil? && finish_cell.color == 'white' || figure.beaten_fields.include?(to) && !p_pass.nil?) ? nil : 'Неправильный ход пешкой'
                 end
-                result = figure.color == 'white' && (x_change == 0 && y_change == 1 && finish_cell.nil? || x_change == 0 && y_change == 2 && from[1] == '2' && finish_cell.nil? || figure.beaten_fields.include?(to) && !finish_cell.nil? && finish_cell.color == 'black' || figure.beaten_fields.include?(to) && !p_pass.nil?) || figure.color == 'black' && (x_change == 0 && y_change == -1 && finish_cell.nil? || x_change == 0 && y_change == -2 && from[1] == '7' && finish_cell.nil? || figure.beaten_fields.include?(to) && !finish_cell.nil? && finish_cell.color == 'white' || figure.beaten_fields.include?(to) && !p_pass.nil?) ? nil : 'Неправильный ход пешкой'
         end
         return result unless result.nil?
         if figure.type == 'k' && !roque.nil? && x_change.abs > 1 && y_change == 0
@@ -85,7 +91,7 @@ class Game < ActiveRecord::Base
             checks = roque.cell.x_param == 'a' ? ["b#{line}", "c#{line}", "d#{line}"] : ["f#{line}", "g#{line}"]
             check_beated = roque.cell.x_param == 'a' ? ["c#{line}", "d#{line}", "e#{line}"] : ["e#{line}", "f#{line}"]
             checks.each do |box|
-                check = self.board.cells.find_by(x_param: box[0], y_param: box[1]).figure
+                check = cells_list.find_by(name: box).figure
                 result = check.nil? ? nil : 'На пути рокировки есть препятствие'
                 break unless result.nil?
             end
@@ -111,20 +117,6 @@ class Game < ActiveRecord::Base
         result
     end
 
-    def beat_fields
-        range = [[], [], [], []]
-        self.board.figures.on_the_board.each do |figure|
-            if figure.color == 'white'
-                range[0] += figure.beaten_fields
-                range[1] += figure.protected_fields
-            else
-                range[2] += figure.beaten_fields
-                range[3] += figure.protected_fields
-            end
-        end
-        self.update(white_beats: range[0].uniq, white_protectes: range[1].uniq, black_beats: range[2].uniq, black_protectes: range[3].uniq)
-    end
-
     def checkmat_check
         if self.white_turn
             self.blacks_check
@@ -136,7 +128,7 @@ class Game < ActiveRecord::Base
     end
 
     def whites_check
-        if self.white_beats.include?(self.board.figures.find_by(type: 'k', color: 'black').cell.cell_name)
+        if self.white_beats.include?(self.board.figures.find_by(type: 'k', color: 'black').cell.name)
             case self.white_checkmat
                 when nil then self.update(white_checkmat: 'check')
                 when 'check' then self.update(white_checkmat: 'mat', game_result: 1)
@@ -145,7 +137,7 @@ class Game < ActiveRecord::Base
     end
 
     def blacks_check
-        if self.black_beats.include?(self.board.figures.find_by(type: 'k', color: 'white').cell.cell_name)
+        if self.black_beats.include?(self.board.figures.find_by(type: 'k', color: 'white').cell.name)
             case self.black_checkmat
                 when nil then self.update(black_checkmat: 'check')
                 when 'check' then self.update(black_checkmat: 'mat', game_result: 0)
