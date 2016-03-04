@@ -88,7 +88,7 @@
                     .clearfix
         #actions
             - if @game.game_result.nil? && current_user && (current_user.id == @game.user_id || current_user.id == @game.opponent_id)
-                = link_to 'Сдаться', surrender_path(@game.id, current_user.id), class: 'btn btn-default', remote: true
+                = link_to 'Сдаться', chess_surrender_path(@game.id, current_user.id), class: 'btn btn-default', remote: true
                 /= link_to 'Предложить ничью', '', class: 'btn btn-default'
     .col-xs-12.col-md-4
         .row#data.data-block
@@ -106,7 +106,7 @@
                 - else
                     p#next_turn= @game.turns.last.next_turn
                 - if current_user && (current_user.id == @game.user_id || current_user.id == @game.opponent_id)
-                    = simple_form_for(Turn.new, as: :turn, url: make_turn_path, remote: true) do |f|
+                    = simple_form_for(Turn.new, as: :turn, url: chess_make_turn_path, remote: true) do |f|
                         = f.input :game, as: :hidden, input_html: {value: "#{@game.id}"}
                         .col-xs-4= f.input :from, placeholder: 'From', label: false
                         .col-xs-4= f.input :to, placeholder: 'To', label: false

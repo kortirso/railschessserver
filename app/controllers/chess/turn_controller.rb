@@ -1,22 +1,15 @@
-class ChessController < ApplicationController
+class Chess::TurnController < ApplicationController
     before_action :authenticate_user!
-    before_action :find_game, only: :make_turn
-    before_action :checks_before_turn, only: :make_turn
+    before_action :find_game
+    before_action :checks_before_turn
 
-    def make_turn
+    def index
         if !@turn_error.is_a? String
             turn = @turn_error.nil? ? Turn.build(@game.id, @from, @to) : Turn.build(@game.id, @from, @to, @turn_error[0], @turn_error[1])
             PrivatePub.publish_to "/games/#{@game.id}/turns", turn: turn.to_json
             PrivatePub.publish_to "/games/#{@game.id}", game: turn.game.to_json unless turn.game.game_result.nil?
             render nothing: true
         end
-    end
-
-    def surrender
-        game = Game.find(params[:game])
-        game.complete(params[:user].to_i == game.user_id ? 0 : 1)
-        PrivatePub.publish_to "/games/#{game.id}", game: game.to_json
-        render nothing: true
     end
 
     private
