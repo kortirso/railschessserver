@@ -1,10 +1,61 @@
 h1 Game block
 .row
-    .col-xs-12.col-sm-6
-        #last_public_games
-            h2 Last started public games
-            - @last_games.each do |game|
-                p
-                    = link_to "Game ##{game.id}", game, class: 'btn btn-sm btn-default'
-                    = "#{game.user.username} vs #{game.opponent.username}"
-    .col-xs-12.col-sm-6
+    - if current_user
+        .col-xs-12.col-sm-6
+            #current_games.col-xs-12 data={user: "#{current_user.id}"}
+                h2 Your current games
+                - @users_games.each do |game|
+                    .col-xs-6= render partial: 'shared/game_block', locals: { game: game }
+            #last_public_games.col-xs-12
+                h2 Last started public games without you
+                - @last_games.each do |game|
+                    .col-xs-6= render partial: 'shared/game_block', locals: { game: game }
+        .col-xs-12.col-sm-6
+            .row
+                .col-lg-12#new_game
+                    h2 Новая партия
+                    .game_block
+                        = simple_form_for Challenge.new, remote: true do |f|
+                            .row
+                                .col-xs-12.col-lg-6= f.input :access, label: 'Открытая партия'
+                                .clearfix
+                                .col-xs-12.col-lg-6= f.input :opponent_id, collection: User.other_users(current_user.id), label: 'Противник', label_method: :username, value_method: :id, include_blank: true
+                                .col-xs-12.col-lg-6= f.input :color, collection: %w(random white black), label: 'Цвет фигур', include_blank: false
+                                .col-xs-12
+                                    .actions
+                                        = f.button :submit, class: 'btn btn-sm btn-primary', value: 'Предложить игру'
+            .row
+                .col-lg-12#challenges
+                    .panel.panel-default
+                        .panel-heading Текущие предложения партий
+                        .panel-body
+                            #r
+                            table.table.table-striped
+                                - @challenges.each do |challenge|
+                                    tr class="challenge_#{challenge.id}"
+                                        td= challenge.user.username
+                                        td
+                                            span.rating_block= challenge.user.elo
+                                        td= challenge.color
+                                        td
+                                            - if challenge.user_id != current_user.id
+                                                = simple_form_for Game.new, remote: true do |f|
+                                                    = f.input :challenge, as: :hidden, input_html: {value: "#{challenge.id}"}
+                                                    = f.button :submit, class: 'btn btn-sm btn-primary', value: 'Играть'
+                                            - if challenge.user_id == current_user.id || challenge.opponent_id == current_user.id
+                                                = link_to 'X', challenge_path(challenge.id), class: 'btn btn-sm btn-default', remote: true, method: :delete
+                                tr.hidden
+                                    td
+                                        = simple_form_for Game.new, remote: true do |f|
+                                            = f.input :challenge, as: :hidden, input_html: {value: ""}
+                                            = f.button :submit, class: 'btn btn-sm btn-primary', value: 'Играть'
+        = subscribe_to "/users/#{current_user.id}/games"
+        = subscribe_to "/users/#{current_user.id}/challenges"
+        = subscribe_to "/users/games"
+        = subscribe_to "/users/challenges"
+    - else
+        .col-xs-12
+            #last_public_games.col-xs-12
+                h2 Last started public games without you
+                - @last_games.each do |game|
+                    .col-xs-3= render partial: 'shared/game_block', locals: { game: game }

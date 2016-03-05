@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160305054840) do
+ActiveRecord::Schema.define(version: 20160305174725) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -34,6 +34,18 @@ ActiveRecord::Schema.define(version: 20160305054840) do
   end
 
   add_index "cells", ["board_id"], name: "index_cells_on_board_id", using: :btree
+
+  create_table "challenges", force: :cascade do |t|
+    t.integer  "user_id"
+    t.integer  "opponent_id"
+    t.string   "color"
+    t.boolean  "access",      default: true
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+  end
+
+  add_index "challenges", ["opponent_id"], name: "index_challenges_on_opponent_id", using: :btree
+  add_index "challenges", ["user_id"], name: "index_challenges_on_user_id", using: :btree
 
   create_table "figures", force: :cascade do |t|
     t.string   "type"
@@ -67,8 +79,12 @@ ActiveRecord::Schema.define(version: 20160305054840) do
     t.string   "w_king_protectors", default: [],                array: true
     t.string   "b_king_protectors", default: [],                array: true
     t.string   "game_result_text"
+    t.integer  "challenge_id"
+    t.integer  "user_rating"
+    t.integer  "opponent_rating"
   end
 
+  add_index "games", ["challenge_id"], name: "index_games_on_challenge_id", using: :btree
   add_index "games", ["opponent_id"], name: "index_games_on_opponent_id", using: :btree
   add_index "games", ["user_id"], name: "index_games_on_user_id", using: :btree
 

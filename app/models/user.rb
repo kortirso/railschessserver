@@ -5,6 +5,9 @@ class User < ActiveRecord::Base
 
     has_many :games
     has_many :as_opponent_games, class_name: 'Game', foreign_key: 'opponent_id'
+
+    has_many :challenges
+    has_many :as_opponent_challenge, class_name: 'Challenge', foreign_key: 'opponent_id'
     
     validates :username, presence: true, uniqueness: true, length: { in: 1..20 }
 

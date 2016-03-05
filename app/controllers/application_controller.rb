@@ -3,6 +3,12 @@ class ApplicationController < ActionController::Base
     before_action :set_current_games
     protect_from_forgery with: :exception
 
+    rescue_from ActionController::RoutingError, with: :render_not_found
+
+    def catch_404
+        raise ActionController::RoutingError.new(params[:path])
+    end
+
     private
     def configure_permitted_parameters
         devise_parameter_sanitizer.for(:sign_up) { |u| u.permit(:username, :email, :password, :password_confirmation, :remember_me) }
@@ -11,6 +17,10 @@ class ApplicationController < ActionController::Base
     end
 
     def set_current_games
-        @users_games = current_user.users_games if current_user
+        @users_games = current_user.users_games.current.includes(:user, :opponent) if current_user
+    end
+
+    def render_not_found
+        render template: 'shared/404', status: 404
     end
 end

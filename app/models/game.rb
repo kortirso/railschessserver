@@ -1,6 +1,7 @@
 class Game < ActiveRecord::Base
     belongs_to :user
     belongs_to :opponent, class_name: 'User', foreign_key: 'opponent_id'
+    belongs_to :challenge
 
     has_one :board
     has_many :turns
@@ -11,10 +12,11 @@ class Game < ActiveRecord::Base
     scope :current, -> { where(game_result: nil) }
     scope :finished, -> { where.not(game_result: nil) }
 
+    before_create :set_ratings
     after_create :board_build
 
-    def self.build(user_1, user_2, access)
-        game = create user_id: user_1, opponent_id: user_2, access: access
+    def self.build(user_1, user_2, access, challenge)
+        game = create user_id: user_1, opponent_id: user_2, access: access, challenge_id: challenge
     end
 
     def check_users_turn(user_id)
@@ -151,7 +153,7 @@ class Game < ActiveRecord::Base
             when 0 then self.update(black_checkmat: 'mat', game_result: 0, game_result_text: 'Победа чёрных')
         end
         user, opponent = self.user, self.opponent
-        ra, rb = user.elo, opponent.elo
+        ra, rb = self.user_rating, self.opponent_rating
         sa, sb = game_result, 1 - game_result
         ea, eb = (1 / (1 + 10 ** ((rb - ra) / 400.0))).round(4), (1 / (1 + 10 ** ((ra - rb) / 400.0))).round(4)
         output = []
@@ -170,6 +172,11 @@ class Game < ActiveRecord::Base
     end
 
     private
+    def set_ratings
+        self.user_rating = self.user.elo
+        self.opponent_rating = self.opponent.elo
+    end
+
     def board_build
         Board.build(self)
     end
