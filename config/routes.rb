@@ -4,7 +4,7 @@ Rails.application.routes.draw do
     resources :games, except: [:edit, :update]
     namespace :chess do
         post 'turn' => 'turn#index', as: 'make_turn'
-        get 'surrender/:game/:user' => 'surrender#index', as: 'surrender'
+        get 'surrender/:id' => 'surrender#index', as: 'surrender'
     end
 
     root to: 'welcome#index'

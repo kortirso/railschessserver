@@ -37,16 +37,7 @@ $(function() {
         game = $.parseJSON(data.game);
         $('#result').html('');
         $('#result').append('<p>Партия завершилась</p>');
-        if(game.game_result == 1) {
-            value = 'Победа белых';
-        }
-        else if(game.game_result == 0) {
-            value = 'Победа черных';
-        }
-        else if(game.game_result == 0.5) {
-            value = 'Ничья';
-        }
-        $('#result').append(value);
+        $('#result').append('Результат - ' + game.game_result_text);
         $('#actions').remove();
     });
 });

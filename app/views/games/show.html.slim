@@ -88,7 +88,7 @@
                     .clearfix
         #actions
             - if @game.game_result.nil? && current_user && (current_user.id == @game.user_id || current_user.id == @game.opponent_id)
-                = link_to 'Сдаться', chess_surrender_path(@game.id, current_user.id), class: 'btn btn-default', remote: true
+                = link_to 'Сдаться', chess_surrender_path(@game.id), class: 'btn btn-default', remote: true
                 /= link_to 'Предложить ничью', '', class: 'btn btn-default'
     .col-xs-12.col-md-4
         .row#data.data-block
@@ -114,7 +114,7 @@
                     p#notice
             - else
                 p Партия завершилась
-                p= "Результат - #{@game_result}"
+                p= "Результат - #{@game.game_result_text}"
 javascript:
     #{render 'games/set_figures.js'}
 = subscribe_to "/games/#{@game.id}"
