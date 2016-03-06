@@ -1,2 +1,1 @@
-User.create(username: 'First_user', email: 'tester_1@gmail.com', password: 'password_1')
-User.create(username: 'Second_user', email: 'tester_2@gmail.com', password: 'password_2')
+User.create(username: 'Коала Майк', email: 'koala_mike@gmail.com', password: '')

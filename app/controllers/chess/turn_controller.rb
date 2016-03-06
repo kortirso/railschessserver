@@ -1,14 +1,14 @@
 class Chess::TurnController < ApplicationController
-    before_action :authenticate_user!
+    #before_action :authenticate_user!
     before_action :find_game
     before_action :checks_before_turn
 
     def index
-        if !@turn_error.is_a? String
+        unless @turn_error.is_a? String
             turn = @turn_error.nil? ? Turn.build(@game.id, @from, @to) : Turn.build(@game.id, @from, @to, @turn_error[0], @turn_error[1])
             PrivatePub.publish_to "/games/#{@game.id}/turns", turn: turn.to_json
             PrivatePub.publish_to "/games/#{@game.id}", game: turn.game.to_json unless turn.game.game_result.nil?
-            render nothing: true
+            @game.ai_turn if @game.opponent == User.find_by(name: 'Коала Майк') && @game.game_result.nil?
         end
     end
 
@@ -20,7 +20,7 @@ class Chess::TurnController < ApplicationController
     end
 
     def checks_before_turn
-        @turn_error = @game.check_users_turn(current_user.id) # Чья очередь ходить
+        @turn_error = @game.check_users_turn(current_user.nil? ? nil : current_user.id) # Чья очередь ходить
         return unless @turn_error.nil?
         @turn_error = @game.check_cells(@from, @to) # Должны быть разные исходная и конечная точки
         return unless @turn_error.nil?

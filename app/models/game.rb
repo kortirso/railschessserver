@@ -6,7 +6,7 @@ class Game < ActiveRecord::Base
     has_one :board
     has_many :turns
 
-    validates :user_id, :opponent_id, presence: true
+    validates :opponent_id, presence: true
 
     scope :accessable, -> { where(access: true) }
     scope :current, -> { where(game_result: nil) }
@@ -15,8 +15,8 @@ class Game < ActiveRecord::Base
     before_create :set_ratings
     after_create :board_build
 
-    def self.build(user_1, user_2, access, challenge)
-        game = create user_id: user_1, opponent_id: user_2, access: access, challenge_id: challenge
+    def self.build(user_1, user_2, access, challenge, guest = nil)
+        game = user_1 != 0 ? create(user_id: user_1, opponent_id: user_2, access: access, challenge_id: challenge) : create(opponent_id: user_2, access: access, guest: guest)
     end
 
     def check_users_turn(user_id)
@@ -132,8 +132,8 @@ class Game < ActiveRecord::Base
     def whites_check
         if self.white_beats.include?(self.board.figures.find_by(type: 'k', color: 'black').cell.name)
             case self.white_checkmat
-                when nil then self.update(white_checkmat: 'check')
                 when 'check' then self.complete(1)
+                when nil then self.update(white_checkmat: 'check')
             end
         end
     end
@@ -141,8 +141,8 @@ class Game < ActiveRecord::Base
     def blacks_check
         if self.black_beats.include?(self.board.figures.find_by(type: 'k', color: 'white').cell.name)
             case self.black_checkmat
-                when nil then self.update(black_checkmat: 'check')
                 when 'check' then self.complete(0)
+                when nil then self.update(black_checkmat: 'check')
             end
         end
     end
@@ -152,28 +152,52 @@ class Game < ActiveRecord::Base
             when 1 then self.update(white_checkmat: 'mat', game_result: 1, game_result_text: 'Победа белых')
             when 0 then self.update(black_checkmat: 'mat', game_result: 0, game_result_text: 'Победа чёрных')
         end
-        user, opponent = self.user, self.opponent
-        ra, rb = self.user_rating, self.opponent_rating
-        sa, sb = game_result, 1 - game_result
-        ea, eb = (1 / (1 + 10 ** ((rb - ra) / 400.0))).round(4), (1 / (1 + 10 ** ((ra - rb) / 400.0))).round(4)
-        output = []
-        [[ra, ea, sa], [rb, eb, sb]].each do |r|
-            if r[0] >= 2400
-                k = 10
-            elsif r[0] < 2400 && r[0] >= 2300
-                k = 20
-            else
-                k = 40
+        if self.guest.nil?
+            user, opponent = self.user, self.opponent
+            ra, rb = self.user_rating, self.opponent_rating
+            sa, sb = game_result, 1 - game_result
+            ea, eb = (1 / (1 + 10 ** ((rb - ra) / 400.0))).round(4), (1 / (1 + 10 ** ((ra - rb) / 400.0))).round(4)
+            output = []
+            [[ra, ea, sa], [rb, eb, sb]].each do |r|
+                if r[0] >= 2400
+                    k = 10
+                elsif r[0] < 2400 && r[0] >= 2300
+                    k = 20
+                else
+                    k = 40
+                end
+                output.push(r[0] + k * (r[2] - r[1]))
             end
-            output.push(r[0] + k * (r[2] - r[1]))
+            user.update(elo: output[0])
+            opponent.update(elo: output[1])
         end
-        user.update(elo: output[0])
-        opponent.update(elo: output[1])
+    end
+
+    def ai_turn
+        result = []
+        figures = self.board.figures.on_the_board.blacks.to_ary
+        figures.each { |figure| result.push(figure) unless figure.beaten_fields == []}
+        rand_figure = result[rand(result.size - 1)]
+
+        fields = rand_figure.beaten_fields
+        fields.push("#{rand_figure.cell.name[0]}#{rand_figure.cell.name[1].to_i - 1}", "#{rand_figure.cell.name[0]}#{rand_figure.cell.name[1].to_i - 2}", "#{rand_figure.cell.name[0]}#{rand_figure.cell.name[1].to_i - 2}") if rand_figure.type == 'p'
+
+        rand_turn = fields[rand(fields.size - 1)]
+        turn_error = self.check_turn(rand_figure.cell.name, rand_turn)
+
+        while turn_error.is_a? String
+            rand_turn = fields[rand(fields.size - 1)]
+            turn_error = self.check_turn(rand_figure.cell.name, rand_turn)
+        end
+
+        turn = Turn.build(self.id, rand_figure.cell.name, rand_turn)
+        PrivatePub.publish_to "/games/#{self.id}/turns", turn: turn.to_json
+        PrivatePub.publish_to "/games/#{self.id}", game: turn.game.to_json unless turn.game.game_result.nil?
     end
 
     private
     def set_ratings
-        self.user_rating = self.user.elo
+        self.user_rating = self.user.elo unless self.user.nil?
         self.opponent_rating = self.opponent.elo
     end
 
