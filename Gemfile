@@ -25,6 +25,7 @@ gem 'responders'
 gem 'omniauth'
 gem 'omniauth-facebook'
 gem 'omniauth-vkontakte'
+gem 'rails_admin'
 
 group :development, :test do
     gem 'byebug'
