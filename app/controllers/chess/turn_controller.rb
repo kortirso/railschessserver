@@ -8,7 +8,7 @@ class Chess::TurnController < ApplicationController
             turn = @turn_error.nil? ? Turn.build(@game.id, @from, @to) : Turn.build(@game.id, @from, @to, @turn_error[0], @turn_error[1])
             PrivatePub.publish_to "/games/#{@game.id}/turns", turn: turn.to_json
             PrivatePub.publish_to "/games/#{@game.id}", game: turn.game.to_json unless turn.game.game_result.nil?
-            @game.ai_turn if @game.opponent == User.find_by(name: 'Коала Майк') && @game.game_result.nil?
+            @game.ai_turn if @game.opponent == User.find_by(username: 'Коала Майк') && @game.game_result.nil?
         end
     end
 
