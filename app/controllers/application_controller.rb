@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
     before_action :configure_permitted_parameters, if: :devise_controller?
     before_action :set_current_games
+    before_action :set_user_session
     protect_from_forgery with: :exception
 
     rescue_from ActionController::RoutingError, with: :render_not_found
@@ -18,6 +19,15 @@ class ApplicationController < ActionController::Base
 
     def set_current_games
         @users_games = current_user.users_games.current.includes(:user, :opponent) if current_user
+    end
+
+    def set_user_session
+        if current_user
+            session[:user_id] = current_user.id
+            session[:guest] = nil
+        elsif session[:guest].nil?
+            session[:guest] = Digest::MD5.hexdigest(Time.current.to_s)
+        end
     end
 
     def render_not_found
