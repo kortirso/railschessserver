@@ -96,7 +96,7 @@
             p= "№#{@game.id}"
         .row.data-block
             p
-                - if current_user
+                - if @game.guest.nil?
                     = "Белыми играет - #{@game.user.username}"
                 - else
                     = "Белыми играет - Гость"
