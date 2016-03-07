@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160307043053) do
+ActiveRecord::Schema.define(version: 20160307135354) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -108,6 +108,7 @@ ActiveRecord::Schema.define(version: 20160307043053) do
     t.string   "second_from"
     t.string   "second_to"
     t.string   "next_turn"
+    t.string   "icon"
   end
 
   add_index "turns", ["game_id"], name: "index_turns_on_game_id", using: :btree
