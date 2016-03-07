@@ -113,7 +113,7 @@ class Game < ActiveRecord::Base
         elsif !roque.nil?
             another = roque.cell.x_param == 'a' ? 'd' : 'f'
             result = ["#{roque.cell.x_param}#{roque.cell.y_param}", "#{another}#{roque.cell.y_param}"]
-        elsif figure.type == 'p' && to[1] == '1' || to[1] == '8'
+        elsif figure.type == 'p' && (to[1] == '1' || to[1] == '8')
             result = ['0', "#{figure.color}"]
         end
         result
