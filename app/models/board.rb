@@ -1,7 +1,7 @@
 class Board < ActiveRecord::Base
     belongs_to :game
-    has_many :cells
-    has_many :figures
+    has_many :cells, dependent: :destroy
+    has_many :figures, dependent: :destroy
 
     validates :game_id, presence: true
 

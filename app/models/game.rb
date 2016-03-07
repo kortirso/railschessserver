@@ -3,8 +3,8 @@ class Game < ActiveRecord::Base
     belongs_to :opponent, class_name: 'User', foreign_key: 'opponent_id'
     belongs_to :challenge
 
-    has_one :board
-    has_many :turns
+    has_one :board, dependent: :destroy
+    has_many :turns, dependent: :destroy
 
     validates :opponent_id, presence: true
 
