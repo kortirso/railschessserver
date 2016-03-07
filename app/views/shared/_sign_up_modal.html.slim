@@ -12,3 +12,7 @@
                     .col-md-7= f.input :password_confirmation, required: true, label: 'Password confirm'
                     .clearfix
                     p= f.button :submit, 'SignUp', class: 'btn btn-small btn-success'
+                .modal-footer
+                    p
+                        = 'Вход через соцсети'
+                        = render partial: 'shared/social'
