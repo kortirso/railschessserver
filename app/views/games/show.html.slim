@@ -118,6 +118,16 @@
             - else
                 p Партия завершилась
                 p= "Результат - #{@game.game_result_text}"
+        .row#turns.data-block
+            p Нотация партии
+            .turn.hidden data={turn: "0"}
+            - @game.turns.each_with_index do |turn, index|
+                - if index % 2 == 0
+                    .col-xs-2
+                        = "#{index / 2 + 1}."
+                .col-xs-5.turn data={turn: "#{index + 1}"}
+                    span= image_tag turn.icon
+                    span= "#{turn.from} - #{turn.to}"
 javascript:
     #{render 'games/set_figures.js'}
 = subscribe_to "/games/#{@game.id}"

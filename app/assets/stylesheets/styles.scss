@@ -172,9 +172,6 @@ body {
             box-shadow: 0 0 10px 0 #999;
             table {
                 margin-bottom: 0;
-                .hidden {
-                    display: hidden;
-                }
             }
             .btn {
                 padding: 0 10px;
@@ -236,4 +233,18 @@ body {
 .social {
     width: 28px;
     margin: 0 2px;
+}
+
+#turns {
+    .turn {
+        img {
+            position: relative;
+            top: -3px;
+            width: 25px;
+        }
+    }
+}
+
+.hidden {
+    display: hidden;
 }

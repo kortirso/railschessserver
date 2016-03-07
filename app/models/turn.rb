@@ -10,7 +10,7 @@ class Turn < ActiveRecord::Base
         cell_from = cells_list.find_by(name: from)
         cell_to = cells_list.find_by(name: to)
         next_turn = game.turns.count % 2 == 1 ? 'Ход белых' : 'Ход черных'
-        new_turn = Turn.create(game: game, from: from, to: to, second_from: second_from, second_to: second_to, next_turn: next_turn)
+        new_turn = Turn.create(game: game, from: from, to: to, second_from: second_from, second_to: second_to, next_turn: next_turn, icon: cell_from.figure.image)
         # удаление чужой фигуры
         enemy = cell_to.figure
         enemy.update(cell: nil) unless enemy.nil?

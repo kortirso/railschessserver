@@ -30,7 +30,50 @@ $(function() {
         $('#notice').html('');
         $('#turn_from').val('');
         $('#turn_to').val('');
-        var audio = new Audio('<%= asset_path('turn.wav') %>');
+        turnID = $('#turns .turn:last-of-type').data("turn");
+        if(turnID % 2 == 0) {
+            $('#turns').append('<div class="col-xs-2">' + (turnID / 2 + 1) + '.</div>');
+        }
+        $('#turns').append('<div class="col-xs-5 turn" data-turn="' + (turnID + 1) + '"><span><img src="" alt=""></span><span>' + turn.from + ' - ' + turn.to + '</span></div>');
+        switch (turn.icon) {
+            case 'figures/wp.png':
+                $('#turns .turn:last-of-type img').attr({ src: "<%= asset_path('figures/wp.png') %>" });
+                break;
+            case 'figures/wk.png':
+                $('#turns .turn:last-of-type img').attr({ src: "<%= asset_path('figures/wk.png') %>" });
+                break;
+            case 'figures/wq.png':
+                $('#turns .turn:last-of-type img').attr({ src: "<%= asset_path('figures/wq.png') %>" });
+                break;
+            case 'figures/wr.png':
+                $('#turns .turn:last-of-type img').attr({ src: "<%= asset_path('figures/wr.png') %>" });
+                break;
+            case 'figures/wn.png':
+                $('#turns .turn:last-of-type img').attr({ src: "<%= asset_path('figures/wn.png') %>" });
+                break;
+            case 'figures/wb.png':
+                $('#turns .turn:last-of-type img').attr({ src: "<%= asset_path('figures/wb.png') %>" });
+                break;
+            case 'figures/bp.png':
+                $('#turns .turn:last-of-type img').attr({ src: "<%= asset_path('figures/bp.png') %>" });
+                break;
+            case 'figures/bk.png':
+                $('#turns .turn:last-of-type img').attr({ src: "<%= asset_path('figures/bk.png') %>" });
+                break;
+            case 'figures/bq.png':
+                $('#turns .turn:last-of-type img').attr({ src: "<%= asset_path('figures/bq.png') %>" });
+                break;
+            case 'figures/br.png':
+                $('#turns .turn:last-of-type img').attr({ src: "<%= asset_path('figures/br.png') %>" });
+                break;
+            case 'figures/bn.png':
+                $('#turns .turn:last-of-type img').attr({ src: "<%= asset_path('figures/bn.png') %>" });
+                break;
+            case 'figures/bb.png':
+                $('#turns .turn:last-of-type img').attr({ src: "<%= asset_path('figures/bb.png') %>" });
+                break;
+        }
+        var audio = new Audio('<%= asset_path("turn.wav") %>');
         audio.play();
     });
 
