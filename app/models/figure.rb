@@ -176,7 +176,7 @@ class Figure < ActiveRecord::Base
             field_figure = cells_list.find_by(name: cell).figure
             unless field_figure.nil?
                 additional = x != 0 && y != 0 ? 'b' : 'r'
-                if field_figure.color != king.color && field_figure.type == 'q' || field_figure.type == additional
+                if field_figure.color != king.color && (field_figure.type == 'q' || field_figure.type == additional)
                     protector = cells_list.find_by(name: from).figure
                     protector.beaten_fields.include?(cell) ? protector.update(beaten_fields: [cell]) : protector.update(beaten_fields: [])
                 end

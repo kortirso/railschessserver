@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
     mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
-    devise_for :users
+    devise_for :users, :controllers => { omniauth_callbacks: 'omniauth_callbacks' }
     
     resources :games, except: [:edit, :update, :new]
     resources :challenges, only: [:create, :destroy]

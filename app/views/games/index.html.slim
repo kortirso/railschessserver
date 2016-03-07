@@ -1,13 +1,13 @@
-h1 Game block
+h1 Игровые комнаты
 .row
     - if current_user
         .col-xs-12.col-sm-6
             #current_games.col-xs-12 data={user: "#{current_user.id}"}
-                h2 Your current games
+                h2 Ваши текущие игры
                 - @users_games.each do |game|
                     .col-xs-6= render partial: 'shared/game_block', locals: { game: game }
             #last_public_games.col-xs-12
-                h2 Last started public games without you
+                h2 Последние открытые игры
                 - @last_games.each do |game|
                     .col-xs-6= render partial: 'shared/game_block', locals: { game: game }
         .col-xs-12.col-sm-6

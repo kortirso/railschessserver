@@ -1,0 +1,13 @@
+.container
+    .row
+        .col-md-8.col-md-offset-2
+            h2 Вход
+            = simple_form_for(User.new, as: :user, url: session_path(:user)) do |f|
+                .col-md-7= f.input :username, required: true, autofocus: true, label: 'Имя пользователя'
+                .col-md-7= f.input :password, required: true, hint: ("#{@minimum_password_length} characters minimum" if @validatable), label: 'Пароль'
+                .clearfix
+                p= f.button :submit, 'Вход', class: 'btn btn-small btn-success'
+                .modal-footer
+                    p
+                        = 'Вход через соцсети'
+                        = render partial: 'shared/social'

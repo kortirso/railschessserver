@@ -1,0 +1,16 @@
+.container
+    .row
+        .col-md-8.col-md-offset-2
+            h2 Регистрация
+            = simple_form_for(User.new, as: :user, url: registration_path(:user)) do |f|
+                .col-md-7= f.input :username, required: true, autofocus: true, label: 'Имя пользователя'
+                .col-md-7= f.input :email, required: true, autofocus: true, label: 'Адрес электронной почты'
+                .col-md-7= f.input :password, required: true, hint: ("#{@minimum_password_length} characters minimum" if @validatable), label: 'Пароль'
+                .col-md-7= f.input :password_confirmation, required: true, label: 'Подтверждение пароля'
+                .clearfix
+                p Минимальная длина пароля - 8 символов
+                p= f.button :submit, 'Регистрация', class: 'btn btn-small btn-success'
+                .modal-footer
+                    p
+                        = 'Вход через соцсети'
+                        = render partial: 'shared/social'
