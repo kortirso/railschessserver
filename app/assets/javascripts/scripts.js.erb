@@ -30,7 +30,7 @@ $(function() {
         $('#notice').html('');
         $('#turn_from').val('');
         $('#turn_to').val('');
-        var audio = new Audio('../assets/turn.wav');
+        var audio = new Audio('<%= asset_path('turn.wav') %>');
         audio.play();
     });
 
