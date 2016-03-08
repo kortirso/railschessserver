@@ -13,21 +13,21 @@ class Figure < ActiveRecord::Base
     scope :blacks, -> { where(color: 'black') }
 
     def self.build(board)
-        ActiveRecord::Base.transaction do
-            %w(white black).each do |color|
-                (1..8).each do |number|
-                    create type: 'p', color: color, board: board, image: "figures/#{color[0]}p.png"
-                end
-                (1..2).each do |number|
-                    %w(r n b).each do |type|
-                        create type: type, color: color, board: board, image: "figures/#{color[0]}#{type}.png"
-                    end
-                end
-                %w(k q).each do |type|
-                    create type: type, color: color, board: board, image: "figures/#{color[0]}#{type}.png"
+        inserts, board_id, t = [], board.id, Time.current
+        %w(white black).each do |color|
+            8.times do
+                inserts.push "(#{board_id}, 'p', '#{color}', 'figures/#{color[0]}p.png', '#{t}', '#{t}')"
+            end
+            2.times do
+                %w(r n b).each do |type|
+                    inserts.push "(#{board_id}, '#{type}', '#{color}', 'figures/#{color[0]}#{type}.png', '#{t}', '#{t}')"
                 end
             end
+            %w(k q).each do |type|
+                inserts.push "(#{board_id}, '#{type}', '#{color}', 'figures/#{color[0]}#{type}.png', '#{t}', '#{t}')"
+            end
         end
+        Figure.connection.execute "INSERT INTO figures (board_id, type, color, image, created_at, updated_at) VALUES #{inserts.join(", ")}"
     end
 
     def check_beaten_fields(board_figures)
