@@ -66,7 +66,7 @@ class Figure < ActiveRecord::Base
                 cell = "#{x_params[x_new]}#{y_params[y_new]}"
                 field_figure = board_figures.find_all{ |elem| elem[0] == cell }
                 unless field_figure.empty?
-                    fields.push(check_king_protector(self, cell, x_params, y_params)) if field_figure[0][1] == self.color
+                    fields.push(check_king_protector(self, cell, x_params, y_params, board_figures)) if field_figure[0][1] == self.color
                     break
                 end
                 x_new += x_change
@@ -166,7 +166,7 @@ class Figure < ActiveRecord::Base
     end
 
     private
-    def check_king_protector(king, from, x_params, y_params)
+    def check_king_protector(king, from, x_params, y_params, board_figures)
         x_diff = x_params.index(from[0]) - x_params.index(king.cell.x_param)
         y_diff = y_params.index(from[1]) - y_params.index(king.cell.y_param)
         x = x_diff != 0 ? x_diff / x_diff.abs : 0
@@ -175,10 +175,12 @@ class Figure < ActiveRecord::Base
         cells_list = king.board.cells
         while x_new >= 0 && x_new <= 7 && y_new >= 0 && y_new <= 7
             cell = "#{x_params[x_new]}#{y_params[y_new]}"
-            field_figure = cells_list.find_by(name: cell).figure
-            unless field_figure.nil?
+            #field_figure = cells_list.find_by(name: cell).figure
+            field_figure = board_figures.find_all{ |elem| elem[0] == cell }
+            unless field_figure.empty?
                 additional = x != 0 && y != 0 ? 'b' : 'r'
-                if field_figure.color != king.color && (field_figure.type == 'q' || field_figure.type == additional)
+                figure = cells_list.find_by(name: cell).figure
+                if figure.color != king.color && (figure.type == 'q' || figure.type == additional)
                     protector = cells_list.find_by(name: from).figure
                     protector.beaten_fields.include?(cell) ? protector.update(beaten_fields: [cell]) : protector.update(beaten_fields: [])
                 end
