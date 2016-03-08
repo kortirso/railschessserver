@@ -175,7 +175,6 @@ class Figure < ActiveRecord::Base
         cells_list = king.board.cells
         while x_new >= 0 && x_new <= 7 && y_new >= 0 && y_new <= 7
             cell = "#{x_params[x_new]}#{y_params[y_new]}"
-            #field_figure = cells_list.find_by(name: cell).figure
             field_figure = board_figures.find_all{ |elem| elem[0] == cell }
             unless field_figure.empty?
                 additional = x != 0 && y != 0 ? 'b' : 'r'
