@@ -4,6 +4,12 @@ RSpec.describe Board, type: :model do
     it { should have_many :figures }
     it { should validate_presence_of :game_id }
 
+    it 'should be valid' do
+        board = create :board
+
+        expect(board).to be_valid
+    end
+
     describe 'Methods' do
         let!(:user) { create :user }
         let!(:opponent) { create :user }

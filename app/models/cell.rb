@@ -2,7 +2,7 @@ class Cell < ActiveRecord::Base
     belongs_to :board
     has_one :figure
 
-    validates :board_id, :x_param, :y_param, presence: true
+    validates :board_id, :x_param, :y_param, :name, presence: true
     validates :x_param, inclusion: { in: %w(a b c d e f g h) }
     validates :y_param, inclusion: { in: %w(1 2 3 4 5 6 7 8) }
 
