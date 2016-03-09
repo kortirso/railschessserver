@@ -8,9 +8,6 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
     def vkontakte
     end
 
-    def github
-    end
-
     private
     def provides_callback
         @user = User.find_for_oauth(env['omniauth.auth'])
