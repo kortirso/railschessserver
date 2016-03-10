@@ -118,4 +118,17 @@ $(function() {
         game = $.parseJSON(data.game);
         $('#current_games h2').after('<div class="col-xs-6"><div class="game_block"><p>Партия №' + game.id + '</p><p>' + game.user.username + '<span class="rating_block">' + game.user.elo + '</span></p><p>' + game.opponent.username + '<span class="rating_block">' + game.opponent.elo + '</span></p><p><a class="btn btn-sm btn-default" href="/games/' + game.id + '">Посмотреть</a></p><div></div>');
     });
+
+    $('#board').on('click', '.square', function(e) {
+        square = $(this).data("square");
+        if($('#turn_from').val() == '') {
+            $('#turn_from').val(square);
+        }
+        else if ($('#turn_to').val() == '') {
+            $('#turn_to').val(square);
+            $.post("http://localhost:3000/chess/turn", $("#new_turn").serialize());
+            $('#turn_from').val('');
+            $('#turn_to').val('')
+        }
+    });
 });
