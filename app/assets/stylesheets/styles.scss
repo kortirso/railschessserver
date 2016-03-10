@@ -248,3 +248,12 @@ body {
 .hidden {
     display: hidden;
 }
+
+.small_text {
+    font-weight: 300;
+    font-size: 14px;
+    ul {
+        padding: 0;
+        list-style: none;
+    }
+}

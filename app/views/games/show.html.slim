@@ -35,7 +35,7 @@
                 .chess_row
                     .square.black.square-a5 data={square: 'a5'}
                     .square.white.square-b5 data={square: 'b5'}
-                    .square.black.square-c5 data={square: 'c6'}
+                    .square.black.square-c5 data={square: 'c5'}
                     .square.white.square-d5 data={square: 'd5'}
                     .square.black.square-e5 data={square: 'e5'}
                     .square.white.square-f5 data={square: 'f5'}
@@ -114,6 +114,11 @@
                         .col-xs-4= f.input :from, placeholder: 'From', label: false
                         .col-xs-4= f.input :to, placeholder: 'To', label: false
                         p= f.button :submit, 'Ход', class: 'btn btn-primary', id: 'make_turn'
+                    .small_text
+                        ul
+                            = "Есть 2 режима выполнения хода:"
+                            li 1) Можете записать в ячейки исходный и конечный квадраты, а затем нажать кнопку 'Ход'.
+                            li 2) Можно кликнуть  мышкой на фигуру, а затем на квадрат, в который надо сходить.
                     p#notice
             - else
                 p Партия завершилась

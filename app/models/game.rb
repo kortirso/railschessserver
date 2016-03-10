@@ -84,7 +84,7 @@ class Game < ActiveRecord::Base
                         last_turn = self.turns.last
                         p_pass = near_figure if last_turn.to == "#{near_x_param}#{from[1]}" && last_turn.from == "#{near_x_param}#{from[1].to_i + y_change * 2}"
                     end
-                    result = figure.color == 'white' && (x_change == 0 && y_change == 1 && finish_cell.nil? || x_change == 0 && y_change == 2 && from[1] == '2' && finish_cell.nil? || figure.beaten_fields.include?(to) && !finish_cell.nil? && finish_cell.color == 'black' || figure.beaten_fields.include?(to) && !p_pass.nil?) || figure.color == 'black' && (x_change == 0 && y_change == -1 && finish_cell.nil? || x_change == 0 && y_change == -2 && from[1] == '7' && finish_cell.nil? || figure.beaten_fields.include?(to) && !finish_cell.nil? && finish_cell.color == 'white' || figure.beaten_fields.include?(to) && !p_pass.nil?) ? nil : 'Неправильный ход пешкой'
+                    result = figure.color == 'white' && (x_change == 0 && y_change == 1 && finish_cell.nil? || x_change == 0 && y_change == 2 && from[1] == '2' && finish_cell.nil? && cells_list.find_by(name: "#{to[0]}#{to[1].to_i - 1}").figure.nil? || figure.beaten_fields.include?(to) && !finish_cell.nil? && finish_cell.color == 'black' || figure.beaten_fields.include?(to) && !p_pass.nil?) || figure.color == 'black' && (x_change == 0 && y_change == -1 && finish_cell.nil? || x_change == 0 && y_change == -2 && from[1] == '7' && finish_cell.nil? && cells_list.find_by(name: "#{to[0]}#{to[1].to_i + 1}").figure.nil? || figure.beaten_fields.include?(to) && !finish_cell.nil? && finish_cell.color == 'white' || figure.beaten_fields.include?(to) && !p_pass.nil?) ? nil : 'Неправильный ход пешкой'
                 end
         end
         return result unless result.nil?
@@ -177,17 +177,17 @@ class Game < ActiveRecord::Base
         result = []
         figures = self.board.figures.on_the_board.blacks.to_ary
         figures.each { |figure| result.push(figure) unless figure.beaten_fields == []}
-        rand_figure = result[rand(result.size - 1)]
-
-        fields = rand_figure.beaten_fields
-        fields.push("#{rand_figure.cell.name[0]}#{rand_figure.cell.name[1].to_i - 1}", "#{rand_figure.cell.name[0]}#{rand_figure.cell.name[1].to_i - 2}", "#{rand_figure.cell.name[0]}#{rand_figure.cell.name[1].to_i - 2}") if rand_figure.type == 'p'
-
-        rand_turn = fields[rand(fields.size - 1)]
-        turn_error = self.check_turn(rand_figure.cell.name, rand_turn)
-
+        
+        turn_error, rand_figure, rand_turn = 'ERROR', nil, nil
         while turn_error.is_a? String
-            rand_turn = fields[rand(fields.size - 1)]
-            turn_error = self.check_turn(rand_figure.cell.name, rand_turn)
+            rand_figure = result[rand(result.size - 1)]
+            fields = rand_figure.beaten_fields
+            fields.push("#{rand_figure.cell.name[0]}#{rand_figure.cell.name[1].to_i - 1}", "#{rand_figure.cell.name[0]}#{rand_figure.cell.name[1].to_i - 2}", "#{rand_figure.cell.name[0]}#{rand_figure.cell.name[1].to_i - 2}") if rand_figure.type == 'p'
+            fields.size.times do
+                rand_turn = fields[rand(fields.size - 1)]
+                turn_error = self.check_turn(rand_figure.cell.name, rand_turn)
+                break if turn_error.is_a? String
+            end
         end
 
         turn = Turn.build(self.id, rand_figure.cell.name, rand_turn)
