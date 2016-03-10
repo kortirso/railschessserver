@@ -126,7 +126,7 @@ $(function() {
         }
         else if ($('#turn_to').val() == '') {
             $('#turn_to').val(square);
-            $.post("http://localhost:3000/chess/turn", $("#new_turn").serialize());
+            $.post("<%= ENV['CURRENT_HOST'] %>/chess/turn", $("#new_turn").serialize());
             $('#turn_from').val('');
             $('#turn_to').val('')
         }
