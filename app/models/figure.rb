@@ -9,6 +9,7 @@ class Figure < ActiveRecord::Base
     validates :color, inclusion: { in: %w(white black) }
 
     scope :on_the_board, -> { where.not(cell: nil) }
+    scope :removed, -> { where(cell: nil) }
     scope :whites, -> { where(color: 'white') }
     scope :blacks, -> { where(color: 'black') }
 

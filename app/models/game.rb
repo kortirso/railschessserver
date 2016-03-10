@@ -171,6 +171,7 @@ class Game < ActiveRecord::Base
             user.update(elo: output[0])
             opponent.update(elo: output[1])
         end
+        self.board.figures.removed.destroy_all
     end
 
     def ai_turn

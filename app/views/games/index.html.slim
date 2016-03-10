@@ -56,6 +56,6 @@ h1 Игровые комнаты
     - else
         .col-xs-12
             #last_public_games.col-xs-12
-                h2 Last started public games without you
+                h2 Последние открытые игры
                 - @last_games.each do |game|
                     .col-xs-3= render partial: 'shared/game_block', locals: { game: game }
