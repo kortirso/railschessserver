@@ -26,6 +26,8 @@ gem 'omniauth'
 gem 'omniauth-facebook'
 gem 'omniauth-vkontakte'
 gem 'rails_admin'
+gem 'http_accept_language'
+gem 'route_translator'
 
 group :development, :test do
     gem 'byebug'
