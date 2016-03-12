@@ -1,33 +1,33 @@
-h1 Игровые комнаты
+h1= t('games.h1')
 .row
     - if current_user
         .col-xs-12.col-sm-6
             #current_games.col-xs-12 data={user: "#{current_user.id}"}
-                h2 Ваши текущие игры
+                h2= t('games.current')
                 - @users_games.each do |game|
                     .col-xs-6= render partial: 'shared/game_block', locals: { game: game }
             #last_public_games.col-xs-12
-                h2 Последние открытые игры
+                h2= t('games.last')
                 - @last_games.each do |game|
                     .col-xs-6= render partial: 'shared/game_block', locals: { game: game }
         .col-xs-12.col-sm-6
             .row
                 .col-lg-12#new_game
-                    h2 Новая партия
+                    h2= t('games.new')
                     .game_block
                         = simple_form_for Challenge.new, remote: true do |f|
                             .row
-                                .col-xs-12.col-lg-6= f.input :access, label: 'Открытая партия'
+                                .col-xs-12.col-lg-6= f.input :access, label: t('games.challenge.access')
                                 .clearfix
-                                .col-xs-12.col-lg-6= f.input :opponent_id, collection: User.other_users(current_user.id), label: 'Противник', label_method: :username, value_method: :id, include_blank: true
-                                .col-xs-12.col-lg-6= f.input :color, collection: %w(random white black), label: 'Цвет фигур', include_blank: false
+                                .col-xs-12.col-lg-6= f.input :opponent_id, collection: User.other_users(current_user.id), label: t('games.challenge.opponent'), label_method: :username, value_method: :id, include_blank: true
+                                .col-xs-12.col-lg-6= f.input :color, collection: %w(random white black), label: t('games.challenge.color'), include_blank: false
                                 .col-xs-12
                                     .actions
-                                        = f.button :submit, class: 'btn btn-sm btn-primary', value: 'Предложить игру'
+                                        = f.button :submit, class: 'btn btn-sm btn-primary', value: t('games.challenge.submit')
             .row
                 .col-lg-12#challenges
                     .panel.panel-default
-                        .panel-heading Текущие предложения партий
+                        .panel-heading= t('games.challenges.current')
                         .panel-body
                             #r
                             table.table.table-striped
@@ -41,14 +41,14 @@ h1 Игровые комнаты
                                             - if challenge.user_id != current_user.id
                                                 = simple_form_for Game.new, remote: true do |f|
                                                     = f.input :challenge, as: :hidden, input_html: {value: "#{challenge.id}"}
-                                                    = f.button :submit, class: 'btn btn-sm btn-primary', value: 'Играть'
+                                                    = f.button :submit, class: 'btn btn-sm btn-primary', value: t('games.challenges.play')
                                             - if challenge.user_id == current_user.id || challenge.opponent_id == current_user.id
                                                 = link_to 'X', challenge_path(challenge.id), class: 'btn btn-sm btn-default', remote: true, method: :delete
                                 tr.hidden
                                     td
                                         = simple_form_for Game.new, remote: true do |f|
                                             = f.input :challenge, as: :hidden, input_html: {value: ""}
-                                            = f.button :submit, class: 'btn btn-sm btn-primary', value: 'Играть'
+                                            = f.button :submit, class: 'btn btn-sm btn-primary', value: t('games.challenges.play')
         = subscribe_to "/users/#{current_user.id}/games"
         = subscribe_to "/users/#{current_user.id}/challenges"
         = subscribe_to "/users/games"
@@ -56,6 +56,6 @@ h1 Игровые комнаты
     - else
         .col-xs-12
             #last_public_games.col-xs-12
-                h2 Последние открытые игры
+                h2= t('games.last')
                 - @last_games.each do |game|
                     .col-xs-3= render partial: 'shared/game_block', locals: { game: game }

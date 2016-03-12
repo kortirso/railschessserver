@@ -1,23 +1,46 @@
-# Files in the config/locales directory are used for internationalization
-# and are automatically loaded by Rails. If you want to use locales other
-# than English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t 'hello'
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t('hello') %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# To learn more, please read the Rails Internationalization guide
-# available at http://guides.rubyonrails.org/i18n.html.
-
 en:
-  hello: "Hello world"
+  index:
+    h1: 'Chess server - Chess Battle'
+    p_first: 'Welcome to simple chess server builded with Ruby on Rails. You can play chess against other players and simple AI.'
+    p_second: 'To start games or view current games - go to the Games.'
+    p_third: 'You can play training game against koala Mike. Mike knows how to make turns.'
+    training: 'Start training'
+  games:
+    h1: 'Game rooms'
+    current: 'Your current games'
+    last: 'Last open games'
+    new: 'New game'
+    challenge:
+      access: 'Open game'
+      opponent: 'Opponent'
+      color: 'Figure color'
+      submit: 'Game offer'
+    challenges:
+      current: 'Current game offers'
+      play: 'Play'
+  game:
+    surrender: 'Surrend'
+    id: 'Chess game'
+    whites: 'White player'
+    blacks: 'Black player'
+    guest: 'Guest'
+    turn: 'Turn'
+    ul: 'there is 2 types of making turn:'
+    li_first: '1) You can fill From and To blocks, then press Turn.'
+    li_second: '2) You can click figure and then click square for turn.'
+    end: 'Game finished'
+    result: 'Result'
+    notation: 'Notation of the game'
+  menu:
+    main: 'Main page'
+    games: 'Games'
+    about: 'About'
+  auth:
+    login_as: 'Login as'
+    exit: 'Exit'
+    signup: 'Sign up'
+    login: 'Login'
+    username: 'Username'
+    password: 'Password'
+    confirm: 'Password confirm'
+    email: 'Email'

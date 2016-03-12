@@ -6,6 +6,8 @@ Bundler.require(*Rails.groups)
 
 module Rcs
     class Application < Rails::Application
+        I18n.available_locales = [:en, :ru]
+        config.i18n.default_locale = :en
         config.active_record.raise_in_transactional_callbacks = true
         config.active_record.schema_format = :ruby
         config.generators do |g|

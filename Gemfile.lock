@@ -139,6 +139,7 @@ GEM
     haml (4.0.7)
       tilt
     hashie (3.4.3)
+    http_accept_language (2.0.5)
     http_parser.rb (0.6.0)
     i18n (0.7.0)
     jbuilder (2.4.1)
@@ -248,6 +249,9 @@ GEM
     remotipart (1.2.1)
     responders (2.1.1)
       railties (>= 4.2.0, < 5.1)
+    route_translator (4.3.0)
+      actionpack (>= 3.2, < 5.0)
+      activesupport (>= 3.2, < 5.0)
     rspec (3.4.0)
       rspec-core (~> 3.4.0)
       rspec-expectations (~> 3.4.0)
@@ -350,6 +354,7 @@ DEPENDENCIES
   devise
   factory_girl_rails
   figaro
+  http_accept_language
   jbuilder (~> 2.0)
   jquery-rails
   json_spec
@@ -362,6 +367,7 @@ DEPENDENCIES
   rails_admin
   remotipart
   responders
+  route_translator
   rspec-rails
   sass-rails (~> 5.0)
   sdoc (~> 0.4.0)

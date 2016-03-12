@@ -2,12 +2,18 @@ class ApplicationController < ActionController::Base
     before_action :configure_permitted_parameters, if: :devise_controller?
     before_action :set_current_games
     before_action :set_user_session
+    before_filter :set_locale
     protect_from_forgery with: :exception
 
     rescue_from ActionController::RoutingError, with: :render_not_found
 
     def catch_404
         raise ActionController::RoutingError.new(params[:path])
+    end
+
+    def locale
+        session[:locale] = params[:name] == 'ru' ? 'ru' : 'en'
+        redirect_to root_path
     end
 
     private
@@ -32,5 +38,9 @@ class ApplicationController < ActionController::Base
 
     def render_not_found
         render template: 'shared/404', status: 404
+    end
+
+    def set_locale
+        session[:locale] == 'ru' || session[:locale] == 'en' ? I18n.locale = session[:locale] : I18n.locale = http_accept_language.compatible_language_from(I18n.available_locales)
     end
 end
