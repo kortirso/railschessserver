@@ -1,9 +1,9 @@
 .game_block
-    p= "Партия №#{game.id}"
+    p= "#{t('games.game')} №#{game.id}"
     p
         = "#{game.user.username}"
         span.rating_block= "#{game.user.elo}"
     p
         = "#{game.opponent.username}"
         span.rating_block= "#{game.opponent.elo}"
-    p= link_to 'Посмотреть', game, class: 'btn btn-sm btn-default'
+    p= link_to t('games.view'), game, class: 'btn btn-sm btn-default'

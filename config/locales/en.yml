@@ -10,6 +10,8 @@ en:
     current: 'Your current games'
     last: 'Last open games'
     new: 'New game'
+    game: 'Game'
+    view: 'View'
     challenge:
       access: 'Open game'
       opponent: 'Opponent'
