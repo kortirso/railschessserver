@@ -9,8 +9,23 @@ RSpec.describe ChallengesController, type: :controller do
         context 'Authorized user' do
             sign_in_user
 
-            it 'can create challenges' do
-                expect { post :create, challenge: {opponent_id: '', access: '1', color: 'random'}, format: :js }.to change(Challenge, :count).by(1)
+            context 'for all users' do
+                it 'can create challenges' do
+                    expect { post :create, challenge: {opponent_id: '', access: '1', color: 'random'}, format: :js }.to change(Challenge, :count).by(1)
+                end
+
+                it_behaves_like 'Publishable' do
+                    let(:path) { "/users/challenges" }
+                    let(:object) { post :create, challenge: {opponent_id: '', access: '1', color: 'random'}, format: :js }
+                end
+            end
+
+            context 'for current users' do
+                let!(:opponent) { create :user }
+
+                it 'can create challenges' do
+                    expect { post :create, challenge: {opponent_id: "#{opponent.id}", access: '1', color: 'random'}, format: :js }.to change(Challenge, :count).by(1)
+                end
             end
         end
     end
