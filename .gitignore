@@ -13,3 +13,4 @@
 /tmp
 /config/application.yml
 /public/uploads/*
+.idea
