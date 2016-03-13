@@ -46,3 +46,4 @@ en:
     password: 'Password'
     confirm: 'Password confirm'
     email: 'Email'
+    minimal: 'Minimal password length - 8 symbols'
