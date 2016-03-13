@@ -4,6 +4,7 @@ Rails.application.routes.draw do
 
     localized do
         resources :games, except: [:edit, :update, :new]
+        resources :about, only: :index
     end
     resources :challenges, only: [:create, :destroy]
     namespace :chess do
