@@ -9,10 +9,10 @@
                             - color = index.odd? ? block[0] : block[1]
                             .square class="#{color} square-#{c}#{r}" data={square: "#{c}#{r}"}
                         .clearfix
-                    .reserve_row
-                        .square.black.square-black data={square: 'black'}
-                        .square.white.square-white data={square: 'white'}
-                        .clearfix
+                .reserve_row
+                    .square.black.square-black data={square: 'black'}
+                    .square.white.square-white data={square: 'white'}
+                    .clearfix
         #actions
             - if @game.game_result.nil? && current_user && (current_user.id == @game.user_id || current_user.id == @game.opponent_id)
                 = link_to t('game.surrender'), chess_surrender_path(@game.id), class: 'btn btn-default', remote: true
