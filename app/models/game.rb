@@ -17,7 +17,7 @@ class Game < ActiveRecord::Base
 
     def self.build(challenge_id, user = nil)
         if challenge_id.nil?
-            create(opponent_id: User.find_by(username: 'Коала Майк').id, access: true, guest: user)
+            create(opponent_id: User.find_by(username: 'Коала Майк').id, access: false, guest: user)
         else
             challenge = Challenge.find(challenge_id)
             color = case challenge.color
