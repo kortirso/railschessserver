@@ -2,12 +2,11 @@
   .col-xs-12.col-md-6
     #all_board
       #board data={game: "#{@game.id}"}
-        - rows = 1..8
-        - cols = 'a'..'h'
-        - rows.reverse_each do |r|
+        - (1..8).reverse_each do |r|
+          - block = r.odd? ? [:white, :black] : [:black, :white]
           .chess_row
-            - cols.each.with_index do |c, index|
-              - color = index.odd? ? 'white' : 'black'
+            - ('a'..'h').each.with_index do |c, index|
+              - color = index.odd? ? block[0] : block[1]
               .square class="#{color} square-#{c}#{r}" data={square: "#{c}#{r}"}
             .clearfix
         .reserve_row
