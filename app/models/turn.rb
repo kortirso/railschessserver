@@ -27,6 +27,7 @@ class Turn < ActiveRecord::Base
         turn = game.white_turn ? false : true
         game.update(white_turn: turn)
         board.check_beaten_fields
+        PrivatePub.publish_to "/games/#{game.id}/turns", turn: new_turn.to_json
         game.checkmat_check
         new_turn
     end

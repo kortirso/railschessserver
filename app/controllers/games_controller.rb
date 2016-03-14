@@ -12,18 +12,8 @@ class GamesController < ApplicationController
     end
 
     def create
-        challenge = Challenge.find(params[:game][:challenge].to_i)
-        color = case challenge.color
-            when 'random' then rand(1)
-            when 'white' then 1
-            else 0
-        end
-        game = color == 1 ? Game.build(challenge.user_id, current_user.id, challenge.access, challenge.id) : Game.build(current_user.id, challenge.user_id, challenge.access, challenge.id)
-        game_json = GameSerializer.new(game).serializable_hash.to_json
-        PrivatePub.publish_to "/users/#{game.user_id}/games", game: game_json
-        PrivatePub.publish_to "/users/#{game.opponent_id}/games", game: game_json
-        PrivatePub.publish_to "/users/games", challenge: ChallengeSerializer.new(challenge).serializable_hash.to_json
-        challenge.destroy
+        challenge_id = params[:game][:challenge].to_i
+        Game.build(challenge_id, current_user.id) unless Challenge.find(challenge_id).nil?
         render nothing: true
     end
 
@@ -35,6 +25,6 @@ class GamesController < ApplicationController
 
     def get_last_games
         @last_games = Game.accessable.current.order(id: :desc).includes(:user, :opponent).limit(16)
-        @last_games = @last_games.where('user_id != ? AND opponent_id != ?', current_user.id, current_user.id).limit(6) if current_user
+        @last_games = @last_games.where('user_id is NULL OR user_id != ? AND opponent_id != ?', current_user.id, current_user.id).limit(6) if current_user
     end
 end

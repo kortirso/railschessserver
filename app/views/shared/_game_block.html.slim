@@ -1,8 +1,11 @@
 .game_block
     p= "#{t('games.game')} №#{game.id}"
     p
-        = "#{game.user.username}"
-        span.rating_block= "#{game.user.elo}"
+        - if game.user.nil?
+            = t('game.guest')
+        - else
+            = "#{game.user.username}"
+            span.rating_block= "#{game.user.elo}"
     p
         = "#{game.opponent.username}"
         span.rating_block= "#{game.opponent.elo}"

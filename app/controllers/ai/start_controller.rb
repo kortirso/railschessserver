@@ -4,7 +4,7 @@ class Ai::StartController < ApplicationController
             render nothing: true
         else
             Game.where(guest: session[:guest]).destroy_all
-            game = Game.build(0, User.find_by(username: 'Коала Майк').id, false, 0, session[:guest])
+            game = Game.build(nil, session[:guest])
             redirect_to game
         end
     end

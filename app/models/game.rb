@@ -15,8 +15,24 @@ class Game < ActiveRecord::Base
     before_create :set_ratings
     after_create :board_build
 
-    def self.build(user_1, user_2, access, challenge, guest = nil)
-        game = user_1 != 0 ? create(user_id: user_1, opponent_id: user_2, access: access, challenge_id: challenge) : create(opponent_id: user_2, access: access, guest: guest)
+    def self.build(challenge_id, user = nil)
+        if challenge_id.nil?
+            create(opponent_id: User.find_by(username: 'Коала Майк').id, access: true, guest: user)
+        else
+            challenge = Challenge.find(challenge_id)
+            color = case challenge.color
+                when 'random' then rand(1)
+                when 'white' then 1
+                else 0
+            end
+            current = color == 1 ? create(user_id: challenge.user_id, opponent_id: user, access: challenge.access, challenge_id: challenge) : create(user_id: user, opponent_id: challenge.user_id, access: challenge.access, challenge_id: challenge)
+            game_json = GameSerializer.new(current).serializable_hash.to_json
+            PrivatePub.publish_to "/users/#{current.user_id}/games", game: game_json
+            PrivatePub.publish_to "/users/#{current.opponent_id}/games", game: game_json
+            PrivatePub.publish_to "/users/games", challenge: ChallengeSerializer.new(challenge).serializable_hash.to_json
+            challenge.destroy
+            current
+        end
     end
 
     def check_users_turn(user_id)
@@ -172,13 +188,13 @@ class Game < ActiveRecord::Base
             opponent.update(elo: output[1])
         end
         self.board.figures.removed.destroy_all
+        PrivatePub.publish_to "/games/#{self.id}", game: self.to_json
     end
 
     def ai_turn
         result = []
         figures = self.board.figures.on_the_board.blacks.to_ary
         figures.each { |figure| result.push(figure) unless figure.beaten_fields == []}
-        
         turn_error, rand_figure, rand_turn = 'ERROR', nil, nil
         while turn_error.is_a? String
             rand_figure = result[rand(result.size - 1)]
@@ -190,10 +206,7 @@ class Game < ActiveRecord::Base
                 break if turn_error.is_a? String
             end
         end
-
-        turn = Turn.build(self.id, rand_figure.cell.name, rand_turn)
-        PrivatePub.publish_to "/games/#{self.id}/turns", turn: turn.to_json
-        PrivatePub.publish_to "/games/#{self.id}", game: turn.game.to_json unless turn.game.game_result.nil?
+        Turn.build(self.id, rand_figure.cell.name, rand_turn)
     end
 
     private
