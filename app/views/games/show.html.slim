@@ -53,7 +53,7 @@
         .row#turns.data-block
             p= t('game.notation')
             .turn.hidden data={turn: "0"}
-            - @game.turns.each_with_index do |turn, index|
+            - @game.turns.order(id: :asc).each_with_index do |turn, index|
                 - if index % 2 == 0
                     .col-xs-2
                         = "#{index / 2 + 1}."
