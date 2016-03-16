@@ -4,6 +4,8 @@ class Game < ActiveRecord::Base
     belongs_to :challenge
 
     has_one :board, dependent: :destroy
+    has_many :figures, through: :board
+    has_many :cells, through: :board
     has_many :turns, dependent: :destroy
 
     validates :opponent_id, presence: true
@@ -48,7 +50,7 @@ class Game < ActiveRecord::Base
     end
 
     def check_right_figure(from)
-        figure = self.board.cells.find_by(x_param: from[0], y_param: from[1]).figure
+        figure = self.cells.find_by(name: from).figure
         result = figure.nil? ? "В клетке '#{from}' нет фигуры для хода" : nil
         return result unless result.nil?
         f_color = figure.color
@@ -56,7 +58,7 @@ class Game < ActiveRecord::Base
     end
 
     def check_turn(from, to)
-        cells_list = self.board.cells
+        cells_list = self.cells
         figure = cells_list.find_by(name: from).figure
         finish_cell = cells_list.find_by(name: to).figure
         x_params, y_params = %w(a b c d e f g h), %w(1 2 3 4 5 6 7 8)
@@ -115,7 +117,7 @@ class Game < ActiveRecord::Base
             end
             if result.nil?
                 check_beated.each do |box|
-                    self.board.figures.on_the_board.where('color != ?', figure.color).each do |figure|
+                    self.figures.on_the_board.where('color != ?', figure.color).each do |figure|
                         result = figure.beaten_fields.include?(box) ? 'Рокировка под ударом' : nil
                         break unless result.nil?
                     end
@@ -146,7 +148,7 @@ class Game < ActiveRecord::Base
     end
 
     def whites_check
-        if self.white_beats.include?(self.board.figures.find_by(type: 'k', color: 'black').cell.name)
+        if self.white_beats.include?(self.figures.find_by(type: 'k', color: 'black').cell.name)
             case self.white_checkmat
                 when 'check' then self.complete(1)
                 when nil then self.update(white_checkmat: 'check')
@@ -155,7 +157,7 @@ class Game < ActiveRecord::Base
     end
 
     def blacks_check
-        if self.black_beats.include?(self.board.figures.find_by(type: 'k', color: 'white').cell.name)
+        if self.black_beats.include?(self.figures.find_by(type: 'k', color: 'white').cell.name)
             case self.black_checkmat
                 when 'check' then self.complete(0)
                 when nil then self.update(black_checkmat: 'check')
@@ -187,13 +189,13 @@ class Game < ActiveRecord::Base
             user.update(elo: output[0])
             opponent.update(elo: output[1])
         end
-        self.board.figures.removed.destroy_all
+        self.figures.removed.destroy_all
         PrivatePub.publish_to "/games/#{self.id}", game: self.to_json
     end
 
     def ai_turn
         result = []
-        figures = self.board.figures.on_the_board.blacks.to_ary
+        figures = self.figures.on_the_board.blacks.to_ary
         figures.each { |figure| result.push(figure) unless figure.beaten_fields == []}
         turn_error, rand_figure, rand_turn = 'ERROR', nil, nil
         while turn_error.is_a? String
