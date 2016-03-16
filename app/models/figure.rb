@@ -79,6 +79,13 @@ class Figure < ActiveRecord::Base
         else
             current_game.update(b_king_protectors: fields) if current_game.b_king_protectors != fields.compact!
         end
+
+        fields = []
+        protectes = self.color == 'white' ? current_game.black_protectes : current_game.white_protectes
+        self.beaten_fields.each do |cell|
+            fields.push(cell) unless protectes.include?(cell)
+        end
+        self.update(beaten_fields: fields) if self.beaten_fields != fields
     end
 
     def r_like_check(board_figures, x_params, y_params, x_index, y_index, color)

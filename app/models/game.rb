@@ -68,10 +68,10 @@ class Game < ActiveRecord::Base
         case figure.type
             when 'k'
                 result = figure.beaten_fields.include?(to) ? nil : 'Неправильный ход королем'
-                if result.nil?
-                    protectes = figure.color == 'white' ? figure.board.game.black_protectes : figure.board.game.white_protectes
-                    result = protectes.include?(to) ? 'Нельзя атаковать, фигура защищена' : nil
-                end
+                #if result.nil?
+                    #protectes = figure.color == 'white' ? self.black_protectes : self.white_protectes
+                    #result = protectes.include?(to) ? 'Нельзя атаковать, фигура защищена' : nil
+                #end
                 if !result.nil? && x_change.abs == 2 && y_change == 0
                     if figure.color == 'white'
                         k_place = 'e1'
@@ -138,20 +138,16 @@ class Game < ActiveRecord::Base
     end
 
     def checkmat_check
-        if self.white_turn
-            self.blacks_check
-            self.whites_check
-        else
-            self.whites_check
-            self.blacks_check
-        end
+        self.white_turn ? self.blacks_check : self.whites_check
     end
 
     def whites_check
         if self.white_beats.include?(self.figures.find_by(type: 'k', color: 'black').cell.name)
             case self.white_checkmat
                 when 'check' then self.complete(1)
-                when nil then self.update(white_checkmat: 'check')
+                when nil
+                    self.update(white_checkmat: 'check')
+                    self.automate('black')
             end
         end
     end
@@ -160,8 +156,17 @@ class Game < ActiveRecord::Base
         if self.black_beats.include?(self.figures.find_by(type: 'k', color: 'white').cell.name)
             case self.black_checkmat
                 when 'check' then self.complete(0)
-                when nil then self.update(black_checkmat: 'check')
+                when nil
+                    self.update(black_checkmat: 'check')
+                    self.automate('white')
             end
+        end
+    end
+
+    def automate(color)
+        king = self.figures.find_by(type: 'k', color: color)
+        if king.beaten_fields.empty?
+            color == 'white' ? self.complete(0) : self.complete(1)
         end
     end
 
