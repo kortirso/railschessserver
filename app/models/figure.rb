@@ -129,9 +129,12 @@ class Figure < ActiveRecord::Base
                 if field_figure.empty?
                     fields[0].push(cell)
                 else
-                    field_figure[0][1] != color ? fields[0].push(cell) : fields[1].push(cell)
-                    attack = true if self.board.cells.find_by(name: cell).figure.type == 'k'
-                    fields[1].push(cell)
+                    if field_figure[0][1] != color
+                        fields[0].push(cell)
+                        attack = true if self.board.cells.find_by(name: cell).figure.type == 'k'
+                    else
+                        fields[1].push(cell)
+                    end
                 end
             end
         end
@@ -150,8 +153,12 @@ class Figure < ActiveRecord::Base
                 if field_figure.empty?
                     fields[0].push(cell)
                 else
-                    field_figure[0][1] != color ? fields[0].push(cell) : fields[1].push(cell)
-                    attack = true if self.board.cells.find_by(name: cell).figure.type == 'k'
+                    if field_figure[0][1] != color
+                        fields[0].push(cell)
+                        attack = true if self.board.cells.find_by(name: cell).figure.type == 'k'
+                    else
+                        fields[1].push(cell)
+                    end
                     break
                 end
                 x_new += x_change
@@ -188,9 +195,12 @@ class Figure < ActiveRecord::Base
                 if field_figure.empty?
                     fields[0].push(cell)
                 else
-                    field_figure[0][1] != color ? fields[0].push(cell) : fields[1].push(cell)
-                    attack = true if self.board.cells.find_by(name: cell).figure.type == 'k'
-                    fields[1].push(cell)
+                    if field_figure[0][1] != color
+                        fields[0].push(cell)
+                        attack = true if self.board.cells.find_by(name: cell).figure.type == 'k'
+                    else
+                        fields[1].push(cell)
+                    end
                 end
             end
         end
