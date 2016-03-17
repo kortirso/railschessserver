@@ -143,30 +143,48 @@ class Game < ActiveRecord::Base
 
     def whites_check
         if self.white_beats.include?(self.figures.find_by(type: 'k', color: 'black').cell.name)
-            case self.white_checkmat
-                when 'check' then self.complete(1)
-                when nil
-                    self.update(white_checkmat: 'check')
-                    self.automate('black')
-            end
+            self.update(white_checkmat: 'check')
+            self.automate('black')
+        else
+            self.update(white_checkmat: nil)
         end
     end
 
     def blacks_check
         if self.black_beats.include?(self.figures.find_by(type: 'k', color: 'white').cell.name)
-            case self.black_checkmat
-                when 'check' then self.complete(0)
-                when nil
-                    self.update(black_checkmat: 'check')
-                    self.automate('white')
-            end
+            self.update(black_checkmat: 'check')
+            self.automate('white')
+        else
+            self.update(black_checkmat: nil)
         end
     end
 
     def automate(color)
         king = self.figures.find_by(type: 'k', color: color)
-        if king.beaten_fields.empty?
-            color == 'white' ? self.complete(0) : self.complete(1)
+        king_cell = king.cell
+
+        # удаление бесполезного выхода короля из под шаха
+        fields = king.beaten_fields
+        attackers = self.figures.other_color(color).attackers
+        attackers.each do |f|
+            f_cell = f.cell
+            x_params, y_params = %w(a b c d e f g h), %w(1 2 3 4 5 6 7 8)
+            x_change = x_params.index(king_cell.x_param) - x_params.index(f_cell.x_param)
+            x_change /= x_change.abs if x_change != 0
+            y_change = y_params.index(king_cell.y_param) - y_params.index(f_cell.y_param)
+            y_change /= y_change.abs if y_change != 0
+            x_new = x_params.index(king_cell.x_param) + x_change
+            y_new = y_params.index(king_cell.y_param) + y_change
+            fields.delete("#{x_params[x_new]}#{y_params[y_new]}") if x_new >= 0 && x_new <= 7 && y_new >= 0 && y_new <= 7
+        end
+        king.update(beaten_fields: fields)
+
+        if attackers.count > 1
+            color == 'white' ? self.complete(0) : self.complete(1) if fields.empty?
+        elsif fields.empty?
+            defenders = color == 'white' ? self.white_beats : self.black_beats
+            states = defenders.include?(attackers.first.cell.name) ? 1 : 0
+            color == 'white' ? self.complete(0) : self.complete(1) if states == 1
         end
     end
 
