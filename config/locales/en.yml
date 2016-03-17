@@ -22,6 +22,11 @@ en:
     li_3_2: 'Fix bugs.'
     li_4_0: '13 march 2016, version 0.4'
     li_4_1: 'Internationalization, available languages: russian and english.'
+    li_5_0: '17 march 2016, version 0.5'
+    li_5_1: 'Autodetection of mate.'
+    li_5_2: 'When check there is only a few possible turns to prevent mate.'
+    li_5_3: 'AI prevent mate.'
+    li_5_4: 'Fix bugs.'
   games:
     h1: 'Game rooms'
     current: 'Your current games'
