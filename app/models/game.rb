@@ -169,7 +169,7 @@ class Game < ActiveRecord::Base
         king_cell = king.cell
 
         # удаление бесполезного выхода короля из под шаха
-        fields = king.beaten_fields
+        fields, threat_cells = king.beaten_fields, []
         attackers = self.figures.on_the_board.other_color(color).attackers
         attackers.each do |f|
             f_cell = f.cell
@@ -187,10 +187,37 @@ class Game < ActiveRecord::Base
         possibles = []
         fields.each { |f| possibles.push([king.cell.name, f]) }
         if attackers.count == 1
-            defenders = self.figures.current_color(color)
-            enemy_cell = attackers.first.cell
+            defenders = self.figures.on_the_board.where(color: color)
+            enemy = attackers.first
+            enemy_cell = enemy.cell
+            if %w(q r b).include?(enemy.type)
+                x_params, y_params = %w(a b c d e f g h), %w(1 2 3 4 5 6 7 8)
+                x_enemy, y_enemy = x_params.index(enemy_cell.x_param), y_params.index(enemy_cell.y_param)
+                x_change = x_params.index(king_cell.x_param) - x_enemy
+                y_change = y_params.index(king_cell.y_param) - y_enemy
+                if x_change.abs > 1 || y_change.abs > 1
+                    x_diff = x_change != 0 ? x_change / x_change.abs : 0
+                    y_diff = y_change != 0 ? y_change / y_change.abs : 0
+
+                    (1..([x_change.abs, y_change.abs].max - 1)).each { |i| threat_cells.push("#{x_params[x_enemy + x_diff * i]}#{y_params[y_enemy + y_diff * i]}") }
+                end
+            end
             defenders.each do |ally|
                 possibles.push([ally.cell.name, enemy_cell.name]) if ally.beaten_fields.include?(enemy_cell.name)
+                if ally.type != 'p'
+                    threat_cells.each { |threat| possibles.push([ally.cell.name, threat]) if ally.beaten_fields.include?(threat) }
+                else
+                    change = color == 'white' ? 1 : -1
+                    double = ally.cell.y_param == '7' || ally.cell.y_param == '2' ? 2 : 1
+                    (1..double).each do |i|
+                        cell_new = "#{ally.cell.x_param}#{ally.cell.y_param.to_i + change * i}"
+                        if self.cells.find_by(name: cell_new).figure.nil?
+                            threat_cells.each { |threat| possibles.push([ally.cell.name, threat])
+                        else
+                            break
+                        end
+                    end
+                end
             end
         end
         if possibles == []
