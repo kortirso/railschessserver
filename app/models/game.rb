@@ -64,7 +64,12 @@ class Game < ActiveRecord::Base
         x_params, y_params = %w(a b c d e f g h), %w(1 2 3 4 5 6 7 8)
         x_change = x_params.index(to[0]) - x_params.index(from[0])
         y_change = y_params.index(to[1]) - y_params.index(from[1])
-        p_pass, roque = nil, nil
+        p_pass, roque, result = nil, nil, nil
+        is_check = self.white_turn ? self.black_checkmat : self.white_checkmat
+        if is_check == 'check'
+            result = self.possibles.include?([from, to]) ? nil : 'Ваш король под угрозой'
+        end
+        return result unless result.nil?
         case figure.type
             when 'k'
                 result = figure.beaten_fields.include?(to) ? nil : 'Неправильный ход королем'
@@ -146,7 +151,7 @@ class Game < ActiveRecord::Base
             self.update(white_checkmat: 'check')
             self.automate('black')
         else
-            self.update(white_checkmat: nil)
+            self.update(white_checkmat: nil, possibles: [])
         end
     end
 
@@ -155,7 +160,7 @@ class Game < ActiveRecord::Base
             self.update(black_checkmat: 'check')
             self.automate('white')
         else
-            self.update(black_checkmat: nil)
+            self.update(black_checkmat: nil, possibles: [])
         end
     end
 
@@ -179,13 +184,19 @@ class Game < ActiveRecord::Base
         end
         king.update(beaten_fields: fields)
 
-        if attackers.count > 1
-            color == 'white' ? self.complete(0) : self.complete(1) if fields.empty?
-        elsif fields.empty?
-            defenders = color == 'white' ? self.white_beats : self.black_beats
-            states = defenders.include?(attackers.first.cell.name) ? 1 : 0
-            color == 'white' ? self.complete(0) : self.complete(1) if states == 1
+        possibles = []
+        fields.each { |f| possibles.push([king.cell.name, f]) }
+        if attackers.count == 1
+            defenders = self.figures.current_color(color)
+            enemy_cell = attackers.first.cell
+            defenders.each do |ally|
+                possibles.push([ally.cell.name, enemy_cell.name]) if ally.beaten_fields.include?(enemy_cell.name)
+            end
         end
+        if possibles == []
+            color == 'white' ? self.complete(0) : self.complete(1)
+        end
+        self.update(possibles: possibles)
     end
 
     def complete(game_result)
