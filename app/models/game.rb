@@ -214,6 +214,8 @@ class Game < ActiveRecord::Base
                         cell_new = "#{ally.cell.x_param}#{ally.cell.y_param.to_i + change * i}"
                         if self.cells.find_by(name: cell_new).figure.nil?
                             possibles.push([ally.cell.name, cell_new]) if threat_cells.include?(cell_new)
+                        else
+                            break
                         end
                     end
                 end
