@@ -14,7 +14,7 @@ class Figure < ActiveRecord::Base
     scope :blacks, -> { where(color: 'black') }
     scope :current_color, -> (color) { where(color: color) }
     scope :other_color, -> (color) { where.not(color: color) }
-    scope :attackers, -> { where(attack: true) } # атакующие короля слон, ладья или ферзь
+    scope :attackers, -> { where(attack: true) } # атакующие короля
 
     def self.build(board)
         inserts, board_id, t = [], board.id, Time.current
@@ -119,16 +119,23 @@ class Figure < ActiveRecord::Base
     end
 
     def n_like_check(board_figures, x_params, y_params, x_index, y_index, color)
-        fields = [[], []]
+        fields, attack = [[], []], false
         [[-2, -1], [-2, 1], [2, -1], [2, 1], [-1, -2], [-1, 2], [1, -2], [1, 2]].each do |turn|
             x_change, y_change = turn[0], turn[1]
             x_new, y_new = x_index + x_change, y_index + y_change
             if x_new >= 0 && x_new <= 7 && y_new >= 0 && y_new <= 7
                 cell = "#{x_params[x_new]}#{y_params[y_new]}"
                 field_figure = board_figures.find_all{ |elem| elem[0] == cell }
-                field_figure.empty? || field_figure[0][1] != color ? fields[0].push(cell) : fields[1].push(cell)
+                if field_figure.empty?
+                    fields[0].push(cell)
+                else
+                    field_figure[0][1] != color ? fields[0].push(cell) : fields[1].push(cell)
+                    attack = true if self.board.cells.find_by(name: cell).figure.type == 'k'
+                    fields[1].push(cell)
+                end
             end
         end
+        self.update(attack: attack)
         fields
     end
 
@@ -170,7 +177,7 @@ class Figure < ActiveRecord::Base
     end
 
     def p_like_check(board_figures, x_params, y_params, x_index, y_index, color)
-        fields = [[], []]
+        fields, attack = [[], []], false
         y_change = self.color == 'white' ? 1 : -1
         y_new = y_index + y_change
         [-1, 1].each do |x_change|
@@ -178,9 +185,16 @@ class Figure < ActiveRecord::Base
             if x_new >= 0 && x_new <= 7
                 cell = "#{x_params[x_new]}#{y_params[y_new]}"
                 field_figure = board_figures.find_all{ |elem| elem[0] == cell }
-                field_figure.empty? || field_figure[0][1] != color ? fields[0].push(cell) : fields[1].push(cell)
+                if field_figure.empty?
+                    fields[0].push(cell)
+                else
+                    field_figure[0][1] != color ? fields[0].push(cell) : fields[1].push(cell)
+                    attack = true if self.board.cells.find_by(name: cell).figure.type == 'k'
+                    fields[1].push(cell)
+                end
             end
         end
+        self.update(attack: attack)
         fields
     end
 

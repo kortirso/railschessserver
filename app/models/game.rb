@@ -167,11 +167,11 @@ class Game < ActiveRecord::Base
     def automate(color)
         king = self.figures.find_by(type: 'k', color: color)
         king_cell = king.cell
-
-        # удаление бесполезного выхода короля из под шаха
         fields, threat_cells = king.beaten_fields, []
-        attackers = self.figures.on_the_board.other_color(color).attackers
-        attackers.each do |f|
+        attack = self.figures.on_the_board.other_color(color).attackers
+
+        # удаление бесполезного выхода короля из под шаха (против ферзя, ладьи и слона)
+        attack.where.not(type: 'p').each do |f|
             f_cell = f.cell
             x_params, y_params = %w(a b c d e f g h), %w(1 2 3 4 5 6 7 8)
             x_change = x_params.index(king_cell.x_param) - x_params.index(f_cell.x_param)
@@ -185,11 +185,12 @@ class Game < ActiveRecord::Base
         king.update(beaten_fields: fields)
 
         possibles = []
-        fields.each { |f| possibles.push([king.cell.name, f]) }
-        if attackers.count == 1
+        fields.each { |f| possibles.push([king_cell.name, f]) }
+        if attack.count == 1
             defenders = self.figures.on_the_board.where(color: color)
-            enemy = attackers.first
+            enemy = attack.first
             enemy_cell = enemy.cell
+            # перекрытие ферзя, ладьи и слона
             if %w(q r b).include?(enemy.type)
                 x_params, y_params = %w(a b c d e f g h), %w(1 2 3 4 5 6 7 8)
                 x_enemy, y_enemy = x_params.index(enemy_cell.x_param), y_params.index(enemy_cell.y_param)
@@ -212,9 +213,7 @@ class Game < ActiveRecord::Base
                     (1..double).each do |i|
                         cell_new = "#{ally.cell.x_param}#{ally.cell.y_param.to_i + change * i}"
                         if self.cells.find_by(name: cell_new).figure.nil?
-                            threat_cells.each { |threat| possibles.push([ally.cell.name, threat])
-                        else
-                            break
+                            possibles.push([ally.cell.name, cell_new]) if threat_cells.include?(cell_new)
                         end
                     end
                 end
