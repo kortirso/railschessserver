@@ -8,7 +8,7 @@ class GamesController < ApplicationController
     end
 
     def show
-        @figures = @game.board.figures.includes(:cell)
+        @figures = @game.figures.includes(:cell)
     end
 
     def create

@@ -4,6 +4,8 @@ class Game < ActiveRecord::Base
     belongs_to :challenge
 
     has_one :board, dependent: :destroy
+    has_many :figures, through: :board
+    has_many :cells, through: :board
     has_many :turns, dependent: :destroy
 
     validates :opponent_id, presence: true
@@ -48,7 +50,7 @@ class Game < ActiveRecord::Base
     end
 
     def check_right_figure(from)
-        figure = self.board.cells.find_by(x_param: from[0], y_param: from[1]).figure
+        figure = self.cells.find_by(name: from).figure
         result = figure.nil? ? "В клетке '#{from}' нет фигуры для хода" : nil
         return result unless result.nil?
         f_color = figure.color
@@ -56,20 +58,25 @@ class Game < ActiveRecord::Base
     end
 
     def check_turn(from, to)
-        cells_list = self.board.cells
+        cells_list = self.cells
         figure = cells_list.find_by(name: from).figure
         finish_cell = cells_list.find_by(name: to).figure
         x_params, y_params = %w(a b c d e f g h), %w(1 2 3 4 5 6 7 8)
         x_change = x_params.index(to[0]) - x_params.index(from[0])
         y_change = y_params.index(to[1]) - y_params.index(from[1])
-        p_pass, roque = nil, nil
+        p_pass, roque, result = nil, nil, nil
+        is_check = self.white_turn ? self.black_checkmat : self.white_checkmat
+        if is_check == 'check'
+            result = self.possibles.include?([from, to]) ? nil : 'Ваш король под угрозой'
+        end
+        return result unless result.nil?
         case figure.type
             when 'k'
                 result = figure.beaten_fields.include?(to) ? nil : 'Неправильный ход королем'
-                if result.nil?
-                    protectes = figure.color == 'white' ? figure.board.game.black_protectes : figure.board.game.white_protectes
-                    result = protectes.include?(to) ? 'Нельзя атаковать, фигура защищена' : nil
-                end
+                #if result.nil?
+                    #protectes = figure.color == 'white' ? self.black_protectes : self.white_protectes
+                    #result = protectes.include?(to) ? 'Нельзя атаковать, фигура защищена' : nil
+                #end
                 if !result.nil? && x_change.abs == 2 && y_change == 0
                     if figure.color == 'white'
                         k_place = 'e1'
@@ -115,7 +122,7 @@ class Game < ActiveRecord::Base
             end
             if result.nil?
                 check_beated.each do |box|
-                    self.board.figures.on_the_board.where('color != ?', figure.color).each do |figure|
+                    self.figures.on_the_board.where('color != ?', figure.color).each do |figure|
                         result = figure.beaten_fields.include?(box) ? 'Рокировка под ударом' : nil
                         break unless result.nil?
                     end
@@ -136,31 +143,86 @@ class Game < ActiveRecord::Base
     end
 
     def checkmat_check
-        if self.white_turn
-            self.blacks_check
-            self.whites_check
-        else
-            self.whites_check
-            self.blacks_check
-        end
+        self.white_turn ? self.blacks_check : self.whites_check
     end
 
     def whites_check
-        if self.white_beats.include?(self.board.figures.find_by(type: 'k', color: 'black').cell.name)
-            case self.white_checkmat
-                when 'check' then self.complete(1)
-                when nil then self.update(white_checkmat: 'check')
-            end
+        if self.white_beats.include?(self.figures.find_by(type: 'k', color: 'black').cell.name)
+            self.update(white_checkmat: 'check')
+            self.automate('black')
+        else
+            self.update(white_checkmat: nil, possibles: [])
         end
     end
 
     def blacks_check
-        if self.black_beats.include?(self.board.figures.find_by(type: 'k', color: 'white').cell.name)
-            case self.black_checkmat
-                when 'check' then self.complete(0)
-                when nil then self.update(black_checkmat: 'check')
+        if self.black_beats.include?(self.figures.find_by(type: 'k', color: 'white').cell.name)
+            self.update(black_checkmat: 'check')
+            self.automate('white')
+        else
+            self.update(black_checkmat: nil, possibles: [])
+        end
+    end
+
+    def automate(color)
+        king = self.figures.find_by(type: 'k', color: color)
+        king_cell = king.cell
+        fields, threat_cells = king.beaten_fields, []
+        attack = self.figures.on_the_board.other_color(color).attackers
+
+        # удаление бесполезного выхода короля из под шаха (против ферзя, ладьи и слона)
+        attack.where.not(type: 'p').each do |f|
+            f_cell = f.cell
+            x_params, y_params = %w(a b c d e f g h), %w(1 2 3 4 5 6 7 8)
+            x_change = x_params.index(king_cell.x_param) - x_params.index(f_cell.x_param)
+            x_change /= x_change.abs if x_change != 0
+            y_change = y_params.index(king_cell.y_param) - y_params.index(f_cell.y_param)
+            y_change /= y_change.abs if y_change != 0
+            x_new = x_params.index(king_cell.x_param) + x_change
+            y_new = y_params.index(king_cell.y_param) + y_change
+            fields.delete("#{x_params[x_new]}#{y_params[y_new]}") if x_new >= 0 && x_new <= 7 && y_new >= 0 && y_new <= 7
+        end
+        king.update(beaten_fields: fields)
+
+        possibles = []
+        fields.each { |f| possibles.push([king_cell.name, f]) }
+        if attack.count == 1
+            defenders = self.figures.on_the_board.where(color: color)
+            enemy = attack.first
+            enemy_cell = enemy.cell
+            # перекрытие ферзя, ладьи и слона
+            if %w(q r b).include?(enemy.type)
+                x_params, y_params = %w(a b c d e f g h), %w(1 2 3 4 5 6 7 8)
+                x_enemy, y_enemy = x_params.index(enemy_cell.x_param), y_params.index(enemy_cell.y_param)
+                x_change = x_params.index(king_cell.x_param) - x_enemy
+                y_change = y_params.index(king_cell.y_param) - y_enemy
+                if x_change.abs > 1 || y_change.abs > 1
+                    x_diff = x_change != 0 ? x_change / x_change.abs : 0
+                    y_diff = y_change != 0 ? y_change / y_change.abs : 0
+
+                    (1..([x_change.abs, y_change.abs].max - 1)).each { |i| threat_cells.push("#{x_params[x_enemy + x_diff * i]}#{y_params[y_enemy + y_diff * i]}") }
+                end
+            end
+            defenders.each do |ally|
+                possibles.push([ally.cell.name, enemy_cell.name]) if ally.beaten_fields.include?(enemy_cell.name)
+                if ally.type != 'p'
+                    threat_cells.each { |threat| possibles.push([ally.cell.name, threat]) if ally.beaten_fields.include?(threat) }
+                else
+                    change = color == 'white' ? 1 : -1
+                    double = ally.cell.y_param == '7' || ally.cell.y_param == '2' ? 2 : 1
+                    (1..double).each do |i|
+                        cell_new = "#{ally.cell.x_param}#{ally.cell.y_param.to_i + change * i}"
+                        if self.cells.find_by(name: cell_new).figure.nil?
+                            possibles.push([ally.cell.name, cell_new]) if threat_cells.include?(cell_new)
+                        end
+                    end
+                end
             end
         end
+        if possibles == []
+            color == 'white' ? self.complete(0) : self.complete(1)
+        end
+        self.update(possibles: possibles)
     end
 
     def complete(game_result)
@@ -187,26 +249,32 @@ class Game < ActiveRecord::Base
             user.update(elo: output[0])
             opponent.update(elo: output[1])
         end
-        self.board.figures.removed.destroy_all
+        self.figures.removed.destroy_all
         PrivatePub.publish_to "/games/#{self.id}", game: self.to_json
     end
 
     def ai_turn
         result = []
-        figures = self.board.figures.on_the_board.blacks.to_ary
-        figures.each { |figure| result.push(figure) unless figure.beaten_fields == []}
-        turn_error, rand_figure, rand_turn = 'ERROR', nil, nil
-        while turn_error.is_a? String
-            rand_figure = result[rand(result.size - 1)]
-            fields = rand_figure.beaten_fields
-            fields.push("#{rand_figure.cell.name[0]}#{rand_figure.cell.name[1].to_i - 1}", "#{rand_figure.cell.name[0]}#{rand_figure.cell.name[1].to_i - 2}", "#{rand_figure.cell.name[0]}#{rand_figure.cell.name[1].to_i - 2}") if rand_figure.type == 'p'
-            fields.size.times do
-                rand_turn = fields[rand(fields.size - 1)]
-                turn_error = self.check_turn(rand_figure.cell.name, rand_turn)
-                break if turn_error.is_a? String
+        if self.possibles == []
+            figures = self.figures.on_the_board.blacks.to_ary
+            figures.each { |figure| result.push(figure) unless figure.beaten_fields == [] }
+            turn_error, rand_figure, rand_turn = 'ERROR', nil, nil
+            while turn_error.is_a? String
+                rand_figure = result[rand(result.size - 1)]
+                fields = rand_figure.beaten_fields
+                fields.push("#{rand_figure.cell.name[0]}#{rand_figure.cell.name[1].to_i - 1}", "#{rand_figure.cell.name[0]}#{rand_figure.cell.name[1].to_i - 2}", "#{rand_figure.cell.name[0]}#{rand_figure.cell.name[1].to_i - 2}") if rand_figure.type == 'p'
+                fields.size.times do
+                    rand_turn = fields[rand(fields.size - 1)]
+                    turn_error = self.check_turn(rand_figure.cell.name, rand_turn)
+                    break unless turn_error.is_a? String
+                end
             end
+            from, to = rand_figure.cell.name, rand_turn
+        else
+            turn = self.possibles[rand(self.possibles.size - 1)]
+            from, to = turn[0], turn[1]
         end
-        Turn.build(self.id, rand_figure.cell.name, rand_turn)
+        Turn.build(self.id, from, to)
     end
 
     private

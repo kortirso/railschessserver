@@ -12,6 +12,9 @@ class Figure < ActiveRecord::Base
     scope :removed, -> { where(cell: nil) }
     scope :whites, -> { where(color: 'white') }
     scope :blacks, -> { where(color: 'black') }
+    scope :current_color, -> (color) { where(color: color) }
+    scope :other_color, -> (color) { where.not(color: color) }
+    scope :attackers, -> { where(attack: true) } # атакующие короля
 
     def self.build(board)
         inserts, board_id, t = [], board.id, Time.current
@@ -79,10 +82,17 @@ class Figure < ActiveRecord::Base
         else
             current_game.update(b_king_protectors: fields) if current_game.b_king_protectors != fields.compact!
         end
+
+        fields = []
+        protectes = self.color == 'white' ? current_game.black_protectes : current_game.white_protectes
+        self.beaten_fields.each do |cell|
+            fields.push(cell) unless protectes.include?(cell)
+        end
+        self.update(beaten_fields: fields) if self.beaten_fields != fields
     end
 
     def r_like_check(board_figures, x_params, y_params, x_index, y_index, color)
-        fields = [[], []]
+        fields, attack = [[], []], false
         [[-1, 0], [1, 0], [0, -1], [0, 1]].each do |turn|
             x_change, y_change = turn[0], turn[1]
             x_new, y_new = x_index + x_change, y_index + y_change
@@ -92,32 +102,48 @@ class Figure < ActiveRecord::Base
                 if field_figure.empty?
                     fields[0].push(cell)
                 else
-                    field_figure[0][1] != color ? fields[0].push(cell) : fields[1].push(cell)
+                    if field_figure[0][1] != color
+                        fields[0].push(cell)
+                        attack = true if self.board.cells.find_by(name: cell).figure.type == 'k'
+                    else
+                        fields[1].push(cell)
+                    end
                     break
                 end
                 x_new += x_change
                 y_new += y_change
             end
         end
+        self.update(attack: attack)
         fields
     end
 
     def n_like_check(board_figures, x_params, y_params, x_index, y_index, color)
-        fields = [[], []]
+        fields, attack = [[], []], false
         [[-2, -1], [-2, 1], [2, -1], [2, 1], [-1, -2], [-1, 2], [1, -2], [1, 2]].each do |turn|
             x_change, y_change = turn[0], turn[1]
             x_new, y_new = x_index + x_change, y_index + y_change
             if x_new >= 0 && x_new <= 7 && y_new >= 0 && y_new <= 7
                 cell = "#{x_params[x_new]}#{y_params[y_new]}"
                 field_figure = board_figures.find_all{ |elem| elem[0] == cell }
-                field_figure.empty? || field_figure[0][1] != color ? fields[0].push(cell) : fields[1].push(cell)
+                if field_figure.empty?
+                    fields[0].push(cell)
+                else
+                    if field_figure[0][1] != color
+                        fields[0].push(cell)
+                        attack = true if self.board.cells.find_by(name: cell).figure.type == 'k'
+                    else
+                        fields[1].push(cell)
+                    end
+                end
             end
         end
+        self.update(attack: attack)
         fields
     end
 
     def b_like_check(board_figures, x_params, y_params, x_index, y_index, color)
-        fields = [[], []]
+        fields, attack = [[], []], false
         [[-1, -1], [-1, 1], [1, -1], [1, 1]].each do |turn|
             x_change, y_change = turn[0], turn[1]
             x_new, y_new = x_index + x_change, y_index + y_change
@@ -127,13 +153,19 @@ class Figure < ActiveRecord::Base
                 if field_figure.empty?
                     fields[0].push(cell)
                 else
-                    field_figure[0][1] != color ? fields[0].push(cell) : fields[1].push(cell)
+                    if field_figure[0][1] != color
+                        fields[0].push(cell)
+                        attack = true if self.board.cells.find_by(name: cell).figure.type == 'k'
+                    else
+                        fields[1].push(cell)
+                    end
                     break
                 end
                 x_new += x_change
                 y_new += y_change
             end
         end
+        self.update(attack: attack) unless self.type == 'q' && self.attack
         fields
     end
 
@@ -152,7 +184,7 @@ class Figure < ActiveRecord::Base
     end
 
     def p_like_check(board_figures, x_params, y_params, x_index, y_index, color)
-        fields = [[], []]
+        fields, attack = [[], []], false
         y_change = self.color == 'white' ? 1 : -1
         y_new = y_index + y_change
         [-1, 1].each do |x_change|
@@ -160,9 +192,19 @@ class Figure < ActiveRecord::Base
             if x_new >= 0 && x_new <= 7
                 cell = "#{x_params[x_new]}#{y_params[y_new]}"
                 field_figure = board_figures.find_all{ |elem| elem[0] == cell }
-                field_figure.empty? || field_figure[0][1] != color ? fields[0].push(cell) : fields[1].push(cell)
+                if field_figure.empty?
+                    fields[0].push(cell)
+                else
+                    if field_figure[0][1] != color
+                        fields[0].push(cell)
+                        attack = true if self.board.cells.find_by(name: cell).figure.type == 'k'
+                    else
+                        fields[1].push(cell)
+                    end
+                end
             end
         end
+        self.update(attack: attack)
         fields
     end
 

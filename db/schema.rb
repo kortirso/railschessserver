@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160307135354) do
+ActiveRecord::Schema.define(version: 20160317061934) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -51,12 +51,13 @@ ActiveRecord::Schema.define(version: 20160307135354) do
     t.string   "type"
     t.string   "color"
     t.integer  "cell_id"
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
     t.integer  "board_id"
     t.string   "image"
-    t.string   "beaten_fields",    default: [],              array: true
-    t.string   "protected_fields", default: [],              array: true
+    t.string   "beaten_fields",    default: [],                 array: true
+    t.string   "protected_fields", default: [],                 array: true
+    t.boolean  "attack",           default: false
   end
 
   add_index "figures", ["board_id"], name: "index_figures_on_board_id", using: :btree
@@ -83,6 +84,7 @@ ActiveRecord::Schema.define(version: 20160307135354) do
     t.integer  "user_rating"
     t.integer  "opponent_rating"
     t.string   "guest"
+    t.string   "possibles",         default: [],                array: true
   end
 
   add_index "games", ["challenge_id"], name: "index_games_on_challenge_id", using: :btree
