@@ -257,7 +257,7 @@ class Game < ActiveRecord::Base
         result = []
         if self.possibles == []
             figures = self.figures.on_the_board.blacks.to_ary
-            figures.each { |figure| result.push(figure) unless figure.beaten_fields == []}
+            figures.each { |figure| result.push(figure) unless figure.beaten_fields == [] }
             turn_error, rand_figure, rand_turn = 'ERROR', nil, nil
             while turn_error.is_a? String
                 rand_figure = result[rand(result.size - 1)]
@@ -266,7 +266,7 @@ class Game < ActiveRecord::Base
                 fields.size.times do
                     rand_turn = fields[rand(fields.size - 1)]
                     turn_error = self.check_turn(rand_figure.cell.name, rand_turn)
-                    break if turn_error.is_a? String
+                    break unless turn_error.is_a? String
                 end
             end
             from, to = rand_figure.cell.name, rand_turn
