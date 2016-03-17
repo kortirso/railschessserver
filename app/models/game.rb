@@ -170,7 +170,7 @@ class Game < ActiveRecord::Base
 
         # удаление бесполезного выхода короля из под шаха
         fields = king.beaten_fields
-        attackers = self.figures.other_color(color).attackers
+        attackers = self.figures.on_the_board.other_color(color).attackers
         attackers.each do |f|
             f_cell = f.cell
             x_params, y_params = %w(a b c d e f g h), %w(1 2 3 4 5 6 7 8)
@@ -229,20 +229,26 @@ class Game < ActiveRecord::Base
 
     def ai_turn
         result = []
-        figures = self.figures.on_the_board.blacks.to_ary
-        figures.each { |figure| result.push(figure) unless figure.beaten_fields == []}
-        turn_error, rand_figure, rand_turn = 'ERROR', nil, nil
-        while turn_error.is_a? String
-            rand_figure = result[rand(result.size - 1)]
-            fields = rand_figure.beaten_fields
-            fields.push("#{rand_figure.cell.name[0]}#{rand_figure.cell.name[1].to_i - 1}", "#{rand_figure.cell.name[0]}#{rand_figure.cell.name[1].to_i - 2}", "#{rand_figure.cell.name[0]}#{rand_figure.cell.name[1].to_i - 2}") if rand_figure.type == 'p'
-            fields.size.times do
-                rand_turn = fields[rand(fields.size - 1)]
-                turn_error = self.check_turn(rand_figure.cell.name, rand_turn)
-                break if turn_error.is_a? String
+        if self.possibles == []
+            figures = self.figures.on_the_board.blacks.to_ary
+            figures.each { |figure| result.push(figure) unless figure.beaten_fields == []}
+            turn_error, rand_figure, rand_turn = 'ERROR', nil, nil
+            while turn_error.is_a? String
+                rand_figure = result[rand(result.size - 1)]
+                fields = rand_figure.beaten_fields
+                fields.push("#{rand_figure.cell.name[0]}#{rand_figure.cell.name[1].to_i - 1}", "#{rand_figure.cell.name[0]}#{rand_figure.cell.name[1].to_i - 2}", "#{rand_figure.cell.name[0]}#{rand_figure.cell.name[1].to_i - 2}") if rand_figure.type == 'p'
+                fields.size.times do
+                    rand_turn = fields[rand(fields.size - 1)]
+                    turn_error = self.check_turn(rand_figure.cell.name, rand_turn)
+                    break if turn_error.is_a? String
+                end
             end
+            from, to = rand_figure.cell.name, rand_turn
+        else
+            turn = self.possibles[rand(self.possibles.size - 1)]
+            from, to = turn[0], turn[1]
         end
-        Turn.build(self.id, rand_figure.cell.name, rand_turn)
+        Turn.build(self.id, from, to)
     end
 
     private
