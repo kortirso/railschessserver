@@ -227,10 +227,27 @@ class Game < ActiveRecord::Base
         self.update(possibles: possibles)
     end
 
+    def offer_draw(player)
+        self.update(offer_draw_by: player)
+        PrivatePub.publish_to "/games/#{self.id}", game: self.to_json
+    end
+
+    def draw_result(player, game_result)
+        if self.offer_draw_by != player && (self.user_id == player || self.opponent_id == player)
+            if game_result == 1
+                self.complete(0.5)
+            else
+                self.update(offer_draw_by: nil)
+                PrivatePub.publish_to "/games/#{self.id}", game: self.to_json
+            end
+        end
+    end
+
     def complete(game_result)
         case game_result
-            when 1 then self.update(white_checkmat: 'mat', game_result: 1, game_result_text: 'Победа белых')
-            when 0 then self.update(black_checkmat: 'mat', game_result: 0, game_result_text: 'Победа чёрных')
+            when 1 then self.update(white_checkmat: 'mat', game_result: 1)
+            when 0 then self.update(black_checkmat: 'mat', game_result: 0)
+            when 0.5 then self.update(game_result: 0.5)
         end
         if self.guest.nil?
             user, opponent = self.user, self.opponent

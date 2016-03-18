@@ -29,6 +29,7 @@ class Turn < ActiveRecord::Base
         board.check_beaten_fields
         PrivatePub.publish_to "/games/#{game.id}/turns", turn: new_turn.to_json
         game.checkmat_check
+        game.draw_result(game.offer_draw_by == game.user_id ? game.opponent_id : game.user_id, 0) unless game.offer_draw_by.nil?
         new_turn
     end
 end

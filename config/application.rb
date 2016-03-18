@@ -6,6 +6,7 @@ Bundler.require(*Rails.groups)
 
 module Rcs
     class Application < Rails::Application
+        config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]
         I18n.available_locales = [:en, :ru]
         config.i18n.default_locale = :en
         config.active_record.raise_in_transactional_callbacks = true

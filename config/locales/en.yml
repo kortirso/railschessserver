@@ -27,6 +27,8 @@ en:
     li_5_2: 'When check there is only a few possible turns to prevent mate.'
     li_5_3: 'AI prevent mate.'
     li_5_4: 'Fix bugs.'
+    li_6_0: '18 march 2016, version 0.5.1'
+    li_6_1: 'Games can over with draws.'
   games:
     h1: 'Game rooms'
     current: 'Your current games'
@@ -44,6 +46,11 @@ en:
       play: 'Play'
   game:
     surrender: 'Surrend'
+    offer_draw: 'Offer draw'
+    you_offer_draw: 'You offered draw'
+    you_get_draw: 'You get draw offer'
+    accept: 'Accept'
+    decline: 'Decline'
     id: 'Chess game'
     whites: 'White player'
     blacks: 'Black player'
@@ -55,6 +62,9 @@ en:
     end: 'Game finished'
     result: 'Result'
     notation: 'Notation of the game'
+    white_wins: 'White wins'
+    black_wins: 'Black wins'
+    draw: 'Draw'
   menu:
     main: 'Main page'
     games: 'Games'

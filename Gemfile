@@ -28,6 +28,7 @@ gem 'omniauth-vkontakte'
 gem 'rails_admin'
 gem 'http_accept_language'
 gem 'route_translator'
+gem 'i18n-js'
 
 group :development, :test do
     gem 'byebug'
