@@ -98,7 +98,7 @@ $(function() {
             $('#actions').remove();
         }
         else if(game.offer_draw_by != null) {
-            $('#actions .actions_block').hide();
+            $('#actions .actions_block').remove();
             if(userID == game.offer_draw_by) {
                 $('#actions').append('<div class="draw_block"><p>' + I18n.t("js.game.you_offer_draw") + '</p></div>');
             }
@@ -108,7 +108,7 @@ $(function() {
         }
         else if(game.offer_draw_by == null) {
             $('#actions .draw_block').remove();
-            $('#actions .actions_block').show();
+            $('#actions').append('<div class="actions_block"><a class="btn btn-default" data-remote="true" href="/ru/chess/surrender/' + gameID + '">' + I18n.t("js.game.surrender") + '</a><a class="btn btn-default" data-remote="true" href="/ru/chess/draw/' + gameID + '">' + I18n.t("js.game.offer_draw") + '</a></div>');
         }
     });
 
