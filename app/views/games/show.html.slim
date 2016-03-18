@@ -1,7 +1,7 @@
 .row
     .col-xs-12.col-md-6
         #all_board
-            #board data={game: "#{@game.id}"}
+            #board data={game: "#{@game.id}", user: "#{current_user.id}"}
                 - (1..8).reverse_each do |r|
                     - block = r.odd? ? [:white, :black] : [:black, :white]
                     .chess_row
@@ -13,10 +13,21 @@
                     .square.black.square-black data={square: 'black'}
                     .square.white.square-white data={square: 'white'}
                     .clearfix
-        #actions
-            - if @game.game_result.nil? && current_user && (current_user.id == @game.user_id || current_user.id == @game.opponent_id)
-                = link_to t('game.surrender'), chess_surrender_path(@game.id), class: 'btn btn-default', remote: true
-                /= link_to 'Предложить ничью', '', class: 'btn btn-default'
+        - if @game.game_result.nil? && current_user && (current_user.id == @game.user_id || current_user.id == @game.opponent_id)
+            #actions
+                - if @game.offer_draw_by.nil?
+                    .actions_block
+                        = link_to t('game.surrender'), chess_surrender_path(@game.id), class: 'btn btn-default', remote: true
+                        = link_to t('game.offer_draw'), chess_draw_path(@game.id), class: 'btn btn-default', remote: true
+                - else
+                    .draw_block
+                        - if @game.offer_draw_by == current_user.id
+                            p= t('game.you_offer_draw')
+                        - else
+                            p= t('game.you_get_draw')
+                            p
+                                = link_to t('game.accept'), chess_draw_result_path(@game.id, 1), class: 'btn btn-default', remote: true
+                                = link_to t('game.decline'), chess_draw_result_path(@game.id, 0), class: 'btn btn-default', remote: true
     .col-xs-12.col-md-4
         .row#data.data-block
             p= t('game.id')

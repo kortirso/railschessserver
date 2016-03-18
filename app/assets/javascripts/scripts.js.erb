@@ -79,10 +79,26 @@ $(function() {
 
     PrivatePub.subscribe("/games/" + gameID, function(data, channel) {
         game = $.parseJSON(data.game);
-        $('#result').html('');
-        $('#result').append('<p>Партия завершилась</p>');
-        $('#result').append('Результат - ' + game.game_result_text);
-        $('#actions').remove();
+        userID = $('#board').data("user");
+        if(game.game_result != null) {
+            $('#result').html('');
+            $('#result').append('<p><%= I18n.t("game.end") %></p>');
+            $('#result').append('<%= I18n.t("game.result") %> - ' + game.game_result_text);
+            $('#actions').remove();
+        }
+        else if(game.offer_draw_by != null) {
+            $('#actions .actions_block').hide();
+            if(userID == game.offer_draw_by) {
+                $('#actions').append('<div class="draw_block"><p><%= I18n.t("game.you_offer_draw") %></p></div>');
+            }
+            else {
+                $('#actions').append('<div class="draw_block"><p><%= I18n.t("game.you_get_draw") %></p><p><a class="btn btn-default" data-remote="true" href="/chess/result/' + gameID + '/1"><%= I18n.t("game.accept") %></a><a class="btn btn-default" data-remote="true" href="/chess/result/' + gameID + '/0"><%= I18n.t("game.decline") %></a></p></div>');
+            }
+        }
+        else if(game.offer_draw_by == null) {
+            $('#actions .draw_block').remove();
+            $('#actions .actions_block').show();
+        }
     });
 
     PrivatePub.subscribe("/users/challenges", function(data, channel) {

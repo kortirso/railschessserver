@@ -44,6 +44,11 @@ en:
       play: 'Play'
   game:
     surrender: 'Surrend'
+    offer_draw: 'Offer draw'
+    you_offer_draw: 'You offered draw'
+    you_get_draw: 'You get draw offer'
+    accept: 'Accept'
+    decline: 'Decline'
     id: 'Chess game'
     whites: 'White player'
     blacks: 'Black player'
