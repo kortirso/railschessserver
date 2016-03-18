@@ -1,7 +1,7 @@
 .row
     .col-xs-12.col-md-6
         #all_board
-            #board data={game: "#{@game.id}", user: "#{current_user.id}"}
+            #board data={game: "#{@game.id}", user: "#{current_user.id if current_user}"}
                 - (1..8).reverse_each do |r|
                     - block = r.odd? ? [:white, :black] : [:black, :white]
                     .chess_row

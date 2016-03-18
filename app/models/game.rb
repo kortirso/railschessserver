@@ -245,9 +245,9 @@ class Game < ActiveRecord::Base
 
     def complete(game_result)
         case game_result
-            when 1 then self.update(white_checkmat: 'mat', game_result: 1, game_result_text: 'Победа белых')
-            when 0 then self.update(black_checkmat: 'mat', game_result: 0, game_result_text: 'Победа чёрных')
-            when 0.5 then self.update(game_result: 0.5, game_result_text: 'Ничья')
+            when 1 then self.update(white_checkmat: 'mat', game_result: 1)
+            when 0 then self.update(black_checkmat: 'mat', game_result: 0)
+            when 0.5 then self.update(game_result: 0.5)
         end
         if self.guest.nil?
             user, opponent = self.user, self.opponent
