@@ -27,6 +27,8 @@ en:
     li_5_2: 'When check there is only a few possible turns to prevent mate.'
     li_5_3: 'AI prevent mate.'
     li_5_4: 'Fix bugs.'
+    li_6_0: '18 march 2016, version 0.5.1'
+    li_6_1: 'Games can over with draws.'
   games:
     h1: 'Game rooms'
     current: 'Your current games'
