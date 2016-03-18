@@ -83,7 +83,18 @@ $(function() {
         if(game.game_result != null) {
             $('#result').html('');
             $('#result').append('<p>' + I18n.t("game.end") + '</p>');
-            $('#result').append(I18n.t("game.result") + ' - ' + game.game_result_text);
+            switch (game.game_result) {
+                case 1:
+                    res = I18n.t("game.white_wins");
+                    break;
+                case 0:
+                    res = I18n.t("game.black_wins");
+                    break;
+                case 0.5:
+                    res = I18n.t("game.draw");
+                    break;
+            }
+            $('#result').append(I18n.t("game.result") + ' - ' + res);
             $('#actions').remove();
         }
         else if(game.offer_draw_by != null) {

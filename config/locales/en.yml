@@ -60,6 +60,9 @@ en:
     end: 'Game finished'
     result: 'Result'
     notation: 'Notation of the game'
+    white_wins: 'White wins'
+    black_wins: 'Black wins'
+    draw: 'Draw'
   menu:
     main: 'Main page'
     games: 'Games'

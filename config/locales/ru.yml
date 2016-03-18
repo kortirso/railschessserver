@@ -60,6 +60,9 @@ ru:
     end: 'Партия завершилась'
     result: 'Результат'
     notation: 'Нотация партии'
+    white_wins: 'Победа белых'
+    black_wins: 'Победа чёрных'
+    draw: 'Ничья'
   menu:
     main: 'Главная'
     games: 'Игры'

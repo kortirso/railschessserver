@@ -60,7 +60,10 @@
                     p#notice
             - else
                 p= t('game.end')
-                p= "#{t('game.result')} - #{@game.game_result_text}"
+                - res = t('game.white_wins') if @game.game_result == 1
+                - res = t('game.black_wins') if @game.game_result == 0
+                - res = t('game.draw') if @game.game_result == 0.5
+                p= "#{t('game.result')} - #{res}"
         .row#turns.data-block
             p= t('game.notation')
             .turn.hidden data={turn: "0"}
