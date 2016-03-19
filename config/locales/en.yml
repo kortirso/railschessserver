@@ -79,3 +79,6 @@ en:
     confirm: 'Password confirm'
     email: 'Email'
     minimal: 'Minimal password length - 8 symbols'
+    socials: 'Login through socials'
+    vk: 'Login through Vkontakte'
+    fb: 'Login through Facebook'
