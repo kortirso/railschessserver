@@ -12,4 +12,14 @@ RSpec.describe Challenge, type: :model do
 
         expect(challenge).to be_valid
     end
+
+    describe 'Methods' do
+        context '.build' do
+
+        end
+
+        context '.del' do
+
+        end
+    end
 end

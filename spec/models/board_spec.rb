@@ -103,5 +103,9 @@ RSpec.describe Board, type: :model do
                 end
             end
         end
+
+        context '.check_beaten_fields' do
+
+        end
     end
 end
