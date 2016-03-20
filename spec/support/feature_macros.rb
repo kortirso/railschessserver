@@ -5,7 +5,7 @@ module FeatureMacros
             fill_in 'user_username', with: user.username
             fill_in 'user_password', with: user.password
 
-            click_on 'Вход'
+            click_on I18n.t('auth.login')
         end
     end
 end
