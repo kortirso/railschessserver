@@ -5,8 +5,7 @@ class Chess::TurnController < ApplicationController
     def index
         unless @turn_error.is_a? String
             @turn_error.nil? ? Turn.build(@game.id, @from, @to) : Turn.build(@game.id, @from, @to, @turn_error[0], @turn_error[1])
-            @game.reload
-            @game.ai_turn if @game.opponent == User.find_by(username: 'Коала Майк') && @game.game_result.nil?
+            render nothing: true
         end
     end
 

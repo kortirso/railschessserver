@@ -26,7 +26,13 @@ $(function() {
             $('.square-' + turn.to + ' img').remove();
             $('.square-' + turn.to).append(newFigure);
         }
-        $('#next_turn').html(turn.next_turn);
+        if(turn.next_turn == 'white') {
+            next_turn = I18n.t("js.game.white_turn")
+        }
+        else {
+            next_turn = I18n.t("js.game.black_turn")
+        }
+        $('#next_turn').html(next_turn);
         $('#notice').html('');
         $('#turn_from').val('');
         $('#turn_to').val('');

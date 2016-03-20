@@ -2,13 +2,12 @@ class Game < ActiveRecord::Base
     belongs_to :user
     belongs_to :opponent, class_name: 'User', foreign_key: 'opponent_id'
     belongs_to :challenge
+    belongs_to :ai
 
     has_one :board, dependent: :destroy
     has_many :figures, through: :board
     has_many :cells, through: :board
     has_many :turns, dependent: :destroy
-
-    validates :opponent_id, presence: true
 
     scope :accessable, -> { where(access: true) }
     scope :current, -> { where(game_result: nil) }
@@ -19,7 +18,7 @@ class Game < ActiveRecord::Base
 
     def self.build(challenge_id, user = nil)
         if challenge_id.nil?
-            create(opponent_id: User.find_by(username: 'Коала Майк').id, access: false, guest: user)
+            create(access: false, guest: user, ai: Ai.find_by(elo: 1))
         else
             challenge = Challenge.find(challenge_id)
             color = case challenge.color
@@ -140,6 +139,15 @@ class Game < ActiveRecord::Base
             result = ['0', "#{figure.color}"]
         end
         result
+    end
+
+    def finish_turn
+        self.update(white_turn: (self.white_turn ? false : true))
+        self.board.check_beaten_fields
+        PrivatePub.publish_to "/games/#{self.id}/turns", turn: self.turns.last.to_json
+        self.checkmat_check
+        self.draw_result(self.offer_draw_by == self.user_id ? self.opponent_id : self.user_id, 0) unless self.offer_draw_by.nil?
+        self.ai.turn(self.id) if !self.ai.nil? && self.game_result.nil? && !self.white_turn
     end
 
     def checkmat_check
@@ -272,34 +280,12 @@ class Game < ActiveRecord::Base
         PrivatePub.publish_to "/games/#{self.id}", game: self.to_json
     end
 
-    def ai_turn
-        result = []
-        if self.possibles == []
-            figures = self.figures.on_the_board.blacks.to_ary
-            figures.each { |figure| result.push(figure) unless figure.beaten_fields == [] }
-            turn_error, rand_figure, rand_turn = 'ERROR', nil, nil
-            while turn_error.is_a? String
-                rand_figure = result[rand(result.size - 1)]
-                fields = rand_figure.beaten_fields
-                fields.push("#{rand_figure.cell.name[0]}#{rand_figure.cell.name[1].to_i - 1}", "#{rand_figure.cell.name[0]}#{rand_figure.cell.name[1].to_i - 2}", "#{rand_figure.cell.name[0]}#{rand_figure.cell.name[1].to_i - 2}") if rand_figure.type == 'p'
-                fields.size.times do
-                    rand_turn = fields[rand(fields.size - 1)]
-                    turn_error = self.check_turn(rand_figure.cell.name, rand_turn)
-                    break unless turn_error.is_a? String
-                end
-            end
-            from, to = rand_figure.cell.name, rand_turn
-        else
-            turn = self.possibles[rand(self.possibles.size - 1)]
-            from, to = turn[0], turn[1]
-        end
-        Turn.build(self.id, from, to)
-    end
-
     private
     def set_ratings
-        self.user_rating = self.user.elo unless self.user.nil?
-        self.opponent_rating = self.opponent.elo
+        unless self.user.nil?
+            self.user_rating = self.user.elo
+            self.opponent_rating = self.opponent.elo
+        end
     end
 
     def board_build

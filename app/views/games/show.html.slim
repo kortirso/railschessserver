@@ -33,19 +33,18 @@
             p= t('game.id')
             p= "№#{@game.id}"
         .row.data-block
-            p
-                - if @game.guest.nil?
-                    = "#{t('game.whites')} - #{@game.user.username}"
-                - else
-                    = "#{t('game.whites')} - #{t('game.guest')}"
-            p
-                = "#{t('game.blacks')} - #{@game.opponent.username}"
+            - if @game.guest.nil?
+                p= "#{t('game.whites')} - #{@game.user.username}"
+                p= "#{t('game.blacks')} - #{@game.opponent.username}"
+            - else
+                p= "#{t('game.whites')} - #{t('game.guest')}"
+                p= "#{t('game.blacks')} - #{t('game.mike')}"
         .row#result.data-block
             - if @game.game_result.nil?
-                - if @game.turns.last.nil?
-                    p#next_turn Ход белых
+                - if @game.white_turn
+                    p#next_turn= t('game.white_turn')
                 - else
-                    p#next_turn= @game.turns.last.next_turn
+                    p#next_turn= t('game.black_turn')
                 - if current_user && (current_user.id == @game.user_id || current_user.id == @game.opponent_id) || current_user.nil? && !@game.guest.nil?
                     = simple_form_for(Turn.new, as: :turn, url: chess_make_turn_path, remote: true) do |f|
                         = f.input :game, as: :hidden, input_html: {value: "#{@game.id}"}
