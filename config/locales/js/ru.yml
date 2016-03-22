@@ -1,5 +1,8 @@
 ru:
   js:
+    games:
+      game: 'Партия'
+      view: 'Посмотреть'
     game:
       surrender: 'Сдаться'
       offer_draw: 'Предложить ничью'

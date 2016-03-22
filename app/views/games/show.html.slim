@@ -32,7 +32,6 @@
         .row#data.data-block
             p= t('game.id')
             p= "№#{@game.id}"
-        .row.data-block
             - if @game.guest.nil?
                 p= "#{t('game.whites')} - #{@game.user.username}"
                 p= "#{t('game.blacks')} - #{@game.opponent.username}"

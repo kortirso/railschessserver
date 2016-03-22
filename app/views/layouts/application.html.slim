@@ -7,6 +7,8 @@ html
         = javascript_include_tag 'application'
         = csrf_meta_tags
     body
+        .inside
+            .shadow
         = render 'layouts/js_locales_info'
         = render 'shared/login_modal'
         = render 'shared/sign_up_modal'

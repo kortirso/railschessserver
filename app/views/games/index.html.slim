@@ -29,7 +29,6 @@ h1= t('games.h1')
                     .panel.panel-default
                         .panel-heading= t('games.challenges.current')
                         .panel-body
-                            #r
                             table.table.table-striped
                                 - @challenges.each do |challenge|
                                     tr class="challenge_#{challenge.id}"

@@ -149,7 +149,7 @@ $(function() {
 
     PrivatePub.subscribe("/users/" + userID + "/games", function(data, channel) {
         game = $.parseJSON(data.game);
-        $('#current_games h2').after('<div class="col-xs-6"><div class="game_block"><p>Партия №' + game.id + '</p><p>' + game.user.username + '<span class="rating_block">' + game.user.elo + '</span></p><p>' + game.opponent.username + '<span class="rating_block">' + game.opponent.elo + '</span></p><p><a class="btn btn-sm btn-default" href="/games/' + game.id + '">Посмотреть</a></p><div></div>');
+        $('#current_games h2').after('<div class="col-xs-6"><div class="game_block"><p>' + I18n.t("js.games.game") + ' №' + game.id + '</p><p>' + game.user.username + '<span class="rating_block">' + game.user.elo + '</span></p><p>' + game.opponent.username + '<span class="rating_block">' + game.opponent.elo + '</span></p><p><a class="btn btn-sm btn-default" href="/games/' + game.id + '">' + I18n.t("js.games.view") + '</a></p><div></div>');
     });
 
     $('#board').on('click', '.square', function(e) {

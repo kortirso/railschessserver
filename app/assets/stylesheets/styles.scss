@@ -7,6 +7,19 @@
 
 html {
     overflow-y: scroll;
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+    &::-webkit-scrollbar-track {
+        -webkit-border-radius: 6px;
+        border-radius: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+        -webkit-border-radius: 6px;
+        border-radius: 6px;
+        background: rgba(217,217,217,0.8);
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    }
 }
 
 html, body {
@@ -18,82 +31,84 @@ body {
     padding-top: 70px;
     position: relative;
     font-size: 20px;
-
     p {
         font-size: 16px;
     }
-
     .btn, .form-control {
         border-radius: 0;
     }
-
     h1 {
         margin: 0;
     }
-
     h2 {
         font-size: 20px;
     }
-
     .navbar-collapse {
         border-top: none;
     }
-
     .navbar {
         padding: 10px 0 10px 10px;
         margin: 0;
         width: 100%;
         border-bottom: 1px solid #000;
-
         .navbar-brand {
             padding: 0;
-
             @media screen and (max-width: 750px) {
                 width: 190px;
                 padding-top: 3px;
             }
         }
-
         .navbar-nav li {
             text-align: left;
             margin: 0 10px;
             border-radius: 5px;
-
             a {
                 font-weight: 500;
             }
-
             @media screen and (max-width: 750px) {
                 width: 150px;
             }
         }
-
         .locale_box {
             padding: 15px 0;
         }
-
         .auth_box {
             position: absolute;
             right: 20px;
             top: 20px;
             color: #AAA;
-
             span {
                 margin-right: 20px;
             }
-
             @media screen and (max-width: 750px) {
                 right: 70px;
             }
         }
     }
-
     .navbar-inverse .navbar-nav > li > a {
         color: #AAA;
     }
-
     .navbar-inverse .navbar-nav > li:hover a {
         color: #FFF;
+    }
+    .inside {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: -2;
+        background-image: image-url('background.jpg');
+        background-size: cover;
+        background-position: center;
+        .shadow {
+            position: fixed;
+            background: rgba(0,0,0,0.1);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
     }
 }
 
@@ -103,7 +118,6 @@ body {
     height: 460px;
     background-image: image-url('board.png');
     box-shadow: 0 0 10px 0 #999;
-
     #board {
         position: relative;
         top: 30px;
@@ -111,7 +125,6 @@ body {
         width: 400px;
         box-sizing: content-box;
         border: 1px solid #000;
-
         .square {
             float: left;
             position: relative;
@@ -124,7 +137,6 @@ body {
                 background: #b58863;
             }
         }
-
         .reserve_row {
             display: none;
         }
@@ -146,7 +158,9 @@ body {
 }
 
 .chess_block {
-    padding: 20px 0;
+    margin: 30px 0;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.75);
     #last_public_games, #current_games, #new_game, #challenges {
         .game_block {
             padding: 10px 20px;
@@ -198,34 +212,12 @@ body {
     margin-top: 10px;
 }
 
-#games_list {
-    height: 250px;
-    overflow-y: scroll;
-
-    &::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    &::-webkit-scrollbar-track {
-        -webkit-border-radius: 6px;
-        border-radius: 6px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        -webkit-border-radius: 6px;
-        border-radius: 6px;
-        background: rgba(217,217,217,0.8);
-        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    }
-}
-
 .data-block {
     margin: 0 0 20px;
     padding: 10px 20px;
     background: #EEE;
     border-radius: 5px;
     box-shadow: 0 0 10px 0 #999;
-
     p {
         margin: 5px 0;
     }

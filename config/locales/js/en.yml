@@ -1,5 +1,8 @@
 en:
   js:
+    games:
+      game: 'Game'
+      view: 'View'
     game:
       surrender: 'Surrend'
       offer_draw: 'Offer draw'
