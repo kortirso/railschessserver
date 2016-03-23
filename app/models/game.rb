@@ -131,10 +131,10 @@ class Game < ActiveRecord::Base
         end
         return result unless result.nil?
         if !p_pass.nil?
-            result = ["#{p_pass.cell.x_param}#{p_pass.cell.y_param}", '0']
+            result = [p_pass.cell.name, '0']
         elsif !roque.nil?
             another = roque.cell.x_param == 'a' ? 'd' : 'f'
-            result = ["#{roque.cell.x_param}#{roque.cell.y_param}", "#{another}#{roque.cell.y_param}"]
+            result = [roque.cell.name, "#{another}#{roque.cell.y_param}"]
         elsif figure.type == 'p' && (to[1] == '1' || to[1] == '8')
             result = ['0', "#{figure.color}"]
         end

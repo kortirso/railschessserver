@@ -1,6 +1,6 @@
 $(function() {
     <% @figures.on_the_board.each do |figure| %>
-        $('.square-<%= "#{figure.cell.x_param}#{figure.cell.y_param}" %>').append('<%= image_tag figure.image, data: { figure: "#{figure.color[0]}#{figure.type}" } %>');
+        $('.square-<%= figure.cell.name %>').append('<%= image_tag figure.image, data: { figure: "#{figure.color[0]}#{figure.type}" } %>');
         <% if figure.type == 'q' %>
             $('.square-<%= figure.color %>').append('<%= image_tag figure.image, data: { figure: "#{figure.color[0]}#{figure.type}" } %>');
         <% end %>
