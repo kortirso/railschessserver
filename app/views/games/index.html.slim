@@ -31,7 +31,7 @@ h1= t('games.h1')
                         .panel-body
                             table.table.table-striped
                                 - @challenges.each do |challenge|
-                                    tr class="challenge_#{challenge.id}"
+                                    tr class="challenge_#{challenge.id} challenge"
                                         td= challenge.user.username
                                         td
                                             span.rating_block= challenge.user.elo

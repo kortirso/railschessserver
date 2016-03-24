@@ -12,7 +12,7 @@
                     .col-md-7= f.input :password_confirmation, required: true, label: t('auth.confirm')
                     .clearfix
                     p= t('auth.minimal')
-                    p= f.button :submit, t('auth.signup'), class: 'btn btn-small btn-success'
+                    p= f.button :submit, t('auth.signup'), class: 'btn btn-small btn-success', id: 'signup_button'
                 .modal-footer
                     p
                         = t('auth.socials')

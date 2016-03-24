@@ -15,5 +15,9 @@ FactoryGirl.define do
         trait :black_turn do
             white_turn false
         end
+
+        trait :without_access do
+            access false
+        end
     end
 end

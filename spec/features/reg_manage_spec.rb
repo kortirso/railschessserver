@@ -76,11 +76,10 @@ RSpec.feature "Registration management", type: :feature do
     end
 
     describe 'Logged user can' do
-        let(:user) { create(:user) }
+        let!(:user) { create(:user) }
 
         it 'logoff' do
-            login_as(user, scope: :user)
-            visit root_path
+            sign_in(user)
             click_on 'destroy'
 
             expect(page).to have_content I18n.t('auth.signup')

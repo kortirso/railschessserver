@@ -9,7 +9,7 @@
                     .col-md-7= f.input :username, required: true, autofocus: true, label: t('auth.username')
                     .col-md-7= f.input :password, required: true, hint: ("#{@minimum_password_length} characters minimum" if @validatable), label: t('auth.password')
                     .clearfix
-                    p= f.button :submit, t('auth.login'), class: 'btn btn-small btn-success'
+                    p= f.button :submit, t('auth.login'), class: 'btn btn-small btn-success', id: 'login_button'
                 .modal-footer
                     p
                         = t('auth.socials')
