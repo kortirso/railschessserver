@@ -31,8 +31,7 @@ class Board < ActiveRecord::Base
     end
 
     def check_beaten_fields
-        board_figures = []
-        range = [[], [], [], []]
+        board_figures, range = [], [[], [], [], []]
         f = self.figures.on_the_board.includes(:cell)
         f.each { |figure| board_figures.push([figure.cell.name, figure.color]) }
         f.each do |figure|

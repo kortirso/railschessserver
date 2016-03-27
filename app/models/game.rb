@@ -44,7 +44,7 @@ class Game < ActiveRecord::Base
         result = from == to ? 'Должны быть указаны разные ячейки' : nil
         return result unless result.nil?
         errors = 0
-        [from, to].each { |index| errors += 1 if index.size > 2 || %w(a b c d e f g h).index(index[0]).nil? || %w(1 2 3 4 5 6 7 8).index(index[1]).nil? }
+        [from, to].each { |i| errors += 1 if i.size > 2 || !%w(a b c d e f g h).include?(i[0]) || !%w(1 2 3 4 5 6 7 8).include?(i[1]) }
         result = errors > 0 ? 'Указана неправильная ячейка' : nil
     end
 
@@ -61,21 +61,14 @@ class Game < ActiveRecord::Base
         figure = cells_list.find_by(name: from).figure
         finish_cell = cells_list.find_by(name: to).figure
         x_params, y_params = %w(a b c d e f g h), %w(1 2 3 4 5 6 7 8)
-        x_change = x_params.index(to[0]) - x_params.index(from[0])
-        y_change = y_params.index(to[1]) - y_params.index(from[1])
+        x_change, y_change = x_params.index(to[0]) - x_params.index(from[0]), y_params.index(to[1]) - y_params.index(from[1])
         p_pass, roque, result = nil, nil, nil
         is_check = self.white_turn ? self.black_checkmat : self.white_checkmat
-        if is_check == 'check'
-            result = self.possibles.include?([from, to]) ? nil : 'Ваш король под угрозой'
-        end
+        result = self.possibles.include?([from, to]) ? nil : 'Ваш король под угрозой' if is_check == 'check'
         return result unless result.nil?
         case figure.type
             when 'k'
                 result = figure.beaten_fields.include?(to) ? nil : 'Неправильный ход королем'
-                #if result.nil?
-                    #protectes = figure.color == 'white' ? self.black_protectes : self.white_protectes
-                    #result = protectes.include?(to) ? 'Нельзя атаковать, фигура защищена' : nil
-                #end
                 if !result.nil? && x_change.abs == 2 && y_change == 0
                     if figure.color == 'white'
                         k_place = 'e1'
@@ -177,7 +170,6 @@ class Game < ActiveRecord::Base
         king_cell = king.cell
         fields, threat_cells = king.beaten_fields, []
         attack = self.figures.on_the_board.other_color(color).attackers
-
         # удаление бесполезного выхода короля из под шаха (против ферзя, ладьи и слона)
         attack.where.not(type: 'p').each do |f|
             f_cell = f.cell
@@ -188,10 +180,9 @@ class Game < ActiveRecord::Base
             y_change /= y_change.abs if y_change != 0
             x_new = x_params.index(king_cell.x_param) + x_change
             y_new = y_params.index(king_cell.y_param) + y_change
-            fields.delete("#{x_params[x_new]}#{y_params[y_new]}") if x_new >= 0 && x_new <= 7 && y_new >= 0 && y_new <= 7
+            fields.delete("#{x_params[x_new]}#{y_params[y_new]}") if (0..7).include?(x_new) && (0..7).include?(y_new)
         end
         king.update(beaten_fields: fields)
-
         possibles = []
         fields.each { |f| possibles.push([king_cell.name, f]) }
         if attack.count == 1
@@ -217,7 +208,7 @@ class Game < ActiveRecord::Base
                     threat_cells.each { |threat| possibles.push([ally.cell.name, threat]) if ally.beaten_fields.include?(threat) }
                 else
                     change = color == 'white' ? 1 : -1
-                    double = ally.cell.y_param == '7' || ally.cell.y_param == '2' ? 2 : 1
+                    double = (ally.cell.y_param == '7' && ally.color == 'black') || (ally.cell.y_param == '2' && ally.color == 'white') ? 2 : 1
                     (1..double).each do |i|
                         cell_new = "#{ally.cell.x_param}#{ally.cell.y_param.to_i + change * i}"
                         if self.cells.find_by(name: cell_new).figure.nil?
@@ -229,9 +220,7 @@ class Game < ActiveRecord::Base
                 end
             end
         end
-        if possibles == []
-            color == 'white' ? self.complete(0) : self.complete(1)
-        end
+        color == 'white' ? self.complete(0) : self.complete(1) if possibles == []
         self.update(possibles: possibles)
     end
 
