@@ -17,6 +17,13 @@ Rails.application.routes.draw do
     namespace :ai do
         get 'start' => 'start#index', as: 'start'
     end
+    namespace :api do
+        namespace :v1 do
+            resource :profiles do
+                get :me, on: :collection
+            end
+        end
+    end
     get 'locale/:name' => 'application#locale', as: 'change_locale'
 
     root to: 'welcome#index'

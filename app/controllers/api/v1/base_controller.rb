@@ -1,5 +1,5 @@
 class Api::V1::BaseController < ApplicationController
-    check_authorization
+    #check_authorization
     before_action :doorkeeper_authorize!
 
     respond_to :json
