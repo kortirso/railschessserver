@@ -7,6 +7,7 @@ describe 'Draw API' do
 
         context 'authorized' do
             let!(:access_token) { create :access_token, resource_owner_id: me.id }
+            
             before { get "/api/v1/draws/#{game.id}", format: :json, access_token: access_token.token }
 
             it 'returns 200 status' do

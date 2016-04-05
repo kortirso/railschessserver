@@ -1,11 +1,10 @@
 describe 'Game API' do
     describe 'GET /index' do
-        let!(:me) { create :user }
-        let!(:game) { create :game, user_id: me.id }
-
         it_behaves_like 'API Authenticable'
 
         context 'authorized' do
+            let!(:me) { create :user }
+            let!(:game) { create :game, user_id: me.id }
             let!(:access_token) { create :access_token, resource_owner_id: me.id }
 
             before { get '/api/v1/games', format: :json, access_token: access_token.token }
@@ -83,13 +82,14 @@ describe 'Game API' do
 
     describe 'POST /create' do
         let!(:me) { create :user }
-        let!(:access_token) { create :access_token, resource_owner_id: me.id }
         let!(:challenge) { create :challenge, user: me }
-        let!(:battle) { create :challenge, opponent: me }
 
         it_behaves_like 'API Authenticable'
 
         context 'authorized' do
+            let!(:access_token) { create :access_token, resource_owner_id: me.id }
+            let!(:battle) { create :challenge, opponent: me }
+
             context 'with valid attributes' do
                 it 'returns 200 status code' do
                     post "/api/v1/games", game: {challenge: battle.id.to_s}, format: :json, access_token: access_token.token

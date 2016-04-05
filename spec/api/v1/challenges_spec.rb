@@ -67,27 +67,26 @@ describe 'Challenge API' do
 
     describe 'DELETE /destroy' do
         let!(:me) { create :user }
-        let!(:access_token) { create :access_token, resource_owner_id: me.id }
         let!(:challenge) { create :challenge, user: me }
+        
         it_behaves_like 'API Authenticable'
 
         context 'authorized' do
+            let!(:access_token) { create :access_token, resource_owner_id: me.id }
             let!(:other_challenge) { create :challenge }
 
-            context 'with valid attributes' do
-                it 'returns 200 status code' do
-                    delete "/api/v1/challenges/#{challenge.id}", format: :json, access_token: access_token.token
+            it 'returns 200 status code' do
+                delete "/api/v1/challenges/#{challenge.id}", format: :json, access_token: access_token.token
 
-                    expect(response).to be_success
-                end
+                expect(response).to be_success
+            end
 
-                it 'remove challenge from the DB' do
-                    expect { delete "/api/v1/challenges/#{challenge.id}", format: :json, access_token: access_token.token }.to change(Challenge, :count).by(-1)
-                end
+            it 'remove challenge from the DB' do
+                expect { delete "/api/v1/challenges/#{challenge.id}", format: :json, access_token: access_token.token }.to change(Challenge, :count).by(-1)
+            end
 
-                it 'not remove other challenge from the DB' do
-                    expect { delete "/api/v1/challenges/#{other_challenge.id}", format: :json, access_token: access_token.token }.to_not change(Challenge, :count)
-                end
+            it 'not remove other challenge from the DB' do
+                expect { delete "/api/v1/challenges/#{other_challenge.id}", format: :json, access_token: access_token.token }.to_not change(Challenge, :count)
             end
         end
 

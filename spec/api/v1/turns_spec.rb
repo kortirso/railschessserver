@@ -1,12 +1,13 @@
 describe 'Turn API' do
     describe 'POST /create' do
         let!(:me) { create :user }
-        let!(:access_token) { create :access_token, resource_owner_id: me.id }
         let!(:game) { create :game, user: me }
 
         it_behaves_like 'API Authenticable'
 
         context 'authorized' do
+            let!(:access_token) { create :access_token, resource_owner_id: me.id }
+
             context 'with valid attributes' do
                 it 'returns 200 status code and correct message' do
                     post "/api/v1/turns", turn: {game: game.id, from: 'e2', to: 'e4'}, format: :json, access_token: access_token.token
