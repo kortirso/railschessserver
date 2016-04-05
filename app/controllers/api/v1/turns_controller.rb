@@ -19,7 +19,7 @@ class Api::V1::TurnsController < Api::V1::BaseController
     end
 
     def checks_before_turn
-        @turn_error = @game.check_users_turn(current_resource_owner.nil? ? nil : current_resource_owner.id)
+        @turn_error = @game.check_users_turn(current_resource_owner.id)
         return unless @turn_error.nil?
         @turn_error = @game.check_cells(@from, @to)
         return unless @turn_error.nil?
