@@ -21,7 +21,9 @@ Rails.application.routes.draw do
         namespace :v1 do
             resource :profiles do
                 get :me, on: :collection
+                get :all, on: :collection
             end
+            resources :challenges, only: [:index, :create, :destroy]
         end
     end
     get 'locale/:name' => 'application#locale', as: 'change_locale'
