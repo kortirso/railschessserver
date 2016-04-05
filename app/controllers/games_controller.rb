@@ -12,8 +12,8 @@ class GamesController < ApplicationController
     end
 
     def create
-        challenge_id = params[:game][:challenge].to_i
-        Game.build(challenge_id, current_user.id) unless Challenge.find(challenge_id).nil?
+        challenge = Challenge.find(params[:game][:challenge].to_i)
+        Game.build(challenge.id, current_user.id) if !challenge.nil? && challenge.user_id != current_user.id && challenge.opponent_id.nil? || challenge.opponent_id == current_user.id
         render nothing: true
     end
 

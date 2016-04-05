@@ -24,6 +24,7 @@ Rails.application.routes.draw do
                 get :all, on: :collection
             end
             resources :challenges, only: [:index, :create, :destroy]
+            resources :games, only: [:index, :show, :create]
         end
     end
     get 'locale/:name' => 'application#locale', as: 'change_locale'
