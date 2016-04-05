@@ -27,6 +27,7 @@ Rails.application.routes.draw do
             resources :games, only: [:index, :show, :create]
             resources :turns, only: :create
             resources :draws, only: [:show, :create]
+            resources :surrender, only: :show
         end
     end
     get 'locale/:name' => 'application#locale', as: 'change_locale'
