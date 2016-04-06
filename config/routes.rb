@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+    use_doorkeeper
     mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
     devise_for :users, :controllers => { omniauth_callbacks: 'omniauth_callbacks' }
 
@@ -15,6 +16,20 @@ Rails.application.routes.draw do
     resources :challenges, only: [:create, :destroy]
     namespace :ai do
         get 'start' => 'start#index', as: 'start'
+    end
+    namespace :api do
+        namespace :v1 do
+            resource :profiles do
+                get :me, on: :collection
+                get :all, on: :collection
+            end
+            resources :challenges, only: [:index, :create, :destroy]
+            resources :games, only: [:index, :show, :create]
+            resources :turns, only: :create
+            resources :draws, only: :show
+            get 'draws/result/:id/:result' => 'draws#result'
+            resources :surrender, only: :show
+        end
     end
     get 'locale/:name' => 'application#locale', as: 'change_locale'
 

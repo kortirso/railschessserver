@@ -16,6 +16,10 @@ class Figure < ActiveRecord::Base
     scope :other_color, -> (color) { where.not(color: color) }
     scope :attackers, -> { where(attack: true) } # атакующие короля
 
+    def cell_name
+        self.cell.name
+    end
+
     def self.build(board)
         inserts, board_id, t = [], board.id, Time.current
         %w(white black).each do |color|

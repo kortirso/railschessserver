@@ -18,6 +18,7 @@ class Challenge < ActiveRecord::Base
             PrivatePub.publish_to "/users/#{user_id}/challenges", challenge: challenge_json
             PrivatePub.publish_to "/users/#{opponent_id}/challenges", challenge: challenge_json
         end
+        challenge
     end
 
     def del(current_user)
