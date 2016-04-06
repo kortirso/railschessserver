@@ -16,6 +16,10 @@ class Game < ActiveRecord::Base
     before_create :set_ratings
     after_create :board_build
 
+    def is_player?(user_id)
+        result = self.user_id == user_id || self.opponent_id == user_id ? true : false
+    end
+
     def self.build(challenge_id, user = nil)
         if challenge_id.nil?
             create(access: false, guest: user, ai: Ai.find_by(elo: 1))

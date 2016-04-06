@@ -26,7 +26,8 @@ Rails.application.routes.draw do
             resources :challenges, only: [:index, :create, :destroy]
             resources :games, only: [:index, :show, :create]
             resources :turns, only: :create
-            resources :draws, only: [:show, :create]
+            resources :draws, only: :show
+            get 'draws/result/:id/:result' => 'draws#result'
             resources :surrender, only: :show
         end
     end
