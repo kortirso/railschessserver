@@ -3,12 +3,12 @@ class Chess::DrawController < ApplicationController
     before_action :find_game
     
     def index
-        @game.offer_draw(current_user.id) !@game.nil? && @game.is_player?(current_user.id)
+        @game.offer_draw(current_user.id) if !@game.nil? && @game.is_player?(current_user.id)
         render nothing: true
     end
 
     def result
-        @game.draw_result(current_user.id, params[:result].to_i) !@game.nil? && @game.is_player?(current_user.id)
+        @game.draw_result(current_user.id, params[:result].to_i) if !@game.nil? && @game.is_player?(current_user.id)
         render nothing: true
     end
 
