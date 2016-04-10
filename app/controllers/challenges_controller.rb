@@ -8,8 +8,8 @@ class ChallengesController < ApplicationController
     end
 
     def destroy
-        challenge = Challenge.find(params[:id])
-        challenge.del(current_user.id) unless challenge.nil?
+        challenge = Challenge.find_by(id: params[:id])
+        challenge.del(current_user.id) if challenge && challenge.is_player?(current_user.id)
         render nothing: true
     end
 end

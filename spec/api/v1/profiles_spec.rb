@@ -45,7 +45,7 @@ describe 'Profile API' do
             end
 
             it 'contains other user data' do
-                expect(response.body).to be_json_eql(users.to_json).at_path('profiles')
+                expect(response.body).to be_json_eql(users.to_json(only: [:elo, :username])).at_path('profiles')
             end
 
             it 'and doesnt contain me data' do

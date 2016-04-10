@@ -48,15 +48,10 @@ describe 'Challenge API' do
             end
 
             context 'with invalid attributes' do
-                it 'returns 200 status code' do
+                it 'returns 200 status code and error message' do
                     post "/api/v1/challenges", challenge: {opponent_id: '', access: '1', color: 'error'}, format: :json, access_token: access_token.token
 
                     expect(response).to be_success
-                end
-
-                it 'returns error text' do
-                    post "/api/v1/challenges", challenge: {opponent_id: '', access: '1', color: 'error'}, format: :json, access_token: access_token.token
-
                     expect(response.body).to eq 'Error color parameter, must be white, black or random'
                 end
 
@@ -79,7 +74,6 @@ describe 'Challenge API' do
 
         context 'authorized' do
             let!(:access_token) { create :access_token, resource_owner_id: me.id }
-            let!(:other_challenge) { create :challenge }
 
             it 'returns 200 status code' do
                 delete "/api/v1/challenges/#{challenge.id}", format: :json, access_token: access_token.token
@@ -91,8 +85,32 @@ describe 'Challenge API' do
                 expect { delete "/api/v1/challenges/#{challenge.id}", format: :json, access_token: access_token.token }.to change(Challenge, :count).by(-1)
             end
 
-            it 'not remove other challenge from the DB' do
-                expect { delete "/api/v1/challenges/#{other_challenge.id}", format: :json, access_token: access_token.token }.to_not change(Challenge, :count)
+            context 'when challenge not for user' do
+                let!(:other_challenge) { create :challenge }
+
+                it 'returns 200 status code and error message' do
+                    delete "/api/v1/challenges/#{other_challenge.id}", format: :json, access_token: access_token.token
+
+                    expect(response).to be_success
+                    expect(response.body).to eq 'Error, you can not destroy challenge'
+                end
+
+                it 'and does not remove other challenge from the DB' do
+                    expect { delete "/api/v1/challenges/#{other_challenge.id}", format: :json, access_token: access_token.token }.to_not change(Challenge, :count)
+                end
+            end
+
+            context 'when challenge does not exist' do
+                it 'returns 200 status code and error message' do
+                    delete "/api/v1/challenges/1000", format: :json, access_token: access_token.token
+
+                    expect(response).to be_success
+                    expect(response.body).to eq 'Error, challenge does not exist'
+                end
+
+                it 'and does not remove challenge from the DB' do
+                    expect { delete "/api/v1/challenges/1000", format: :json, access_token: access_token.token }.to_not change(Challenge, :count)
+                end
             end
         end
 

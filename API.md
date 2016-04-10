@@ -30,7 +30,7 @@
 
 `{"challenges":[{"id":163,"user_id":8,"opponent_id":5,"color":"random","access":true,"created_at":"2016-03-24T13:18:58.523Z","updated_at":"2016-03-24T13:18:58.523Z"},{"id":164,"user_id":8,"opponent_id":null,"color":"random","access":true,"created_at":"2016-03-24T13:20:31.119Z","updated_at":"2016-03-24T13:20:31.119Z"}]}`
 
-#### List of challenges
+#### Challenge creating
 
 `POST http://chess-battle.ru/api/v1/challenges/create.json?access_token=your_token`
 
@@ -41,3 +41,9 @@
 `Success answer - {"challenges":[{"id":163,"user_id":8,"opponent_id":5,"color":"random","access":true,"created_at":"2016-03-24T13:18:58.523Z","updated_at":"2016-03-24T13:18:58.523Z"},{"id":164,"user_id":8,"opponent_id":null,"color":"random","access":true,"created_at":"2016-03-24T13:20:31.119Z","updated_at":"2016-03-24T13:20:31.119Z"}]}`
 
 `Error answer - 'User does not exist;Error access parameter, must be 1 or 0;Error color parameter, must be white, black or random'`
+
+#### Challenge deleting
+
+`DELETE http://chess-battle.ru/api/v1/challenges/168.json?access_token=your_token`
+
+`Error answer - 'Error, you can not destroy challenge' or 'Error, challenge does not exist'`
