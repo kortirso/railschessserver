@@ -48,10 +48,16 @@ describe 'Challenge API' do
             end
 
             context 'with invalid attributes' do
-                it 'doesnt return 200 status code' do
+                it 'returns 200 status code' do
                     post "/api/v1/challenges", challenge: {opponent_id: '', access: '1', color: 'error'}, format: :json, access_token: access_token.token
 
-                    expect(response).to_not be_success
+                    expect(response).to be_success
+                end
+
+                it 'returns error text' do
+                    post "/api/v1/challenges", challenge: {opponent_id: '', access: '1', color: 'error'}, format: :json, access_token: access_token.token
+
+                    expect(response.body).to eq 'Error color parameter, must be white, black or random'
                 end
 
                 it 'does not save the new answer in the DB' do

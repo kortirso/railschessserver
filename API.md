@@ -14,16 +14,30 @@
 
 #### Current user information
 
-`http://chess-battle.ru/api/v1/profiles/me.json?access_token=your_token`
-
-_Answer_
+`GET http://chess-battle.ru/api/v1/profiles/me.json?access_token=your_token`
 
 `{"user":{"id":8,"username":"testing","elo":989}}`
 
 #### All users information
 
-`http://chess-battle.ru/api/v1/profiles/all.json?access_token=your_token`
-
-_Answer_
+`GET http://chess-battle.ru/api/v1/profiles/all.json?access_token=your_token`
 
 `{"profiles":[{"id":2,"username":"First_user","elo":1118},{"id":3,"username":"Second_user","elo":1000},{"id":5,"username":"kortirso","elo":1000},{"id":7,"username":"tester","elo":1000}]}`
+
+#### List of challenges
+
+`GET http://chess-battle.ru/api/v1/challenges.json?access_token=your_token`
+
+`{"challenges":[{"id":163,"user_id":8,"opponent_id":5,"color":"random","access":true,"created_at":"2016-03-24T13:18:58.523Z","updated_at":"2016-03-24T13:18:58.523Z"},{"id":164,"user_id":8,"opponent_id":null,"color":"random","access":true,"created_at":"2016-03-24T13:20:31.119Z","updated_at":"2016-03-24T13:20:31.119Z"}]}`
+
+#### List of challenges
+
+`POST http://chess-battle.ru/api/v1/challenges/create.json?access_token=your_token`
+
+`Parameters: {"challenge"=>{"access"=>"1", "opponent_id"=>"", "color"=>"random"}}`
+
+`access - 0 or 1, color - white, black or random, opponent_id - empty or user_id`
+
+`Success answer - {"challenges":[{"id":163,"user_id":8,"opponent_id":5,"color":"random","access":true,"created_at":"2016-03-24T13:18:58.523Z","updated_at":"2016-03-24T13:18:58.523Z"},{"id":164,"user_id":8,"opponent_id":null,"color":"random","access":true,"created_at":"2016-03-24T13:20:31.119Z","updated_at":"2016-03-24T13:20:31.119Z"}]}`
+
+`Error answer - 'User does not exist;Error access parameter, must be 1 or 0;Error color parameter, must be white, black or random'`

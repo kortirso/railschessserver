@@ -5,7 +5,11 @@ class Api::V1::ChallengesController < Api::V1::BaseController
 
     def create
         @challenge = Challenge.build(current_resource_owner.id, (params[:challenge][:opponent_id].empty? ? nil : params[:challenge][:opponent_id]), params[:challenge][:access], params[:challenge][:color])
-        respond_with @challenge
+        if @challenge.kind_of?(Challenge)
+            respond_with @challenge
+        else
+            render text: @challenge
+        end
     end
 
     def destroy
