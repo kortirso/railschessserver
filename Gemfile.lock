@@ -39,6 +39,8 @@ GEM
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
     addressable (2.4.0)
+    apipie-rails (0.3.6)
+      json
     arel (6.0.3)
     autoprefixer-rails (5.2.1)
       execjs
@@ -345,6 +347,7 @@ PLATFORMS
 
 DEPENDENCIES
   active_model_serializers
+  apipie-rails
   autoprefixer-rails (= 5.2.1)
   bootstrap-sass (~> 3.2.0)
   bullet
