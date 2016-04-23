@@ -1,4 +1,9 @@
+require "application_responder"
+
 class ApplicationController < ActionController::Base
+    self.responder = ApplicationResponder
+    respond_to :html
+
     before_action :configure_permitted_parameters, if: :devise_controller?
     before_action :set_current_games
     before_action :set_user_session

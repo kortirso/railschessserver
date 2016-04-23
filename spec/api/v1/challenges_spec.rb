@@ -75,10 +75,11 @@ describe 'Challenge API' do
         context 'authorized' do
             let!(:access_token) { create :access_token, resource_owner_id: me.id }
 
-            it 'returns 200 status code' do
+            it 'returns 200 status code and success message' do
                 delete "/api/v1/challenges/#{challenge.id}", format: :json, access_token: access_token.token
 
                 expect(response).to be_success
+                expect(response.body).to eq 'Challenge is deleted'
             end
 
             it 'remove challenge from the DB' do

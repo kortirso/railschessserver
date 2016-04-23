@@ -6,6 +6,9 @@ Bundler.require(*Rails.groups)
 
 module Rcs
     class Application < Rails::Application
+        # Use the responders controller from the responders gem
+        config.app_generators.scaffold_controller :responders_controller
+
         config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]
         I18n.available_locales = [:en, :ru]
         config.i18n.default_locale = :en

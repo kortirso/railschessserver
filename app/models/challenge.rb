@@ -33,7 +33,7 @@ class Challenge < ActiveRecord::Base
         end
     end
 
-    def del(current_user)
+    def del
         PrivatePub.publish_to "/users/games", challenge: ChallengeSerializer.new(self).serializable_hash.to_json
         self.destroy
     end
