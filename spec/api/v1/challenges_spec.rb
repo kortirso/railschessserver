@@ -48,11 +48,18 @@ describe 'Challenge API' do
             end
 
             context 'with invalid attributes' do
-                it 'returns 200 status code and error message' do
+                it 'returns 400 status code and error message' do
                     post "/api/v1/challenges", challenge: {opponent_id: '', access: '1', color: 'error'}, format: :json, access_token: access_token.token
 
-                    expect(response).to be_success
-                    expect(response.body).to eq 'Error color parameter, must be white, black or random'
+                    expect(response.status).to eq 400
+                    expect(response.body).to eq "{\"errors\":[\"Error color parameter, must be white, black or random\"]}"
+                end
+
+                it 'and if user creates challenge agains self' do
+                    post "/api/v1/challenges", challenge: {opponent_id: me.id, access: '1', color: 'random'}, format: :json, access_token: access_token.token
+
+                    expect(response.status).to eq 400
+                    expect(response.body).to eq "{\"errors\":[\"You cant play against you\"]}"
                 end
 
                 it 'does not save the new answer in the DB' do
@@ -78,22 +85,22 @@ describe 'Challenge API' do
             it 'returns 200 status code and success message' do
                 delete "/api/v1/challenges/#{challenge.id}", format: :json, access_token: access_token.token
 
-                expect(response).to be_success
-                expect(response.body).to eq 'Challenge is deleted'
+                expect(response.status).to eq 200
+                expect(response.body).to eq "{\"error\":\"none\"}"
             end
 
             it 'remove challenge from the DB' do
                 expect { delete "/api/v1/challenges/#{challenge.id}", format: :json, access_token: access_token.token }.to change(Challenge, :count).by(-1)
             end
 
-            context 'when challenge not for user' do
+            context 'when its not users challenge' do
                 let!(:other_challenge) { create :challenge }
 
-                it 'returns 200 status code and error message' do
+                it 'returns 400 status code and error message' do
                     delete "/api/v1/challenges/#{other_challenge.id}", format: :json, access_token: access_token.token
 
-                    expect(response).to be_success
-                    expect(response.body).to eq 'Error, you can not destroy challenge'
+                    expect(response.status).to eq 400
+                    expect(response.body).to eq "{\"error\":\"Error, you cant destroy challenge\"}"
                 end
 
                 it 'and does not remove other challenge from the DB' do
@@ -102,11 +109,11 @@ describe 'Challenge API' do
             end
 
             context 'when challenge does not exist' do
-                it 'returns 200 status code and error message' do
+                it 'returns 400 status code and error message' do
                     delete "/api/v1/challenges/1000", format: :json, access_token: access_token.token
 
-                    expect(response).to be_success
-                    expect(response.body).to eq 'Error, challenge does not exist'
+                    expect(response.status).to eq 400
+                    expect(response.body).to eq "{\"error\":\"Error, challenge does not exist\"}"
                 end
 
                 it 'and does not remove challenge from the DB' do
