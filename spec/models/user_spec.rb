@@ -60,8 +60,8 @@ RSpec.describe User, type: :model do
             games = user.users_games
             
             expect(games.count).to eq 2
-            expect(games[0]).to eq game_2
-            expect(games[1]).to eq game_1
+            expect(games[0]).to eq game_1
+            expect(games[1]).to eq game_2
         end
     end
 end

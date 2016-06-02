@@ -34,7 +34,7 @@ class Api::V1::ChallengesController < Api::V1::BaseController
         end
     end
 
-    api :DELETE, '/v1/challenges/:id', 'Destroy challenge if current user can do this'
+    api :DELETE, '/v1/challenges/:id.json', 'Destroy challenge if current user can do this'
     param :access_token, String, desc: 'Token info', required: true
     error code: 400, desc: 'Challenge deleting error'
     error code: 401, desc: 'Unauthorized'

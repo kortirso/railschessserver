@@ -14,7 +14,7 @@ class User < ActiveRecord::Base
     scope :other_users, -> (user_id) { where.not(id: user_id) }
 
     def users_games
-        games = Game.where('user_id = ? OR opponent_id = ?', self.id, self.id).order(id: :desc)
+        games = Game.where('user_id = ? OR opponent_id = ?', self.id, self.id).order(id: :asc)
     end
 
     def self.find_for_oauth(auth)

@@ -1,5 +1,5 @@
 class GamesController < ApplicationController
-    before_action :authenticate_user!, except: [:index, :show]
+    before_action :authenticate_user!, only: :create
     before_action :game_find, only: :show
     before_action :get_last_games, only: :index
 
@@ -12,8 +12,7 @@ class GamesController < ApplicationController
     end
 
     def create
-        challenge = Challenge.find(params[:game][:challenge].to_i)
-        Game.build(challenge.id, current_user.id) if !challenge.nil? && challenge.user_id != current_user.id && challenge.opponent_id.nil? || challenge.opponent_id == current_user.id
+        Game.create_from_challenge(params[:game][:challenge].to_i, current_user.id)
         render nothing: true
     end
 

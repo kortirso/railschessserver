@@ -20,9 +20,33 @@ class Game < ActiveRecord::Base
         result = self.user_id == user_id || self.opponent_id == user_id ? true : false
     end
 
+    def self.find_accessable(ident, user_id)
+        game = find_by(id: ident)
+        if game
+            result = game.access == false && !game.is_player?(user_id) ? 'Game is private, you dont have access' : game
+        else
+            result = 'Game does not exist'
+        end
+    end
+
+    def self.create_from_challenge(ident, user_id)
+        challenge = Challenge.find_by(id: ident)
+        if challenge.nil?
+            result = 'Challenge does not exist'
+        else
+            if challenge.user_id == user_id
+                result = 'You cant create game against you'
+            elsif !challenge.opponent_id.nil? && challenge.opponent_id != user_id
+                result = 'You cant create game, challenge is not for you'
+            else
+                result = Game.build(ident, user_id)
+            end
+        end
+    end
+
     def self.build(challenge_id, user = nil)
         if challenge_id.nil?
-            create(access: false, guest: user, ai: Ai.find_by(elo: 1))
+            game = create access: false, guest: user, ai: Ai.find_by(elo: 1)
         else
             challenge = Challenge.find(challenge_id)
             color = case challenge.color
@@ -30,14 +54,17 @@ class Game < ActiveRecord::Base
                 when 'white' then 1
                 else 0
             end
-            current = color == 1 ? create(user_id: challenge.user_id, opponent_id: user, access: challenge.access, challenge_id: challenge) : create(user_id: user, opponent_id: challenge.user_id, access: challenge.access, challenge_id: challenge)
-            game_json = GameSerializer.new(current).serializable_hash.to_json
-            PrivatePub.publish_to "/users/#{current.user_id}/games", game: game_json
-            PrivatePub.publish_to "/users/#{current.opponent_id}/games", game: game_json
-            PrivatePub.publish_to "/users/games", challenge: ChallengeSerializer.new(challenge).serializable_hash.to_json
-            challenge.destroy
-            current
+            game = color == 1 ? create(user_id: challenge.user_id, opponent_id: user, access: challenge.access, challenge_id: challenge_id) : create(user_id: user, opponent_id: challenge.user_id, access: challenge.access, challenge_id: challenge_id)
+            game.send_creating_message
+            Challenge.del(challenge_id, challenge.user_id)
         end
+        game
+    end
+
+    def send_creating_message
+        game_json = GameSerializer.new(self).serializable_hash.to_json
+        PrivatePub.publish_to "/users/#{self.user_id}/games", game: game_json
+        PrivatePub.publish_to "/users/#{self.opponent_id}/games", game: game_json
     end
 
     def check_users_turn(user_id)
