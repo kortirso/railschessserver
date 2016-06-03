@@ -24,9 +24,9 @@ class Challenge < ActiveRecord::Base
     def self.del(ident, user_id)
         challenge = find_by(id: ident)
         if challenge
-            error = challenge.is_player?(user_id) ? challenge.send_deleting_message : 'Error, you cant destroy challenge'
+            error = challenge.is_player?(user_id) ? challenge.send_deleting_message : 'You cant destroy challenge'
         else
-            error = 'Error, challenge does not exist'
+            error = 'Challenge does not exist'
         end
         error
     end

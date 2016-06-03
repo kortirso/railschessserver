@@ -15,7 +15,7 @@ describe 'Challenge API' do
             end
 
             it 'contains list challenges for user' do
-                expect(response.body).to be_json_eql(challenges.to_json).at_path('challenges')
+                expect(response.body).to be_json_eql(ActiveModel::ArraySerializer.new(challenges.to_a, each_serializer: ChallengeSerializer).to_json).at_path('challenges')
             end
         end
 
@@ -86,7 +86,7 @@ describe 'Challenge API' do
                 delete "/api/v1/challenges/#{challenge.id}", format: :json, access_token: access_token.token
 
                 expect(response.status).to eq 200
-                expect(response.body).to eq "{\"error\":\"none\"}"
+                expect(response.body).to eq "{\"error\":\"None, challenge is deleted\"}"
             end
 
             it 'remove challenge from the DB' do
@@ -100,7 +100,7 @@ describe 'Challenge API' do
                     delete "/api/v1/challenges/#{other_challenge.id}", format: :json, access_token: access_token.token
 
                     expect(response.status).to eq 400
-                    expect(response.body).to eq "{\"error\":\"Error, you cant destroy challenge\"}"
+                    expect(response.body).to eq "{\"error\":\"You cant destroy challenge\"}"
                 end
 
                 it 'and does not remove other challenge from the DB' do
@@ -113,7 +113,7 @@ describe 'Challenge API' do
                     delete "/api/v1/challenges/1000", format: :json, access_token: access_token.token
 
                     expect(response.status).to eq 400
-                    expect(response.body).to eq "{\"error\":\"Error, challenge does not exist\"}"
+                    expect(response.body).to eq "{\"error\":\"Challenge does not exist\"}"
                 end
 
                 it 'and does not remove challenge from the DB' do

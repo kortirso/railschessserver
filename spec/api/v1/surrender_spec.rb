@@ -18,7 +18,7 @@ describe 'Surrender API' do
                 it 'contains reloaded game object' do
                     game.reload
 
-                    expect(response.body).to be_json_eql(game.to_json).at_path('game')
+                    expect(response.body).to be_json_eql(GameSerializer.new(game).serializable_hash.to_json).at_path('game')
                 end
 
                 it 'and game is over' do
@@ -33,11 +33,27 @@ describe 'Surrender API' do
 
                 before { get "/api/v1/surrender/#{new_game.id}", format: :json, access_token: access_token.token }
 
-                it 'returns 200 status' do
-                    expect(response).to be_success
+                it 'returns 400 status and error message' do
+                    expect(response.status).to eq 400
+                    expect(response.body).to eq "{\"error\":\"You are not game player\"}"
                 end
 
-                it 'but game is not over' do
+                it 'and game is not over' do
+                    game.reload
+
+                    expect(game.game_result).to eq nil
+                end
+            end
+
+            context 'for unexist game' do
+                before { get "/api/v1/surrender/10000", format: :json, access_token: access_token.token }
+
+                it 'returns 400 status and error message' do
+                    expect(response.status).to eq 400
+                    expect(response.body).to eq "{\"error\":\"Game does not exist\"}"
+                end
+
+                it 'and game is not over' do
                     game.reload
 
                     expect(game.game_result).to eq nil

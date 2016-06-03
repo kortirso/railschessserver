@@ -17,8 +17,8 @@ class Api::V1::TurnsController < Api::V1::BaseController
     meta turn: { game: 1, from: 'a1', to: 'a2' }
     error code: 400, desc: 'Game creation error'
     error code: 401, desc: 'Unauthorized'
-    example "'None, correct turn'"
-    example "'Incorrect turn'"
+    example "error: 'None, correct turn'"
+    example "error: 'Incorrect turn'"
     def create
         if !@turn_error.is_a? String
             @turn_error.nil? ? Turn.build(@game.id, @from, @to) : Turn.build(@game.id, @from, @to, @turn_error[0], @turn_error[1])

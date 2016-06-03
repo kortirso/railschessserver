@@ -8,7 +8,7 @@ class Api::V1::ProfilesController < Api::V1::BaseController
     error code: 401, desc: 'Unauthorized'
     example "{'user':{'id':8,'username':'testing','elo':989}}"
     def me
-        respond_with current_resource_owner
+        respond_with current_resource_owner, serializer: UserSerializer
     end
 
     api :GET, '/v1/profiles/all.json?access_token=TOKEN', 'Returns the information about all users except currently logged user'

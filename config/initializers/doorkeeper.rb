@@ -7,6 +7,13 @@ Doorkeeper.configure do
         current_user || warden.authenticate!(scope: :user)
     end
 
+    resource_owner_from_credentials do |routes|
+        user = User.find_for_database_authentication(username: params[:username])
+        if user && user.valid_for_authentication? { user.valid_password?(params[:password]) }
+            user
+        end
+    end
+
     # If you want to restrict access to the web interface for adding oauth authorized applications, you need to declare the block below.
     # admin_authenticator do
     #   # Put your admin authentication logic here.
@@ -19,7 +26,7 @@ Doorkeeper.configure do
 
     # Access token expiration time (default 2 hours).
     # If you want to disable expiration, set this to nil.
-    access_token_expires_in 24.hours
+    access_token_expires_in 1.hours
 
     # Assign a custom TTL for implicit grants.
     # custom_access_token_expires_in do |oauth_client|
@@ -90,7 +97,7 @@ Doorkeeper.configure do
     #   http://tools.ietf.org/html/rfc6819#section-4.4.2
     #   http://tools.ietf.org/html/rfc6819#section-4.4.3
     #
-    # grant_flows %w(authorization_code client_credentials)
+    grant_flows %w(authorization_code client_credentials password)
 
     # Under some circumstances you might want to have applications auto-approved,
     # so that the user skips the authorization step.

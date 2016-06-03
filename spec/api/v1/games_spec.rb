@@ -40,7 +40,7 @@ describe 'Game API' do
                     expect(response).to be_success
                 end
 
-                %w(id challenge_id white_turn).each do |attr|
+                %w(id challenge_id white_turn offer_draw_by game_result).each do |attr|
                     it "contains #{attr}" do
                         expect(response.body).to be_json_eql(game.send(attr.to_sym).to_json).at_path("with_figures/#{attr}")
                     end
