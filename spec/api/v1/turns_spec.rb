@@ -13,7 +13,7 @@ describe 'Turn API' do
                     post "/api/v1/turns", turn: {game: game.id, from: 'e2', to: 'e4'}, format: :json, access_token: access_token.token
 
                     expect(response).to be_success
-                    expect(response.body).to eq 'correct turn'
+                    expect(response.body).to eq "{\"error\":\"None, correct turn\"}"
                 end
 
                 it 'saves the new turn in the DB' do
@@ -22,11 +22,11 @@ describe 'Turn API' do
             end
 
             context 'with invalid attributes' do
-                it 'return 200 status code and message about error' do
+                it 'return 400 status code and message about error' do
                     post "/api/v1/turns", turn: {game: game.id, from: 'e1', to: 'e3'}, format: :json, access_token: access_token.token
 
-                    expect(response).to be_success
-                    expect(response.body).to_not eq 'correct turn'
+                    expect(response.status).to eq 400
+                    expect(response.body).to_not eq "{\"error\":\"None, correct turn\"}"
                 end
 
                 it 'does not save the new game in the DB' do
