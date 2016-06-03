@@ -2,6 +2,11 @@ class Api::V1::TurnsController < Api::V1::BaseController
     before_action :find_game
     before_action :checks_before_turn
 
+    resource_description do
+        short 'Turns resources'
+        formats ['json']
+    end
+
     api :POST, '/v1/turns.json', 'Creates turn in the game'
     param :access_token, String, desc: 'Token info', required: true
     param :turn, Hash, required: true do
