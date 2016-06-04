@@ -34,6 +34,20 @@ describe 'Draws API' do
                     expect(response.body).to eq "{\"error\":\"Game does not exist\"}"
                 end
 
+                it 'return 400 status code and message about error if direction not 0 or 1' do
+                    post "/api/v1/draws", draw: {game: game.id, direction: '2', result: '0'}, format: :json, access_token: access_token.token
+
+                    expect(response.status).to eq 400
+                    expect(response.body).to eq "{\"error\":\"Wrong direction parameter, must be 0 or 1\"}"
+                end
+
+                it 'return 400 status code and message about error if result not 0 or 1' do
+                    post "/api/v1/draws", draw: {game: game.id, direction: '1', result: '2'}, format: :json, access_token: access_token.token
+
+                    expect(response.status).to eq 400
+                    expect(response.body).to eq "{\"error\":\"Wrong result parameter, must be 0 or 1\"}"
+                end
+
                 context 'if user is not game player' do
                     before do
                         post "/api/v1/draws", draw: {game: other_game.id, direction: '0', result: '0'}, format: :json, access_token: access_token.token

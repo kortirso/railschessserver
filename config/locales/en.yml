@@ -29,6 +29,8 @@ en:
     li_5_4: 'Fix bugs.'
     li_6_0: '18 march 2016, version 0.5.1'
     li_6_1: 'Games can over with draws.'
+    li_7_0: '4 june 2016, version 0.6'
+    li_7_1: 'Add API, you can create bots for playing against users or other bots, methods description - chess-battle.ru/apipie, connecting description - https://github.com/kortirso/railschessserver/blob/master/API.md.'
   games:
     h1: 'Game rooms'
     current: 'Your current games'

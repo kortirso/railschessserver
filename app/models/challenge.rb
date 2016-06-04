@@ -36,7 +36,7 @@ class Challenge < ActiveRecord::Base
     end
 
     def self.can_be_created?(opponent_id, enemy_id, user_id, access, color)
-        result = (opponent_id.nil? || (enemy_id != user_id)) && %w(0 1).include?(access) && %w(white black random).include?(color) ? true : false
+        result = (opponent_id.nil? || enemy_id != user_id) && %w(0 1).include?(access) && %w(white black random).include?(color) ? true : false
     end
 
     def send_creating_message(opponent_id, user_id)
@@ -56,11 +56,11 @@ class Challenge < ActiveRecord::Base
     end
 
     def self.error_compilation(opponent_id, enemy_id, user_id, access, color)
-        challenge = []
-        challenge.push 'User does not exist' if opponent_id && enemy_id.nil?
-        challenge.push 'You cant play against you' if opponent_id && enemy_id == user_id
-        challenge.push 'Error access parameter, must be 1 or 0' unless %w(0 1).include?(access)
-        challenge.push 'Error color parameter, must be white, black or random' unless %w(white black random).include?(color)
-        challenge
+        errors = []
+        errors.push 'User does not exist' if opponent_id && enemy_id.nil?
+        errors.push 'You cant play against you' if opponent_id && enemy_id == user_id
+        errors.push 'Error access parameter, must be 1 or 0' unless %w(0 1).include?(access)
+        errors.push 'Error color parameter, must be white, black or random' unless %w(white black random).include?(color)
+        errors
     end
 end
