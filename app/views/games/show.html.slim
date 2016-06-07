@@ -18,7 +18,7 @@
                 - if @game.offer_draw_by.nil?
                     .actions_block
                         = link_to t('game.surrender'), chess_surrender_path(@game.id), class: 'btn btn-default', remote: true
-                        = link_to t('game.offer_draw'), chess_draw_path(@game.id), class: 'btn btn-default', remote: true
+                        = link_to t('game.offer_draw'), chess_draw_index_path(game: @game.id, direction: 0), class: 'btn btn-default', remote: true, method: :post
                 - else
                     .draw_block
                         - if @game.offer_draw_by == current_user.id
@@ -26,8 +26,8 @@
                         - else
                             p= t('game.you_get_draw')
                             p
-                                = link_to t('game.accept'), chess_draw_result_path(@game.id, 1), class: 'btn btn-default', remote: true
-                                = link_to t('game.decline'), chess_draw_result_path(@game.id, 0), class: 'btn btn-default', remote: true
+                                = link_to t('game.accept'), chess_draw_index_path(game: @game.id, direction: 1, result: 1), class: 'btn btn-default', remote: true, method: :post
+                                = link_to t('game.decline'), chess_draw_index_path(game: @game.id, direction: 1, result: 0), class: 'btn btn-default', remote: true, method: :post
     .col-xs-12.col-md-4
         .row#data.data-block
             p= t('game.id')

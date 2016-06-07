@@ -1,9 +1,14 @@
 class Chess::SurrenderController < ApplicationController
     before_action :authenticate_user!
+    before_action :find_game
     
-    def index
-        game = Game.find(params[:id])
-        game.complete(current_user.id == game.user_id ? 0 : 1) if !game.nil? && game.is_player?(current_user.id)
+    def show
+        @game.complete(current_user.id == @game.user_id ? 0 : 1) if @game&.is_player?(current_user.id)
         render nothing: true
+    end
+
+    private
+    def find_game
+        @game = Game.find_by(id: params[:id])
     end
 end

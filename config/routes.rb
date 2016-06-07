@@ -9,9 +9,8 @@ Rails.application.routes.draw do
         resources :about, only: :index
         namespace :chess do
             post 'turn' => 'turn#index', as: 'make_turn'
-            get 'surrender/:id' => 'surrender#index', as: 'surrender'
-            get 'draw/:id' => 'draw#index', as: 'draw'
-            get 'result/:id/:result' => 'draw#result', as: 'draw_result'
+            resources :draw, only: :create
+            resources :surrender, only: :show
         end
     end
     resources :challenges, only: [:create, :destroy]

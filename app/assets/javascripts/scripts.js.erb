@@ -109,12 +109,12 @@ $(function() {
                 $('#actions').append('<div class="draw_block"><p>' + I18n.t("js.game.you_offer_draw") + '</p></div>');
             }
             else {
-                $('#actions').append('<div class="draw_block"><p>' + I18n.t("js.game.you_get_draw") + '</p><p><a class="btn btn-default" data-remote="true" href="/chess/result/' + gameID + '/1">' + I18n.t("js.game.accept") + '</a><a class="btn btn-default" data-remote="true" href="/chess/result/' + gameID + '/0">' + I18n.t("js.game.decline") + '</a></p></div>');
+                $('#actions').append('<div class="draw_block"><p>' + I18n.t("js.game.you_get_draw") + '</p><p><a class="btn btn-default" data-remote="true" rel="nofollow" data-method="post" href="/chess/draw?direction=1&amp;game=' + gameID + '&amp;result=1">' + I18n.t("js.game.accept") + '</a><a class="btn btn-default" data-remote="true" rel="nofollow" data-method="post" href="/chess/draw?direction=1&amp;game=' + gameID + '&amp;result=0">' + I18n.t("js.game.decline") + '</a></p></div>');
             }
         }
         else if(game.offer_draw_by == null) {
             $('#actions .draw_block').remove();
-            $('#actions').append('<div class="actions_block"><a class="btn btn-default" data-remote="true" href="/ru/chess/surrender/' + gameID + '">' + I18n.t("js.game.surrender") + '</a><a class="btn btn-default" data-remote="true" href="/ru/chess/draw/' + gameID + '">' + I18n.t("js.game.offer_draw") + '</a></div>');
+            $('#actions').append('<div class="actions_block"><a class="btn btn-default" data-remote="true" href="/ru/chess/surrender/' + gameID + '">' + I18n.t("js.game.surrender") + '</a><a class="btn btn-default" data-remote="true" rel="nofollow" data-method="post" href="/ru/chess/draw?direction=0&amp;game=' + gameID + '&amp;result=0">' + I18n.t("js.game.offer_draw") + '</a></div>');
         }
     });
 
