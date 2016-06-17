@@ -29,7 +29,7 @@ describe 'Turn API' do
                     expect(response.body).to_not eq "{\"error\":\"None, correct turn\"}"
                 end
 
-                it 'does not save the new game in the DB' do
+                it 'does not save the new turn in the DB' do
                     expect { post "/api/v1/turns", turn: {game: game.id, from: 'e1', to: 'e3'}, format: :json, access_token: access_token.token }.to_not change(Turn, :count)
                 end
             end

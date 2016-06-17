@@ -15,7 +15,7 @@ class Api::V1::TurnsController < Api::V1::BaseController
         param :to, String, desc: 'To square', required: true
     end
     meta turn: { game: 1, from: 'a1', to: 'a2' }
-    error code: 400, desc: 'Game creation error'
+    error code: 400, desc: 'Turn creation error'
     error code: 401, desc: 'Unauthorized'
     example "error: 'None, correct turn'"
     example "error: 'Incorrect turn'"
@@ -30,18 +30,16 @@ class Api::V1::TurnsController < Api::V1::BaseController
 
     private
     def find_game
-        @game = Game.find(params[:turn][:game])
+        @game = Game.find_by(id: params[:turn][:game])
         @from = params[:turn][:from]
         @to = params[:turn][:to]
     end
 
     def checks_before_turn
-        @turn_error = @game.check_users_turn(current_resource_owner.id)
+        @turn_error = current_resource_owner.nil? ? 'You dont have access' : nil
         return unless @turn_error.nil?
-        @turn_error = @game.check_cells(@from, @to)
+        @turn_error = @game.nil? ? 'Game doesnt exist' : nil
         return unless @turn_error.nil?
-        @turn_error = @game.check_right_figure(@from)
-        return unless @turn_error.nil?
-        @turn_error = @game.check_turn(@from, @to)
+        @turn_error = @game.checks_before_turn(current_resource_owner.id, @from, @to)
     end
 end

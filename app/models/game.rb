@@ -16,6 +16,36 @@ class Game < ActiveRecord::Base
     before_create :set_ratings
     after_create :board_build
 
+    def checks_before_turn(user_id, from, to)
+        result = self.check_users_turn(user_id)
+        return result unless result.nil?
+        result = self.check_cells(from, to)
+        return result unless result.nil?
+        result = self.check_right_figure(from)
+        return result unless result.nil?
+        result = self.check_turn(from, to)
+    end
+
+    def check_users_turn(user_id)
+        result = user_id == self.user_id && self.white_turn || user_id == self.opponent_id && !self.white_turn ? nil : 'Сейчас не ваш черед ходить'
+    end
+
+    def check_cells(from, to)
+        result = from == to ? 'Должны быть указаны разные ячейки' : nil
+        return result unless result.nil?
+        errors = 0
+        [from, to].each { |i| errors += 1 if i.size > 2 || !%w(a b c d e f g h).include?(i[0]) || !%w(1 2 3 4 5 6 7 8).include?(i[1]) }
+        result = errors > 0 ? 'Указана неправильная ячейка' : nil
+    end
+
+    def check_right_figure(from)
+        figure = self.cells.find_by(name: from).figure
+        result = figure.nil? ? "В клетке '#{from}' нет фигуры для хода" : nil
+        return result unless result.nil?
+        f_color = figure.color
+        result = f_color == 'white' && self.white_turn || f_color == 'black' && !self.white_turn ? nil : 'Нельзя ходить чужой фигурой'
+    end
+
     def is_player?(user_id)
         result = self.user_id == user_id || self.opponent_id == user_id ? true : false
     end
@@ -65,26 +95,6 @@ class Game < ActiveRecord::Base
         game_json = GameSerializer.new(self).serializable_hash.to_json
         PrivatePub.publish_to "/users/#{self.user_id}/games", game: game_json
         PrivatePub.publish_to "/users/#{self.opponent_id}/games", game: game_json
-    end
-
-    def check_users_turn(user_id)
-        result = user_id == self.user_id && self.white_turn || user_id == self.opponent_id && !self.white_turn ? nil : 'Сейчас не ваш черед ходить'
-    end
-
-    def check_cells(from, to)
-        result = from == to ? 'Должны быть указаны разные ячейки' : nil
-        return result unless result.nil?
-        errors = 0
-        [from, to].each { |i| errors += 1 if i.size > 2 || !%w(a b c d e f g h).include?(i[0]) || !%w(1 2 3 4 5 6 7 8).include?(i[1]) }
-        result = errors > 0 ? 'Указана неправильная ячейка' : nil
-    end
-
-    def check_right_figure(from)
-        figure = self.cells.find_by(name: from).figure
-        result = figure.nil? ? "В клетке '#{from}' нет фигуры для хода" : nil
-        return result unless result.nil?
-        f_color = figure.color
-        result = f_color == 'white' && self.white_turn || f_color == 'black' && !self.white_turn ? nil : 'Нельзя ходить чужой фигурой'
     end
 
     def check_turn(from, to)
