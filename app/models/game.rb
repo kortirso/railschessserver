@@ -27,23 +27,23 @@ class Game < ActiveRecord::Base
     end
 
     def check_users_turn(user_id)
-        result = user_id == self.user_id && self.white_turn || user_id == self.opponent_id && !self.white_turn ? nil : 'Сейчас не ваш черед ходить'
+        result = user_id == self.user_id && self.white_turn || user_id == self.opponent_id && !self.white_turn ? nil : I18n.t('errors.not_your_turn')
     end
 
     def check_cells(from, to)
-        result = from == to ? 'Должны быть указаны разные ячейки' : nil
+        result = from == to ? I18n.t('errors.diff_cells') : nil
         return result unless result.nil?
         errors = 0
         [from, to].each { |i| errors += 1 if i.size > 2 || !%w(a b c d e f g h).include?(i[0]) || !%w(1 2 3 4 5 6 7 8).include?(i[1]) }
-        result = errors > 0 ? 'Указана неправильная ячейка' : nil
+        result = errors > 0 ? I18n.t('errors.wrong_cell') : nil
     end
 
     def check_right_figure(from)
         figure = self.cells.find_by(name: from).figure
-        result = figure.nil? ? "В клетке '#{from}' нет фигуры для хода" : nil
+        result = figure.nil? ? I18n.t('errors.no_figure', cell: from) : nil
         return result unless result.nil?
         f_color = figure.color
-        result = f_color == 'white' && self.white_turn || f_color == 'black' && !self.white_turn ? nil : 'Нельзя ходить чужой фигурой'
+        result = f_color == 'white' && self.white_turn || f_color == 'black' && !self.white_turn ? nil : I18n.t('errors.enemy_figure')
     end
 
     def is_player?(user_id)
@@ -105,11 +105,11 @@ class Game < ActiveRecord::Base
         x_change, y_change = x_params.index(to[0]) - x_params.index(from[0]), y_params.index(to[1]) - y_params.index(from[1])
         p_pass, roque, result = nil, nil, nil
         is_check = self.white_turn ? self.black_checkmat : self.white_checkmat
-        result = self.possibles.include?([from, to]) ? nil : 'Ваш король под угрозой' if is_check == 'check'
+        result = self.possibles.include?([from, to]) ? nil : I18n.t('errors.under_check') if is_check == 'check'
         return result unless result.nil?
         case figure.type
             when 'k'
-                result = figure.beaten_fields.include?(to) ? nil : 'Неправильный ход королем'
+                result = figure.beaten_fields.include?(to) ? nil : I18n.t('errors.wrong_king_turn')
                 if !result.nil? && x_change.abs == 2 && y_change == 0
                     if figure.color == 'white'
                         k_place = 'e1'
@@ -121,18 +121,18 @@ class Game < ActiveRecord::Base
                     did_k_turn = self.turns.where(from: k_place).any?
                     did_r_turn = self.turns.where(from: r_place).any?
                     roque_figure = cells_list.find_by(name: r_place).figure
-                    result = roque_figure.nil? ? 'Нет ладьи для рокировки' : nil
-                    result = result.nil? && did_k_turn && did_r_turn ? 'Нельзя рокироваться, фигуры двигались' : nil
+                    result = roque_figure.nil? ? I18n.t('errors.no_rook') : nil
+                    result = result.nil? && did_k_turn && did_r_turn ? I18n.t('errors.wrong_castling') : nil
                     roque = roque_figure if result.nil?
                 end
-            when 'q' then result = figure.beaten_fields.include?(to) ? nil : 'Неправильный ход ферзём'
-            when 'r' then result = figure.beaten_fields.include?(to) ? nil : 'Неправильный ход ладьёй'
-            when 'n' then result = figure.beaten_fields.include?(to) ? nil : 'Неправильный ход конём'
-            when 'b' then result = figure.beaten_fields.include?(to) ? nil : 'Неправильный ход слоном'
+            when 'q' then result = figure.beaten_fields.include?(to) ? nil : I18n.t('errors.wrong_queen_turn')
+            when 'r' then result = figure.beaten_fields.include?(to) ? nil : I18n.t('errors.wrong_rook_turn')
+            when 'n' then result = figure.beaten_fields.include?(to) ? nil : I18n.t('errors.wrong_knight_turn')
+            when 'b' then result = figure.beaten_fields.include?(to) ? nil : I18n.t('errors.wrong_bishop_turn')
             when 'p'
                 protectors = figure.color == 'white' ? self.w_king_protectors : self.b_king_protectors
                 if protectors.include?(figure.cell.name) && x_change == 0 && y_change.abs > 0
-                    result = 'Эта пешка защищает короля'
+                    result = I18n.t('errors.kings_protector')
                 else
                     near_x_param = x_params[x_params.index(from[0]) + x_change]
                     near_figure = cells_list.find_by(x_param: near_x_param, y_param: from[1]).figure
@@ -140,7 +140,7 @@ class Game < ActiveRecord::Base
                         last_turn = self.turns.last
                         p_pass = near_figure if last_turn.to == "#{near_x_param}#{from[1]}" && last_turn.from == "#{near_x_param}#{from[1].to_i + y_change * 2}"
                     end
-                    result = figure.color == 'white' && (x_change == 0 && y_change == 1 && finish_cell.nil? || x_change == 0 && y_change == 2 && from[1] == '2' && finish_cell.nil? && cells_list.find_by(name: "#{to[0]}#{to[1].to_i - 1}").figure.nil? || figure.beaten_fields.include?(to) && !finish_cell.nil? && finish_cell.color == 'black' || figure.beaten_fields.include?(to) && !p_pass.nil?) || figure.color == 'black' && (x_change == 0 && y_change == -1 && finish_cell.nil? || x_change == 0 && y_change == -2 && from[1] == '7' && finish_cell.nil? && cells_list.find_by(name: "#{to[0]}#{to[1].to_i + 1}").figure.nil? || figure.beaten_fields.include?(to) && !finish_cell.nil? && finish_cell.color == 'white' || figure.beaten_fields.include?(to) && !p_pass.nil?) ? nil : 'Неправильный ход пешкой'
+                    result = figure.color == 'white' && (x_change == 0 && y_change == 1 && finish_cell.nil? || x_change == 0 && y_change == 2 && from[1] == '2' && finish_cell.nil? && cells_list.find_by(name: "#{to[0]}#{to[1].to_i - 1}").figure.nil? || figure.beaten_fields.include?(to) && !finish_cell.nil? && finish_cell.color == 'black' || figure.beaten_fields.include?(to) && !p_pass.nil?) || figure.color == 'black' && (x_change == 0 && y_change == -1 && finish_cell.nil? || x_change == 0 && y_change == -2 && from[1] == '7' && finish_cell.nil? && cells_list.find_by(name: "#{to[0]}#{to[1].to_i + 1}").figure.nil? || figure.beaten_fields.include?(to) && !finish_cell.nil? && finish_cell.color == 'white' || figure.beaten_fields.include?(to) && !p_pass.nil?) ? nil : I18n.t('errors.wrong_pawn_turn')
                 end
         end
         return result unless result.nil?
@@ -150,13 +150,13 @@ class Game < ActiveRecord::Base
             check_beated = roque.cell.x_param == 'a' ? ["c#{line}", "d#{line}", "e#{line}"] : ["e#{line}", "f#{line}"]
             checks.each do |box|
                 check = cells_list.find_by(name: box).figure
-                result = check.nil? ? nil : 'На пути рокировки есть препятствие'
+                result = check.nil? ? nil : I18n.t('errors.castling_obstacle')
                 break unless result.nil?
             end
             if result.nil?
                 check_beated.each do |box|
                     self.figures.on_the_board.where('color != ?', figure.color).each do |figure|
-                        result = figure.beaten_fields.include?(box) ? 'Рокировка под ударом' : nil
+                        result = figure.beaten_fields.include?(box) ? I18n.t('errors.castling_attack') : nil
                         break unless result.nil?
                     end
                     break unless result.nil?
