@@ -4,11 +4,8 @@ gem 'rails', '4.2.6'
 gem 'pg'
 gem 'sass-rails', '~> 5.0'
 gem 'uglifier', '>= 1.3.0'
-gem 'coffee-rails', '~> 4.1.0'
 gem 'therubyracer', platforms: :ruby
 gem 'jquery-rails'
-gem 'jbuilder', '~> 2.0'
-gem 'sdoc', '~> 0.4.0', group: :doc
 
 gem 'figaro'
 gem 'bootstrap-sass', '~> 3.2.0'
@@ -35,7 +32,6 @@ gem 'i18n-js'
 gem 'apipie-rails'
 
 group :development, :test do
-    gem 'byebug'
     gem 'spring'
     gem 'rspec-rails'
     gem 'factory_girl_rails'
@@ -46,7 +42,6 @@ end
 
 group :development do
     gem 'bullet'
-    gem 'web-console', '~> 2.0'
     gem 'capistrano', require: false
     gem 'capistrano-bundler', require: false
     gem 'capistrano-rails', require: false

@@ -4,6 +4,7 @@ class GameSerializer < ActiveModel::Serializer
     has_one :opponent, serializer: UserSerializer
 
     class WithFigures < self
+        attributes :possibles
         has_many :figures
 
         def figures
