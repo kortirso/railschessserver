@@ -40,30 +40,30 @@ describe 'Game API' do
                     expect(response).to be_success
                 end
 
-                %w(id challenge_id white_turn offer_draw_by game_result).each do |attr|
+                %w(id challenge_id white_turn offer_draw_by game_result possibles).each do |attr|
                     it "contains #{attr}" do
-                        expect(response.body).to be_json_eql(game.send(attr.to_sym).to_json).at_path("with_figures/#{attr}")
+                        expect(response.body).to be_json_eql(game.send(attr.to_sym).to_json).at_path("#{attr}")
                     end
                 end
 
                 %w(id username elo).each do |attr|
                     it "contains #{attr} for user" do
-                        expect(response.body).to be_json_eql(game.user.send(attr.to_sym).to_json).at_path("with_figures/user/#{attr}")
+                        expect(response.body).to be_json_eql(game.user.send(attr.to_sym).to_json).at_path("user/#{attr}")
                     end
 
                     it "contains #{attr} for opponent" do
-                        expect(response.body).to be_json_eql(game.opponent.send(attr.to_sym).to_json).at_path("with_figures/opponent/#{attr}")
+                        expect(response.body).to be_json_eql(game.opponent.send(attr.to_sym).to_json).at_path("opponent/#{attr}")
                     end
                 end
 
                 context 'figures' do
                     it 'included in game object' do
-                        expect(response.body).to have_json_size(32).at_path("with_figures/figures")
+                        expect(response.body).to have_json_size(32).at_path("figures")
                     end
 
-                    %w(id type color cell_name).each do |attr|
+                    %w(id type color cell_name beaten_fields).each do |attr|
                         it "contains #{attr}" do
-                            expect(response.body).to be_json_eql(game.figures.order(id: :asc).first.send(attr.to_sym).to_json).at_path("with_figures/figures/0/#{attr}")
+                            expect(response.body).to be_json_eql(game.figures.order(id: :asc).first.send(attr.to_sym).to_json).at_path("figures/0/#{attr}")
                         end
                     end
                 end

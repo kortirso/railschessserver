@@ -1,4 +1,5 @@
 class Api::V1::TurnsController < Api::V1::BaseController
+    skip_before_filter :verify_authenticity_token
     before_action :find_game
     before_action :checks_before_turn
 

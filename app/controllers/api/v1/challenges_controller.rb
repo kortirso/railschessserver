@@ -10,7 +10,7 @@ class Api::V1::ChallengesController < Api::V1::BaseController
     error code: 401, desc: 'Unauthorized'
     example "{'challenges':[{'id':163,'user':{'id':8,'username':'testing','elo':989},'opponent':{'id':5,'username':'testing1','elo':1000},'color':'random','access':true},{'id':164,'user_id':8,'opponent_id':null,'color':'random','access':true}]}"
     def index
-        respond_with challenges: ActiveModel::ArraySerializer.new(Challenge.accessable(current_resource_owner.id).to_a, each_serializer: ChallengeSerializer)
+        respond_with challenges: ActiveModel::Serializer::CollectionSerializer.new(Challenge.accessable(current_resource_owner.id).to_a, each_serializer: ChallengeSerializer)
     end
 
     api :POST, '/v1/challenges.json', 'Creates challenge'

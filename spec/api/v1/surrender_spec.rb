@@ -18,7 +18,7 @@ describe 'Surrender API' do
                 it 'contains reloaded game object' do
                     game.reload
 
-                    expect(response.body).to be_json_eql(GameSerializer.new(game).serializable_hash.to_json).at_path('game')
+                    expect(response.body).to be_json_eql(GameSerializer.new(game).serializable_hash.to_json)
                 end
 
                 it 'and game is over' do

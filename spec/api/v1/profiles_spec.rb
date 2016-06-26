@@ -14,13 +14,13 @@ describe 'Profile API' do
 
             %w(id username elo).each do |attr|
                 it "contains #{attr}" do
-                    expect(response.body).to be_json_eql(me.send(attr.to_sym).to_json).at_path("user/#{attr}")
+                    expect(response.body).to be_json_eql(me.send(attr.to_sym).to_json).at_path("#{attr}")
                 end
             end
 
             %w(password encrypted_password).each do |attr|
                 it "doesnt contains #{attr}" do
-                    expect(response.body).to_not have_json_path("user/#{attr}")
+                    expect(response.body).to_not have_json_path("#{attr}")
                 end
             end
         end

@@ -16,7 +16,7 @@ describe 'Draws API' do
 
                 it 'returns 200 status code and game object' do
                     expect(response).to be_success
-                    expect(response.body).to be_json_eql(GameSerializer.new(game).serializable_hash.to_json).at_path('game')
+                    expect(response.body).to be_json_eql(GameSerializer.new(game).serializable_hash.to_json)
                 end
 
                 it 'and changes game attribute offer_draw_by' do

@@ -15,7 +15,7 @@ describe 'Challenge API' do
             end
 
             it 'contains list challenges for user' do
-                expect(response.body).to be_json_eql(ActiveModel::ArraySerializer.new(challenges.to_a, each_serializer: ChallengeSerializer).to_json).at_path('challenges')
+                expect(response.body).to be_json_eql(ActiveModel::Serializer::CollectionSerializer.new(challenges.to_a, each_serializer: ChallengeSerializer).to_json).at_path('challenges')
             end
         end
 

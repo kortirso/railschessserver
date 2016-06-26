@@ -10,13 +10,13 @@ class Api::V1::GamesController < Api::V1::BaseController
     error code: 401, desc: 'Unauthorized'
     example "{'games':[{'id':252,'user':{'id':8,'username':'testing','elo':989},'opponent':{'id':5,'username':'testing1','elo':1000},'challenge_id':null,'white_turn':true,'offer_draw_by':null,'game_result':null}]}"
     def index
-        respond_with games: ActiveModel::ArraySerializer.new(current_resource_owner.users_games.current.to_a, each_serializer: GameSerializer)
+        respond_with games: ActiveModel::Serializer::CollectionSerializer.new(current_resource_owner.users_games.current.to_a, each_serializer: GameSerializer)
     end
 
     api :GET, '/v1/games/:id.json?access_token=TOKEN', 'Returns the information about current game'
     error code: 400, desc: 'Game showing error'
     error code: 401, desc: 'Unauthorized'
-    example "{'with_figures':{'id':252,'challenge_id':null,'white_turn':true,'offer_draw_by':null,'game_result':null,'user':{'id':2,'username':'First_user','elo':1118},'opponent':{'id':8,'username':'testing','elo':989},'figures':[{'id':7527,'color':'white','type':'p','cell_name':'a2'}]}}"
+    example "{'id':252,'challenge_id':null,'white_turn':true,'offer_draw_by':null,'game_result':null,'user':{'id':2,'username':'First_user','elo':1118},'opponent':{'id':8,'username':'testing','elo':989},'figures':[{'id':7527,'color':'white','type':'p','cell_name':'a2'}]}"
     example "error: 'Game is private, you dont have access'"
     example "error: 'Game does not exist'"
     def show
