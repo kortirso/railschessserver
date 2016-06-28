@@ -4,7 +4,7 @@ class GamesController < ApplicationController
     before_action :get_last_games, only: :index
 
     def index
-        @challenges = Challenge.accessable(current_user.id).order(id: :desc).includes(:user) if current_user
+        @challenges = Challenge.accessable(current_user.id).includes(:user) if current_user
     end
 
     def show

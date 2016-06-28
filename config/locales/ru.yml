@@ -39,10 +39,12 @@ ru:
     game: 'Партия'
     view: 'Посмотреть'
     challenge:
+      username: 'Противник'
       access: 'Открытая партия'
       opponent: 'Противник'
       color: 'Цвет фигур'
       submit: 'Предложить игру'
+      cancel: 'Отмена'
     challenges:
       current: 'Текущие предложения партий'
       play: 'Играть'

@@ -11,7 +11,7 @@ class User < ActiveRecord::Base
     
     validates :username, presence: true, uniqueness: true, length: { in: 1..20 }
 
-    scope :other_users, -> (user_id) { where.not(id: user_id) }
+    scope :other_users, -> (user_id) { where.not(id: user_id).order(username: :asc) }
 
     def users_games
         games = Game.where('user_id = ? OR opponent_id = ?', self.id, self.id).order(id: :desc)

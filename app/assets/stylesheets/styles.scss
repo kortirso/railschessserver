@@ -189,14 +189,17 @@ body {
     #challenges {
         .panel {
             box-shadow: 0 0 10px 0 #999;
-            table {
-                margin-bottom: 0;
-            }
-            .btn {
-                padding: 0 10px;
-            }
-            .rating_block {
-                margin-left: 0;
+            .panel-body {
+                padding: 0 15px 15px;
+                table {
+                    margin-bottom: 0;
+                }
+                .btn {
+                    padding: 0 10px;
+                }
+                .rating_block {
+                    margin-left: 10px;
+                }
             }
         }
     }

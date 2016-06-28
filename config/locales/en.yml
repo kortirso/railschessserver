@@ -39,10 +39,12 @@ en:
     game: 'Game'
     view: 'View'
     challenge:
+      username: 'Enemy'
       access: 'Open game'
       opponent: 'Opponent'
       color: 'Figure color'
       submit: 'Game offer'
+      cancel: 'Cancel'
     challenges:
       current: 'Current game offers'
       play: 'Play'
