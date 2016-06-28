@@ -41,7 +41,11 @@ h1= t('games.h1')
                                         td
                                             = challenge.user.username
                                             span.rating_block= challenge.user.elo
-                                        td= challenge.opponent.nil? ? 'everybody' : challenge.opponent.username
+                                        td
+                                            - enemy = challenge.opponent.nil? ? 'everybody' : challenge.opponent.username
+                                            = enemy
+                                            - unless enemy == 'everybody'
+                                                span.rating_block= challenge.opponent.elo 
                                         td= challenge.color
                                         td
                                             - if challenge.user_id != current_user.id
