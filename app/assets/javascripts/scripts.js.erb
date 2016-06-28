@@ -120,8 +120,14 @@ $(function() {
 
     PrivatePub.subscribe("/users/challenges", function(data, channel) {
         challenge = $.parseJSON(data.challenge);
+        if(challenge.opponent == null) {
+            enemy = 'everybody';
+        }
+        else {
+            enemy = challenge.opponent.username;
+        }
         newFigure = $('#challenges table tbody .hidden td:first-child form').clone();
-        $('#challenges table tbody').prepend('<tr class="challenge_' + challenge.id + ' challenge"><td>' + challenge.user.username + '</td><td><span class="rating_block">' + challenge.user.elo + '</span></td><td>' + challenge.color + '</td><td></td></tr>');
+        $('#challenges table tbody').prepend('<tr class="challenge_' + challenge.id + ' challenge"><td>' + challenge.user.username + '<span class="rating_block">' + challenge.user.elo + '</span></td><td>' + enemy + '</td><td>' + challenge.color + '</td><td></td></tr>');
         if(challenge.user.id != userID) {
             $('#challenges table tbody tr:first-child td:last-child').append(newFigure);
             $('#challenges table tbody tr:first-child #game_challenge').attr("value", challenge.id);
@@ -133,8 +139,14 @@ $(function() {
 
     PrivatePub.subscribe("/users/" + userID + "/challenges", function(data, channel) {
         challenge = $.parseJSON(data.challenge);
+        if(challenge.opponent == null) {
+            enemy = 'everybody';
+        }
+        else {
+            enemy = challenge.opponent.username;
+        }
         newFigure = $('#challenges table tbody .hidden td:first-child form').clone();
-        $('#challenges table tbody').prepend('<tr class="challenge_' + challenge.id + '"><td>' + challenge.user.username + '</td><td><span class="rating_block">' + challenge.user.elo + '</span></td><td>' + challenge.color + '</td><td></td></tr>');
+        $('#challenges table tbody').prepend('<tr class="challenge_' + challenge.id + '"><td>' + challenge.user.username + '<span class="rating_block">' + challenge.user.elo + '</span></td><td>' + enemy + '</td><td>' + challenge.color + '</td><td></td></tr>');
         if(challenge.user.id != userID) {
             $('#challenges table tbody tr:first-child td:last-child').append(newFigure);
             $('#challenges table tbody tr:first-child #game_challenge').attr("value", challenge.id);

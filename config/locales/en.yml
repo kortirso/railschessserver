@@ -42,7 +42,7 @@ en:
     game: 'Game'
     view: 'View'
     challenge:
-      username: 'Enemy'
+      username: 'User'
       access: 'Open game'
       opponent: 'Opponent'
       color: 'Figure color'

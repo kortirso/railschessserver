@@ -42,7 +42,7 @@ ru:
     game: 'Партия'
     view: 'Посмотреть'
     challenge:
-      username: 'Противник'
+      username: 'Пользователь'
       access: 'Открытая партия'
       opponent: 'Противник'
       color: 'Цвет фигур'

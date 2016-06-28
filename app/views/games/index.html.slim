@@ -36,15 +36,12 @@ h1= t('games.h1')
                                         td vs
                                         td= t('games.challenge.color')
                                         td= t('games.challenge.cancel')
-                                tbody
                                 - @challenges.each do |challenge|
                                     tr class="challenge_#{challenge.id} challenge"
                                         td
                                             = challenge.user.username
                                             span.rating_block= challenge.user.elo
-                                        td
-                                            - enemy = challenge.opponent.nil? ? 'everybody' : challenge.opponent.username
-                                            = enemy
+                                        td= challenge.opponent.nil? ? 'everybody' : challenge.opponent.username
                                         td= challenge.color
                                         td
                                             - if challenge.user_id != current_user.id

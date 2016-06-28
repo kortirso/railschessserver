@@ -7,7 +7,7 @@ class Challenge < ActiveRecord::Base
     validates :user_id, :color, :access, presence: true
     validates :color, inclusion: { in: %w(random white black) }
 
-    scope :accessable, -> (user) { where('user_id = ? OR opponent_id = ? OR opponent_id IS NULL', user, user).order(id: :asc) }
+    scope :accessable, -> (user) { where('user_id = ? OR opponent_id = ? OR opponent_id IS NULL', user, user).order(id: :desc) }
 
     def self.build(user_id, opponent_id, access = '1', color = 'random')
         enemy = User.find_by(id: opponent_id.to_i)
