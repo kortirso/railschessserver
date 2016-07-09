@@ -27,7 +27,11 @@ class Game < ActiveRecord::Base
     end
 
     def check_users_turn(user_id)
-        result = user_id == self.user_id && self.white_turn || user_id == self.opponent_id && !self.white_turn ? nil : I18n.t('errors.not_your_turn')
+        if user_id.kind_of? String
+            result = !self.guest.nil? && self.guest == user_id && self.white_turn ? nil : I18n.t('errors.not_your_turn')
+        else
+            result = user_id == self.user_id && self.white_turn || user_id == self.opponent_id && !self.white_turn ? nil : I18n.t('errors.not_your_turn')
+        end
     end
 
     def check_cells(from, to)

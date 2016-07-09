@@ -17,10 +17,8 @@ class Chess::TurnController < ApplicationController
     end
 
     def checks_before_turn
-        @turn_error = current_user.nil? ? 'You dont have access' : nil
-        return unless @turn_error.nil?
         @turn_error = @game.nil? ? 'Game doesnt exist' : nil
         return unless @turn_error.nil?
-        @turn_error = @game.checks_before_turn(current_user.id, @from, @to)
+        @turn_error = @game.checks_before_turn(current_user.nil? ? session[:guest] : current_user.id, @from, @to)
     end
 end

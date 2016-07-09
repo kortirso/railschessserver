@@ -37,8 +37,6 @@ class Api::V1::TurnsController < Api::V1::BaseController
     end
 
     def checks_before_turn
-        @turn_error = current_resource_owner.nil? ? 'You dont have access' : nil
-        return unless @turn_error.nil?
         @turn_error = @game.nil? ? 'Game doesnt exist' : nil
         return unless @turn_error.nil?
         @turn_error = @game.checks_before_turn(current_resource_owner.id, @from, @to)
