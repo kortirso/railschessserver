@@ -21,5 +21,25 @@ RSpec.describe Challenge, type: :model do
         context '.del' do
 
         end
+
+        context '.is_player?' do
+
+        end
+
+        context '.can_be_created?' do
+
+        end
+
+        context '.send_creating_message' do
+
+        end
+
+        context '.send_deleting_message' do
+
+        end
+
+        context '.error_compilation' do
+
+        end
     end
 end

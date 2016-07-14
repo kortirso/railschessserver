@@ -18,6 +18,22 @@ RSpec.describe Game, type: :model do
         let!(:user_1) { create :user }
         let!(:user_2) { create :user }
 
+        context '.checks_before_turn' do
+
+        end
+
+        context '.is_player?' do
+
+        end
+
+        context '.find_accessable' do
+
+        end
+
+        context '.create_from_challenge' do
+
+        end
+
         context '.build' do
             context 'by challenge' do
                 let(:challenge) { create :challenge, user: user_1, color: 'white' }
@@ -157,6 +173,50 @@ RSpec.describe Game, type: :model do
                 expect(game.cells.find_by(name: from).figure.color).to eq 'white'
                 expect(game.check_right_figure(from)).to eq nil
             end
+        end
+
+        context '.send_creating_message' do
+
+        end
+
+        context '.check_turn' do
+
+        end
+
+        context '.finish_turn' do
+
+        end
+
+        context '.checkmat_check' do
+
+        end
+
+        context '.whites_check' do
+
+        end
+
+        context '.blacks_check' do
+
+        end
+
+        context '.automate' do
+
+        end
+
+        context '.offer_draw' do
+
+        end
+
+        context '.draw_result' do
+
+        end
+
+        context '.complete' do
+
+        end
+
+        context '.set_ratings' do
+
         end
     end
 end

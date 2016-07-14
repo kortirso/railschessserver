@@ -15,6 +15,10 @@ RSpec.describe Figure, type: :model do
     end
 
     describe 'Methods' do
+        context '.cell_name' do
+
+        end
+
         context '.build' do
             let!(:board) { create :board }
             before do
@@ -45,6 +49,38 @@ RSpec.describe Figure, type: :model do
                 expect(board.figures.where(type: 'q', color: 'white').count).to eq 1
                 expect(board.figures.where(type: 'q', color: 'black').count).to eq 1
             end
+        end
+
+        context '.check_beaten_fields' do
+
+        end
+
+        context '.check_king_cells' do
+
+        end
+
+        context '.r_like_check' do
+
+        end
+
+        context '.n_like_check' do
+
+        end
+
+        context '.b_like_check' do
+
+        end
+
+        context '.k_like_check' do
+
+        end
+
+        context '.p_like_check' do
+
+        end
+
+        context '.check_king_protector' do
+
         end
     end
 end
