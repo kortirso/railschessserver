@@ -1,4 +1,4 @@
-class Board < ActiveRecord::Base
+class Board < ApplicationRecord
     belongs_to :game
     has_many :cells, dependent: :destroy
     has_many :figures, dependent: :destroy

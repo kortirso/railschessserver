@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '2.3.1'
 
-gem 'rails', '4.2.8'
+gem 'rails', '5.1.2'
 gem 'pg'
 gem 'sass-rails', '~> 5.0'
 gem 'uglifier', '>= 1.3.0'
@@ -11,43 +11,38 @@ gem 'jquery-rails'
 
 gem 'figaro'
 gem 'bootstrap-sass', '~> 3.2.0'
-gem 'autoprefixer-rails', '5.2.1'
+gem 'autoprefixer-rails', '6.7.6'
 gem 'slim'
-gem 'devise'
-gem 'simple_form'
+gem 'devise', github: 'plataformatec/devise'
+gem 'simple_form', '~> 3.5'
 gem 'carrierwave'
 gem 'remotipart'
 gem 'active_model_serializers'
 gem 'doorkeeper'
 gem 'oj'
 gem 'oj_mimic_json'
-gem 'private_pub'
-gem 'thin'
-gem 'responders'
 gem 'omniauth'
 gem 'omniauth-facebook'
 gem 'omniauth-vkontakte'
 gem 'rails_admin'
-gem 'http_accept_language'
 gem 'route_translator'
-gem 'i18n-js'
 gem 'apipie-rails'
 
 group :development, :test do
-    gem 'spring'
-    gem 'rspec-rails'
     gem 'factory_girl_rails'
-    gem 'capybara'
-    gem 'database_cleaner'
-    gem 'capybara-webkit'
+    gem 'rails-controller-testing'
+    gem 'rspec-rails'
 end
 
 group :development do
-    gem 'bullet'
     gem 'capistrano', require: false
     gem 'capistrano-bundler', require: false
     gem 'capistrano-rails', require: false
     gem 'capistrano-rvm', require: false
+    gem 'capistrano-sidekiq', require: false
+    gem 'listen', '~> 3.0.5'
+    gem 'spring'
+    gem 'spring-watcher-listen', '~> 2.0.0'
 end
 
 group :test do

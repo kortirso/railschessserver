@@ -1,5 +1,5 @@
 class Api::V1::GamesController < Api::V1::BaseController
-    skip_before_filter :verify_authenticity_token, only: :create
+    skip_before_action :verify_authenticity_token, only: :create
 
     resource_description do
         short 'Games resources'

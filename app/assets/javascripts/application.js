@@ -12,7 +12,5 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require private_pub
 //= require bootstrap-sprockets
-//= require i18n
 //= require_tree .

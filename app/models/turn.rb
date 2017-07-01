@@ -1,4 +1,4 @@
-class Turn < ActiveRecord::Base
+class Turn < ApplicationRecord
     belongs_to :game
 
     validates :game_id, :from, :to, presence: true
