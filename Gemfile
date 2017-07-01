@@ -28,6 +28,10 @@ gem 'rails_admin'
 gem 'route_translator'
 gem 'apipie-rails'
 
+gem 'foreman'
+gem 'webpacker'
+gem 'webpacker-react', '~> 0.3.1'
+
 group :development, :test do
     gem 'factory_girl_rails'
     gem 'rails-controller-testing'
