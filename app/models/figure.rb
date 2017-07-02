@@ -1,4 +1,4 @@
-class Figure < ActiveRecord::Base
+class Figure < ApplicationRecord
     self.inheritance_column = nil
 
     belongs_to :cell

@@ -1,4 +1,4 @@
-class Cell < ActiveRecord::Base
+class Cell < ApplicationRecord
     belongs_to :board
     has_one :figure
 

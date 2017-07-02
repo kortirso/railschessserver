@@ -1,0 +1,58 @@
+AllCops:
+  Include:
+    - '**/Rakefile'
+    - '**/config.ru'
+  Exclude:
+    - db/schema.rb
+    - config.ru
+    - lib/**/*.rake
+    - vendor/**/*
+    - bin/*
+    - node_modules/**/*
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false
+
+Metrics/LineLength:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/ModuleLength:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+Layout/IndentationWidth:
+  # Number of spaces for each indentation level.
+  Width: 4
+
+Layout/CaseIndentation:
+  EnforcedStyle: case
+  SupportedStyles:
+    - case
+    - end
+  IndentOneStep: true
+
+Layout/AlignHash:
+  Enabled: false
+
+Style/Documentation:
+  Exclude:
+    - db/migrate/*.rb
+    - app/serializers/**/*.rb
+    - app/controllers/**/*.rb
+
+Style/GuardClause:
+  Enabled: false
+
+Style/FileName:
+  Enabled: false

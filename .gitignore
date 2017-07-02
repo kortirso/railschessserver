@@ -14,3 +14,5 @@
 /config/application.yml
 /public/uploads/*
 .idea
+/public/packs
+/node_modules

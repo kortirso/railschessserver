@@ -1,4 +1,4 @@
-class Ai < ActiveRecord::Base
+class Ai < ApplicationRecord
     has_many :games
 
     validates :elo, presence: true

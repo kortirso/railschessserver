@@ -1,4 +1,4 @@
-class Challenge < ActiveRecord::Base
+class Challenge < ApplicationRecord
     belongs_to :user
     belongs_to :opponent, class_name: 'User', foreign_key: 'opponent_id'
 

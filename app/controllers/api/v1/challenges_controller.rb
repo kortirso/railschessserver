@@ -1,5 +1,5 @@
 class Api::V1::ChallengesController < Api::V1::BaseController
-    skip_before_filter :verify_authenticity_token, only: [:create, :destroy]
+    skip_before_action :verify_authenticity_token, only: [:create, :destroy]
 
     resource_description do
         short 'Challenges resources'

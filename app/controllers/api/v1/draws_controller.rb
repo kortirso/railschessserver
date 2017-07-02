@@ -1,5 +1,5 @@
 class Api::V1::DrawsController < Api::V1::BaseController
-    skip_before_filter :verify_authenticity_token
+    skip_before_action :verify_authenticity_token
     before_action :find_game
     before_action :check_player
     before_action :check_params

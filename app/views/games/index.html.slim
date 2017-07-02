@@ -59,10 +59,6 @@ h1= t('games.h1')
                                         = simple_form_for Game.new, remote: true do |f|
                                             = f.input :challenge, as: :hidden, input_html: {value: ""}
                                             = f.button :submit, class: 'btn btn-sm btn-primary', value: t('games.challenges.play')
-        = subscribe_to "/users/#{current_user.id}/games"
-        = subscribe_to "/users/#{current_user.id}/challenges"
-        = subscribe_to "/users/games"
-        = subscribe_to "/users/challenges"
     - else
         .col-xs-12
             #last_public_games.col-xs-12
