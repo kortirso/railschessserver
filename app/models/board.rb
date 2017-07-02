@@ -1,16 +1,4 @@
 class Board < ApplicationRecord
-    belongs_to :game
-    has_many :cells, dependent: :destroy
-    has_many :figures, dependent: :destroy
-
-    validates :game_id, presence: true
-
-    after_create :board_sets
-
-    def self.build(game)
-        board = create game: game
-    end
-
     def set_figures
         figures_list, cells_list = self.figures, self.cells
         f = figures_list.where(type: 'p', color: 'white')

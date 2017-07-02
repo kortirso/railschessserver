@@ -7,9 +7,7 @@ class GamesController < ApplicationController
         @challenges = Challenge.accessable(current_user.id).includes(:user) if current_user
     end
 
-    def show
-        @figures = @game.figures.includes(:cell)
-    end
+    def show; end
 
     def create
         Game.create_from_challenge(params[:game][:challenge].to_i, current_user.id)

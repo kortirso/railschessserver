@@ -1,12 +1,9 @@
 class Game < ApplicationRecord
-    belongs_to :user
-    belongs_to :opponent, class_name: 'User', foreign_key: 'opponent_id'
-    belongs_to :challenge
-    belongs_to :ai
+    belongs_to :user, optional: true
+    belongs_to :opponent, class_name: 'User', foreign_key: 'opponent_id', optional: true
+    belongs_to :challenge, optional: true
+    belongs_to :ai, optional: true
 
-    has_one :board, dependent: :destroy
-    has_many :figures, through: :board
-    has_many :cells, through: :board
     has_many :turns, dependent: :destroy
 
     scope :accessable, -> { where(access: true) }
@@ -14,7 +11,7 @@ class Game < ApplicationRecord
     scope :finished, -> { where.not(game_result: nil) }
 
     before_create :set_ratings
-    after_create :board_build
+    before_create :set_board
 
     def checks_before_turn(user_id, from, to)
         result = self.check_users_turn(user_id)
@@ -315,6 +312,7 @@ class Game < ApplicationRecord
     end
 
     private
+
     def set_ratings
         unless self.user.nil?
             self.user_rating = self.user.elo
@@ -322,7 +320,27 @@ class Game < ApplicationRecord
         end
     end
 
-    def board_build
-        Board.build(self)
+    def set_board(board = {figures: {}})
+        %i(w b).each do |color|
+            if color == :w
+                king_line = 1
+                p_line = 2
+            else
+                king_line = 8
+                p_line = 7
+            end
+            %w(a b c d e f g h).each_with_index do |line, index|
+                board[:figures]["#{color}p#{index + 1}".to_sym] = {color: color, type: :p, cell: "#{line}#{p_line}".to_sym}
+            end
+            board[:figures]["#{color}r1".to_sym] = {color: color, type: :r, cell: "a#{king_line}".to_sym}
+            board[:figures]["#{color}r2".to_sym] = {color: color, type: :r, cell: "h#{king_line}".to_sym}
+            board[:figures]["#{color}n1".to_sym] = {color: color, type: :n, cell: "b#{king_line}".to_sym}
+            board[:figures]["#{color}n2".to_sym] = {color: color, type: :n, cell: "g#{king_line}".to_sym}
+            board[:figures]["#{color}b1".to_sym] = {color: color, type: :b, cell: "c#{king_line}".to_sym}
+            board[:figures]["#{color}b2".to_sym] = {color: color, type: :b, cell: "f#{king_line}".to_sym}
+            board[:figures]["#{color}k".to_sym] = {color: color, type: :k, cell: "e#{king_line}".to_sym}
+            board[:figures]["#{color}q".to_sym] = {color: color, type: :q, cell: "d#{king_line}".to_sym}
+        end
+        self.board = board
     end
 end

@@ -1,13 +1,4 @@
 class Figure < ApplicationRecord
-    self.inheritance_column = nil
-
-    belongs_to :cell
-    belongs_to :board
-
-    validates :type, :color, :board_id, :image, presence: true
-    validates :type, inclusion: { in: %w(k q r n b p) }
-    validates :color, inclusion: { in: %w(white black) }
-
     scope :on_the_board, -> { where.not(cell: nil) }
     scope :removed, -> { where(cell: nil) }
     scope :whites, -> { where(color: 'white') }
