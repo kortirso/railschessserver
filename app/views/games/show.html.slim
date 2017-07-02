@@ -1,6 +1,8 @@
+= javascript_pack_tag 'game_box'
 .row
     .col-xs-12.col-md-6
-        #all_board
+        = react_component('GameBox')
+        /#all_board
             #board data={game: "#{@game.id}", user: "#{current_user.id if current_user}"}
                 - (1..8).reverse_each do |r|
                     - block = r.odd? ? [:white, :black] : [:black, :white]
