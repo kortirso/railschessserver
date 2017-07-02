@@ -12,7 +12,7 @@ class GameBox extends React.Component {
 
     render() {
         return (
-            <Board />
+            <Board game_id={this.props.game_id} access_token={this.props.access_token} />
         )
     }
 }

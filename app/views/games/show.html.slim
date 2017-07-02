@@ -1,7 +1,7 @@
 = javascript_pack_tag 'game_box'
 .row
     .col-xs-12.col-md-6
-        = react_component('GameBox')
+        = react_component('GameBox', access_token: '731ea3dbb8662be86f61b57c1a64a593ab6968df1cda1d62a0121e19f1fc1136', game_id: @game.id)
         /#all_board
             #board data={game: "#{@game.id}", user: "#{current_user.id if current_user}"}
                 - (1..8).reverse_each do |r|

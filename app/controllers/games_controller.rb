@@ -17,7 +17,7 @@ class GamesController < ApplicationController
     private
     def game_find
         @game = Game.find_by(id: params[:id])
-        render template: 'shared/404', status: 404 if @game.nil? || @game.access == false && (current_user && @game.user_id != current_user.id && @game.opponent_id != current_user.id || !@game.guest.nil? && @game.guest != session[:guest])
+        #render template: 'shared/404', status: 404 if @game.nil? || @game.access == false && (current_user && @game.user_id != current_user.id && @game.opponent_id != current_user.id || !@game.guest.nil? && @game.guest != session[:guest])
     end
 
     def get_last_games

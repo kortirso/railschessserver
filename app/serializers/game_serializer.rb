@@ -4,11 +4,10 @@ class GameSerializer < ActiveModel::Serializer
     has_one :opponent, serializer: UserSerializer
 
     class WithFigures < self
-        attributes :possibles
-        has_many :figures
+        attributes :figures
 
         def figures
-            object.figures.order(id: :asc)
+            eval(object.board['figures'])
         end
     end
 end
