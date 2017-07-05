@@ -1,27 +1,15 @@
 import React from 'react';
-import ReactDOMServer from 'react-dom/server';
 
 class Board extends React.Component {
 
     constructor() {
         super();
         this.state = {
-            game: {}
+            status: 0,
+            figure: {},
+            from: '',
+            to: ''
         }
-    }
-
-    componentDidMount() {
-        this._fetchFigures();
-    }
-
-    _fetchFigures() {
-        $.ajax({
-            method: 'GET',
-            url: `/api/v1/games/${this.props.game_id}.json?access_token=${this.props.access_token}`,
-            success: (data) => {
-                this.setState({game: data});
-            }
-        });
     }
 
     _prepareCells() {
@@ -45,19 +33,35 @@ class Board extends React.Component {
             if(index & 1) color = block[0];
             else color = block[1];
             return (
-                <div className={['square', color, 'square-' + item + line].join(' ')} key={index}></div>
+                <div id={item + line} className={['square', color].join(' ')} onClick={this._handleClick.bind(this, item + line)} key={index}></div>
             )
         });
+    }
+
+    _handleClick(clickedId, object) {
+        let clicked = object.target;
+        console.log(clicked);
+        if (this.state.status == 0) {
+            if (clicked.classList.contains('with_figure')) {
+                $('#' + clickedId).addClass('yellow');
+                this.setState({status: 1, from: clickedId, figure: clicked.classList[3]});
+            }
+        } else if (this.state.status == 1) {
+            $('#' + this.state.from).removeClass('yellow with_figure ' + this.state.figure);
+            $('#' + clickedId).addClass('with_figure ' + this.state.figure);
+            this.setState({status: 0, from: '', figure: {}});
+            // todo: send request to backend, set new game status
+            //var audio = new Audio('<%= asset_path("turn.wav") %>');
+            //audio.play();
+        }
     }
 
     _setFigures() {
         let parent = this;
         let child;
-        if(this.state.game.figures) {
-            $.each(this.state.game.figures, function(figure, data) {
-                $('.square-' + data.cell).addClass('with_figure figure-' + data.color + data.type);
-            });
-        }
+        $.each(this.props.game.figures, function(figure, data) {
+            $('#' + data.cell).addClass('with_figure figure-' + data.color + data.type);
+        });
     }
 
     render() {

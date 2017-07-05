@@ -1,5 +1,6 @@
 class Api::V1::GamesController < Api::V1::BaseController
-    skip_before_action :verify_authenticity_token#, only: :create
+    skip_before_action :verify_authenticity_token, only: :create
+    skip_before_action :doorkeeper_authorize!, only: :show
 
     resource_description do
         short 'Games resources'
@@ -11,7 +12,7 @@ class Api::V1::GamesController < Api::V1::BaseController
         render json: { games: ActiveModel::Serializer::CollectionSerializer.new(current_resource_owner.users_games.current.to_a, each_serializer: GameSerializer) }
     end
 
-    api :GET, '/v1/games/:id.json?access_token=TOKEN', 'Returns the information about current game'
+    api :GET, '/v1/games/:id.json', 'Returns the information about current game'
     def show
         game = Game.find(params[:id])
         render json: game, serializer: GameSerializer::WithFigures
