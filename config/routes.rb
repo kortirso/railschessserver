@@ -2,7 +2,7 @@ Rails.application.routes.draw do
     apipie
     use_doorkeeper
     mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
-    devise_for :users, :controllers => { omniauth_callbacks: 'omniauth_callbacks' }
+    devise_for :users, controllers: { sessions: 'sessions', registrations: 'registrations', omniauth_callbacks: 'omniauth_callbacks' }
 
     localized do
         resources :games, except: [:edit, :update, :new]

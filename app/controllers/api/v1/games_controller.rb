@@ -15,7 +15,7 @@ class Api::V1::GamesController < Api::V1::BaseController
     api :GET, '/v1/games/:id.json', 'Returns the information about current game'
     def show
         game = Game.find(params[:id])
-        render json: game, serializer: GameSerializer::WithFigures
+        render json: game, serializer: GameSerializer::FullData
     end
 
     api :POST, '/v1/games.json', 'Creates game from challenge'

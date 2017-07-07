@@ -65,6 +65,7 @@ class Board extends React.Component {
     }
 
     render() {
+        console.log(this.props.game);
         return (
             <div id='all_board'>
                 <div id='board'>
