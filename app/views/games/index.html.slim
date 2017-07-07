@@ -1,3 +1,4 @@
+= javascript_pack_tag 'user_box'
 h1= t('games.h1')
 .row
     - if current_user
@@ -10,7 +11,8 @@ h1= t('games.h1')
                 h2= t('games.last')
                 - @last_games.each do |game|
                     .col-xs-6= render partial: 'shared/game_block', locals: { game: game }
-        .col-xs-12.col-sm-6
+        = react_component('UserBox', access_token: '')
+        /.col-xs-12.col-sm-6
             .row
                 .col-lg-12#new_game
                     h2= t('games.new')
